@@ -1,0 +1,74 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/read_cover3" >
+
+    <RelativeLayout
+        android:id="@+id/rl_top"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:padding="3dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/tv_chapter_name"
+            android:layout_marginLeft="10dp"
+            android:layout_alignParentLeft="true"
+            android:textSize="12sp"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="3dp"
+            android:layout_alignParentRight="true"
+            android:textSize="12sp"
+            android:layout_marginRight="10dp"
+            android:id="@+id/tv_now_time"/>
+    </RelativeLayout>
+
+    <TextView
+        android:id="@+id/content"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="8dp"
+        android:padding="10dp"
+        android:layout_below="@+id/rl_top"
+        android:layout_above="@+id/rl_bttom"
+        android:lineSpacingExtra="5dp"
+        android:textColor="#000000"
+        android:textSize="19sp" />
+
+    <RelativeLayout
+        android:id="@+id/rl_bttom"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="15dp"
+        android:layout_alignParentBottom="true">
+        <TextView
+            android:layout_marginLeft="40dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:text="上一章"
+            android:padding="5dp"
+            android:id="@+id/tv_last_chapter"/>
+        <TextView
+            android:id="@+id/index"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:textColor="#000000"
+            android:padding="5dp"
+            android:textSize="15sp" />
+        <TextView
+            android:layout_marginRight="40dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:text="下一章"
+            android:padding="5dp"
+            android:id="@+id/tv_next_chapter"/>
+    </RelativeLayout>
+
+
+</RelativeLayout>

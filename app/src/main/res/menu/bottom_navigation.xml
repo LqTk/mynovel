@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/navigation_my"
+        android:icon="@drawable/my_books"
+        android:title="我的" />
+    <item
+        android:id="@+id/navigation_allnovels"
+        android:icon="@drawable/books"
+        android:title="书架" />
+    <!--        android:icon="@drawable/homeb"-->
+<!--    <item
+        android:id="@+id/navigation_user"
+        android:icon="@drawable/userb"
+        android:title="@string/my" />-->
+</menu>
