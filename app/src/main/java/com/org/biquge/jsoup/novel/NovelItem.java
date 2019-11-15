@@ -14,6 +14,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.alibaba.fastjson.JSON;
 import com.bumptech.glide.Glide;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.githang.statusbar.StatusBarCompat;
@@ -110,6 +111,8 @@ public class NovelItem extends AppCompatActivity {
                     bundle.putString("from", "noveitem");
                     bundle.putString("title", (String) authorMap.get("title"));
                     bundle.putString("author", (String) authorMap.get("author"));
+                    bundle.putString("chapters",JSON.toJSONString(itemsList));
+                    bundle.putString("bookName", (String) authorMap.get("title"));
 
                     Intent intent = new Intent(context, NovelReadItem.class);
                     intent.putExtras(bundle);
@@ -173,6 +176,7 @@ public class NovelItem extends AppCompatActivity {
             saveBookLists = new ArrayList<>();
         authorMap.put("chapter",novelHomeUrl + String.valueOf(itemsMap.get("href")));
         authorMap.put("lastPage",1);
+        authorMap.put("chapters", JSON.toJSONString(itemsList));
         saveBookLists.add(authorMap);
         myPreference.setObject(saveInfo,saveBookLists);
         tvAddbook.setTextColor(Color.parseColor("#999999"));

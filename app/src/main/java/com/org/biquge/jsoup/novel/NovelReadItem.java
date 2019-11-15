@@ -1,15 +1,16 @@
 package com.org.biquge.jsoup.novel;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import com.alibaba.fastjson.JSON;
 import com.org.biquge.jsoup.JsoupGet;
@@ -17,6 +18,8 @@ import com.org.biquge.jsoup.MyPreference;
 import com.org.biquge.jsoup.R;
 import com.org.biquge.jsoup.novel.adapter.ScanViewAdapter;
 import com.org.biquge.jsoup.novel.events.RefreshMyBooks;
+import com.org.biquge.jsoup.novel.popwindow.ChapterPop;
+import com.org.biquge.jsoup.novel.popwindow.FullScreenPop;
 import com.org.biquge.jsoup.novel.view.ScanView;
 
 import org.greenrobot.eventbus.EventBus;
@@ -36,6 +39,8 @@ public class NovelReadItem extends AppCompatActivity {
 
     @BindView(R.id.scanView)
     ScanView scanView;
+    @BindView(R.id.ll_main)
+    LinearLayout llMain;
     /*@BindView(R.id.tv_content)
         TextView tvContent;*/
     private Context context;
@@ -51,11 +56,11 @@ public class NovelReadItem extends AppCompatActivity {
                 return;
             String content = (String) readItem.get("content");
             final List<String> cons = new ArrayList<>();
-            int i=0;
-            for (i = 0;i<content.length()/pageReadCount;i++){
-                cons.add(content.substring(i*pageReadCount,(i+1)*pageReadCount));
+            int i = 0;
+            for (i = 0; i < content.length() / pageReadCount; i++) {
+                cons.add(content.substring(i * pageReadCount, (i + 1) * pageReadCount));
             }
-            cons.add(content.substring(i*pageReadCount,content.length()));
+            cons.add(content.substring(i * pageReadCount, content.length()));
             if (!first) {
                 if (pageStatus.equals("next")) {
                     currentIndex = 1;
@@ -65,11 +70,11 @@ public class NovelReadItem extends AppCompatActivity {
                     authorMap.put("lastPage", currentIndex);
                 }
             }
-            if (first){
+            if (first) {
                 first = false;
                 currentIndex = (int) authorMap.get("lastPage");
             }
-            scanViewAdapter = new ScanViewAdapter(context,cons, (String) readItem.get("name"));
+            scanViewAdapter = new ScanViewAdapter(context, cons, (String) readItem.get("name"));
             scanViewAdapter.setChapterClicker(new ScanViewAdapter.ChapterClicker() {
                 @Override
                 public void lastChapterListener() {
@@ -78,27 +83,37 @@ public class NovelReadItem extends AppCompatActivity {
                     if (lastUrl.equals(allUrl))
                         return;
                     pageStatus = "next";
-                    authorMap.put("chapter",lastUrl);
+                    authorMap.put("chapter", lastUrl);
                     getData(lastUrl);
                 }
 
                 @Override
                 public void nextChapterListener() {
                     pageStatus = "next";
-                    authorMap.put("chapter",(String) readItem.get("nextChapter"));
+                    authorMap.put("chapter", (String) readItem.get("nextChapter"));
                     getData((String) readItem.get("nextChapter"));
                 }
             });
-            scanView.setAdapter(scanViewAdapter, currentIndex);
-            scanView.setPageListener(pageListener);
-            scanView.setSavePageListener(savePageListener);
+            if (scanViewAdapter!=null) {
+                scanView.setAdapter(scanViewAdapter, currentIndex);
+                scanView.setPageListener(pageListener);
+                scanView.setScreenClick(screenClick);
+                scanView.setSavePageListener(savePageListener);
+            }
 //            tvContent.setText((CharSequence) readItem.get("content"));
         }
     };
     private HashMap readItem;
-    private HashMap authorMap=new HashMap();
-    private int currentIndex=1;
-    private String pageStatus="next";
+    private HashMap authorMap = new HashMap();
+    private int currentIndex = 1;
+    private String pageStatus = "next";
+    private boolean first = false;
+    private MyPreference myPreference;
+    private int mapPosition = -1;
+    private List<HashMap> myBooksLists;
+    private List<HashMap> chaptersLists;
+    private boolean isAdded = false;
+
     private ScanView.OnPageListener pageListener = new ScanView.OnPageListener() {
         @Override
         public void lastChapter() {
@@ -107,28 +122,53 @@ public class NovelReadItem extends AppCompatActivity {
             if (lastUrl.equals(allUrl))
                 return;
             pageStatus = "last";
-            authorMap.put("chapter",lastUrl);
+            authorMap.put("chapter", lastUrl);
             getData(lastUrl);
         }
 
         @Override
         public void nextChapter() {
             pageStatus = "next";
-            authorMap.put("chapter",(String) readItem.get("nextChapter"));
+            authorMap.put("chapter", (String) readItem.get("nextChapter"));
             getData((String) readItem.get("nextChapter"));
         }
     };
     private ScanView.SavePageListener savePageListener = new ScanView.SavePageListener() {
         @Override
         public void saveNowPage(int page) {
-            authorMap.put("lastPage",page);
+            authorMap.put("lastPage", page);
         }
     };
-    private boolean first = false;
-    private MyPreference myPreference;
-    private int mapPosition=-1;
-    private List<HashMap> myBooksLists;
-    private boolean isAdded = false;
+    private ScanView.ScreenClick screenClick = new ScanView.ScreenClick() {
+        @Override
+        public void onClick() {
+            FullScreenPop fullScreenPop = new FullScreenPop(context);
+            fullScreenPop.setFullPopClick(fullPopClick);
+            fullScreenPop.setFocusable(true);
+            fullScreenPop.setOutsideTouchable(false);
+            fullScreenPop.showAtLocation(llMain, Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL, 0, 0);
+        }
+    };
+
+    private FullScreenPop.FullPopClick fullPopClick = new FullScreenPop.FullPopClick() {
+        @Override
+        public void chaptersClick() {
+            ChapterPop chapterPop = new ChapterPop(context);
+            chapterPop.setData(chaptersLists,bookName);
+            chapterPop.setChaptersClick(chaptersClick);
+            chapterPop.setFocusable(true);
+            chapterPop.setOutsideTouchable(false);
+            chapterPop.showAtLocation(llMain, Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL, 0, 0);
+        }
+    };
+
+    private ChapterPop.ChaptersClick chaptersClick = new ChapterPop.ChaptersClick() {
+        @Override
+        public void chapterItemClick(int position) {
+            Toast.makeText(context, (CharSequence) chaptersLists.get(position).get("name"), Toast.LENGTH_SHORT).show();
+        }
+    };
+    private String bookName="";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -146,29 +186,35 @@ public class NovelReadItem extends AppCompatActivity {
         getData(initData());
     }
 
-    private String initData(){
-        String href="";
+    private String initData() {
+        String href = "";
         Bundle bundle = getIntent().getExtras();
-        if (bundle.getString("from").equals("noveitem")){
+        if (bundle.getString("from").equals("noveitem")) {
             href = bundle.getString("url");
+            bookName = bundle.getString("bookName");
+            chaptersLists = JSON.parseObject(bundle.getString("chapters"),List.class);
             isAdded = bundle.getBoolean("isAdded");
-            if (isAdded){
-                for (int i=0;i<myBooksLists.size();i++){
+            if (isAdded) {
+                for (int i = 0; i < myBooksLists.size(); i++) {
                     HashMap cMap = myBooksLists.get(i);
                     if (cMap.get("title").equals(bundle.getString("title"))
-                            && cMap.get("author").equals(bundle.getString("author"))){
+                            && cMap.get("author").equals(bundle.getString("author"))) {
                         mapPosition = i;
                         authorMap = myBooksLists.get(mapPosition);
+                        /*href = (String) authorMap.get("chapter");
+                        first = true;*/
                         break;
                     }
                 }
             }
-        }else{
+        } else {
             isAdded = true;
             mapPosition = bundle.getInt("itemPosition");
-            if (myBooksLists!=null && myBooksLists.size()>0){
+            if (myBooksLists != null && myBooksLists.size() > 0) {
                 authorMap = myBooksLists.get(mapPosition);
                 href = (String) authorMap.get("chapter");
+                chaptersLists = JSON.parseObject((String) authorMap.get("chapters"),List.class);
+                bookName = (String) authorMap.get("title");
                 first = true;
             }
         }
@@ -194,6 +240,8 @@ public class NovelReadItem extends AppCompatActivity {
         super.onDestroy();
         onSaveBooks();
         bind.unbind();
+        if (scanViewAdapter != null)
+            scanViewAdapter.unRegister();
     }
 
     @Override
@@ -218,10 +266,10 @@ public class NovelReadItem extends AppCompatActivity {
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if (keyCode == KeyEvent.KEYCODE_VOLUME_DOWN || keyCode==KeyEvent.KEYCODE_VOLUME_UP) {
+        if (keyCode == KeyEvent.KEYCODE_VOLUME_DOWN || keyCode == KeyEvent.KEYCODE_VOLUME_UP) {
             scanView.keyDown(keyCode);
             return true;
-        }else {
+        } else {
             onSaveBooks();
             return super.onKeyDown(keyCode, event);
         }

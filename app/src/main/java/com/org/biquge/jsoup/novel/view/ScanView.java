@@ -13,11 +13,13 @@ import android.graphics.Shader.TileMode;
 import android.os.Handler;
 import android.os.Message;
 import android.util.AttributeSet;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.VelocityTracker;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.RelativeLayout;
 
 import com.org.biquge.jsoup.novel.adapter.PageAdapter;
@@ -71,8 +73,15 @@ public class ScanView extends RelativeLayout {
     private int mEvents;
 
     private OnPageListener pageListener;
-
     private SavePageListener savePageListener;
+    private ScreenClick screenClick;
+
+    private long downTime=0l;
+    private long upTime=0l;
+
+    public void setScreenClick(ScreenClick click){
+        this.screenClick = click;
+    }
 
     public void setPageListener(OnPageListener listener){
         this.pageListener = listener;
@@ -262,6 +271,13 @@ public class ScanView extends RelativeLayout {
             switch (event.getActionMasked()) {
                 case MotionEvent.ACTION_DOWN:
                     lastX = event.getX();
+
+                    WindowManager wm = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
+                    int screenWidth = wm.getDefaultDisplay().getWidth();
+                    int screenHeight = wm.getDefaultDisplay().getHeight();
+                    if (lastX>screenWidth/3&&lastX<screenWidth/3*2) {
+                        downTime = System.currentTimeMillis();
+                    }
                     try {
                         if (vt == null) {
                             vt = VelocityTracker.obtain();
@@ -303,6 +319,12 @@ public class ScanView extends RelativeLayout {
                     requestLayout();
                     break;
                 case MotionEvent.ACTION_UP:
+                    upTime = System.currentTimeMillis();
+                    if (upTime-downTime<500){
+                        if (screenClick!=null){
+                            screenClick.onClick();
+                        }
+                    }
                     actionUp();
                     break;
                 default:
@@ -369,15 +391,6 @@ public class ScanView extends RelativeLayout {
         public void run() {
             handler.sendMessage(handler.obtainMessage());
         }
-    }
-
-    public interface OnPageListener{
-        void lastChapter();
-        void nextChapter();
-    }
-
-    public interface SavePageListener {
-        void saveNowPage(int page);
     }
 
     private void lastPage(){
@@ -465,4 +478,16 @@ public class ScanView extends RelativeLayout {
         }
     }
 
+    public interface OnPageListener{
+        void lastChapter();
+        void nextChapter();
+    }
+
+    public interface SavePageListener {
+        void saveNowPage(int page);
+    }
+
+    public interface ScreenClick{
+        void onClick();
+    }
 }
