@@ -103,8 +103,16 @@ public class NovelItem extends AppCompatActivity {
             novelItemAdapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
                 @Override
                 public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
+
+                    Bundle bundle = new Bundle();
+                    bundle.putString("url", novelHomeUrl + String.valueOf(itemsList.get(position).get("href")));
+                    bundle.putBoolean("isAdded", tvAddbook.getText().toString().equals("已加入图书"));
+                    bundle.putString("from", "noveitem");
+                    bundle.putString("title", (String) authorMap.get("title"));
+                    bundle.putString("author", (String) authorMap.get("author"));
+
                     Intent intent = new Intent(context, NovelReadItem.class);
-                    intent.putExtra("url", novelHomeUrl + String.valueOf(itemsList.get(position).get("href")));
+                    intent.putExtras(bundle);
                     startActivity(intent);
                 }
             });

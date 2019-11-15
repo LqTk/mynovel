@@ -17,6 +17,7 @@ import android.widget.Toast;
 
 import com.alibaba.fastjson.JSON;
 import com.chad.library.adapter.base.BaseQuickAdapter;
+import com.githang.statusbar.StatusBarCompat;
 import com.org.biquge.jsoup.MyPreference;
 import com.org.biquge.jsoup.R;
 import com.org.biquge.jsoup.novel.NovelReadItem;
@@ -59,6 +60,7 @@ public class MyFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_my, container, false);
+        StatusBarCompat.setStatusBarColor(getActivity(),getResources().getColor(R.color.blue_main));
         unbinder = ButterKnife.bind(this, view);
         EventBus.getDefault().register(this);
         return view;
@@ -91,7 +93,7 @@ public class MyFragment extends Fragment {
                         .setText("删除")
                         .setTextColor(getResources().getColor(R.color.white))
                         .setTextSize(15)
-                        .setWidth(100)
+                        .setWidth(160)
                         .setHeight(ViewGroup.LayoutParams.MATCH_PARENT);
                 swipeRightMenu.addMenuItem(menuItem);
             }
@@ -124,6 +126,8 @@ public class MyFragment extends Fragment {
             public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
                 Bundle bundle = new Bundle();
                 bundle.putInt("itemPosition", position);
+                bundle.putBoolean("isAdded", true);
+                bundle.putString("from", "myFragment");
                 Intent intent = new Intent(getContext(), NovelReadItem.class);
                 intent.putExtras(bundle);
                 startActivity(intent);

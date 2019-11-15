@@ -152,7 +152,7 @@ public class ScanView extends RelativeLayout {
                 LayoutParams.MATCH_PARENT));
         // 从适配器获取前一页内容
         adapter.addContent(nextPage, index - 1);
-        savePageListener.saveNowPage(index-1);
+        savePageListener.saveNowPage(index);
         // 交换顺序
         View temp = nextPage;
         nextPage = currPage;
@@ -170,7 +170,7 @@ public class ScanView extends RelativeLayout {
                 LayoutParams.MATCH_PARENT));
         // 从适配器获取后一页内容
         adapter.addContent(prePage, index + 1);
-        savePageListener.saveNowPage(index+1);
+        savePageListener.saveNowPage(index);
         // 交换顺序
         View temp = currPage;
         currPage = nextPage;
