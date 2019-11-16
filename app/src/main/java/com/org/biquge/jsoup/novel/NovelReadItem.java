@@ -29,6 +29,7 @@ import com.org.biquge.jsoup.novel.broadcastReceiver.BattaryBroadcast;
 import com.org.biquge.jsoup.novel.events.RefreshMyBooks;
 import com.org.biquge.jsoup.novel.popwindow.ChapterPop;
 import com.org.biquge.jsoup.novel.popwindow.FullScreenPop;
+import com.org.biquge.jsoup.novel.utils.ToastUtils;
 import com.org.biquge.jsoup.novel.view.ScanView;
 
 import org.greenrobot.eventbus.EventBus;
@@ -69,6 +70,7 @@ public class NovelReadItem extends AppCompatActivity {
     private Unbinder bind;
     private JsoupGet jsoupGet = new JsoupGet();
     private int pageReadCount = 300;
+    private ToastUtils mToastUtils = new ToastUtils();
     ScanViewAdapter scanViewAdapter;
 
     Handler handler = new Handler() {
@@ -103,16 +105,30 @@ public class NovelReadItem extends AppCompatActivity {
                 public void lastChapterListener() {
                     String lastUrl = (String) readItem.get("lastChapter");
                     String allUrl = (String) readItem.get("allChapter");
-                    if (lastUrl.equals(allUrl))
+                    if (lastUrl.equals(allUrl)){
+                        if (System.currentTimeMillis()-showLastTime>1200) {
+                            showLastTime = System.currentTimeMillis();
+                            mToastUtils.showShortMsg(context, "这已经是第一章了哦~");
+                        }
                         return;
+                    }
                     pageStatus = "next";
                     getData(lastUrl);
                 }
 
                 @Override
                 public void nextChapterListener() {
+                    String nextUrl = (String) readItem.get("nextChapter");
+                    String allUrl = (String) readItem.get("allChapter");
+                    if (nextUrl.equals(allUrl)) {
+                        if (System.currentTimeMillis()-showLastTime>1200) {
+                            showLastTime = System.currentTimeMillis();
+                            mToastUtils.showShortMsg(context, "没有下一章了，看看其它的吧");
+                        }
+                        return;
+                    }
                     pageStatus = "next";
-                    getData((String) readItem.get("nextChapter"));
+                    getData(nextUrl);
                 }
             });
             if (scanViewAdapter!=null) {
@@ -143,16 +159,30 @@ public class NovelReadItem extends AppCompatActivity {
         public void lastChapter() {
             String lastUrl = (String) readItem.get("lastChapter");
             String allUrl = (String) readItem.get("allChapter");
-            if (lastUrl.equals(allUrl))
+            if (lastUrl.equals(allUrl)) {
+                if (System.currentTimeMillis()-showLastTime>1200) {
+                    showLastTime = System.currentTimeMillis();
+                    mToastUtils.showShortMsg(context, "这已经是第一章了哦~");
+                }
                 return;
+            }
             pageStatus = "last";
             getData(lastUrl);
         }
 
         @Override
         public void nextChapter() {
+            String nextUrl = (String) readItem.get("nextChapter");
+            String allUrl = (String) readItem.get("allChapter");
+            if (nextUrl.equals(allUrl)) {
+                if (System.currentTimeMillis()-showLastTime>1200) {
+                    showLastTime = System.currentTimeMillis();
+                    mToastUtils.showShortMsg(context, "没有下一章了，看看其它的吧");
+                }
+                return;
+            }
             pageStatus = "next";
-            getData((String) readItem.get("nextChapter"));
+            getData(nextUrl);
         }
     };
     private ScanView.SavePageListener savePageListener = new ScanView.SavePageListener() {
@@ -206,6 +236,7 @@ public class NovelReadItem extends AppCompatActivity {
     private String bookName="";
     private BattaryBroadcast battaryBroadcast;
     private HashMap scanViewBgSetting;
+    private long showLastTime = 0l;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
