@@ -18,6 +18,11 @@ public class BattaryBroadcast extends BroadcastReceiver {
         this.iv_battary = imageView;
     }
 
+    public void setView(TextView battaryView, ImageView imageView){
+        this.battary = battaryView;
+        this.iv_battary = imageView;
+    }
+
     @Override
     public void onReceive(Context context, Intent intent) {
         int current = intent.getExtras().getInt("level");// 获得当前电量

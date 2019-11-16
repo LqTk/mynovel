@@ -51,5 +51,5 @@ dependencies {
     implementation 'com.android.support:design:27.1.0'
     implementation 'org.greenrobot:eventbus:3.1.1'
     implementation 'com.alibaba:fastjson:1.2.62'
-    compile 'com.yanzhenjie:recyclerview-swipe:1.1.4'
+    implementation 'com.yanzhenjie:recyclerview-swipe:1.1.4'
 }

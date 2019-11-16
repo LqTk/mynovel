@@ -1,22 +1,31 @@
 package com.org.biquge.jsoup.novel;
 
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Gravity;
 import android.view.KeyEvent;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.alibaba.fastjson.JSON;
 import com.org.biquge.jsoup.JsoupGet;
 import com.org.biquge.jsoup.MyPreference;
 import com.org.biquge.jsoup.R;
+import com.org.biquge.jsoup.novel.adapter.NovelItemAdapter;
 import com.org.biquge.jsoup.novel.adapter.ScanViewAdapter;
+import com.org.biquge.jsoup.novel.adapter.ThemeAdapter;
+import com.org.biquge.jsoup.novel.broadcastReceiver.BattaryBroadcast;
 import com.org.biquge.jsoup.novel.events.RefreshMyBooks;
 import com.org.biquge.jsoup.novel.popwindow.ChapterPop;
 import com.org.biquge.jsoup.novel.popwindow.FullScreenPop;
@@ -31,16 +40,29 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import butterknife.Unbinder;
 
 import static com.org.biquge.jsoup.MyPreference.saveInfo;
+import static com.org.biquge.jsoup.MyPreference.scanViewBgId;
+import static com.org.biquge.jsoup.novel.NovelUrl.novelHomeUrl;
 
 public class NovelReadItem extends AppCompatActivity {
 
     @BindView(R.id.scanView)
     ScanView scanView;
     @BindView(R.id.ll_main)
-    LinearLayout llMain;
+    RelativeLayout llMain;
+    @BindView(R.id.rl_top)
+    RelativeLayout rlTop;
+    @BindView(R.id.tv_chapter_name)
+    TextView tvChapterName;
+    @BindView(R.id.tv_now_battary)
+    TextView tvNowBattary;
+    @BindView(R.id.iv_battary)
+    ImageView ivBattary;
+    @BindView(R.id.ll_pro)
+    LinearLayout llPro;
     /*@BindView(R.id.tv_content)
         TextView tvContent;*/
     private Context context;
@@ -54,6 +76,7 @@ public class NovelReadItem extends AppCompatActivity {
         public void handleMessage(Message msg) {
             if (readItem == null)
                 return;
+            tvChapterName.setText((String) readItem.get("name"));
             String content = (String) readItem.get("content");
             final List<String> cons = new ArrayList<>();
             int i = 0;
@@ -74,7 +97,7 @@ public class NovelReadItem extends AppCompatActivity {
                 first = false;
                 currentIndex = (int) authorMap.get("lastPage");
             }
-            scanViewAdapter = new ScanViewAdapter(context, cons, (String) readItem.get("name"));
+            scanViewAdapter = new ScanViewAdapter(context, cons, (Integer) scanViewBgSetting.get("bgId"));
             scanViewAdapter.setChapterClicker(new ScanViewAdapter.ChapterClicker() {
                 @Override
                 public void lastChapterListener() {
@@ -83,14 +106,12 @@ public class NovelReadItem extends AppCompatActivity {
                     if (lastUrl.equals(allUrl))
                         return;
                     pageStatus = "next";
-                    authorMap.put("chapter", lastUrl);
                     getData(lastUrl);
                 }
 
                 @Override
                 public void nextChapterListener() {
                     pageStatus = "next";
-                    authorMap.put("chapter", (String) readItem.get("nextChapter"));
                     getData((String) readItem.get("nextChapter"));
                 }
             });
@@ -100,6 +121,7 @@ public class NovelReadItem extends AppCompatActivity {
                 scanView.setScreenClick(screenClick);
                 scanView.setSavePageListener(savePageListener);
             }
+            llPro.setVisibility(View.GONE);
 //            tvContent.setText((CharSequence) readItem.get("content"));
         }
     };
@@ -114,6 +136,8 @@ public class NovelReadItem extends AppCompatActivity {
     private List<HashMap> chaptersLists;
     private boolean isAdded = false;
 
+    List<ThemeBgEntity> themeBgEntities = new ArrayList<>();
+
     private ScanView.OnPageListener pageListener = new ScanView.OnPageListener() {
         @Override
         public void lastChapter() {
@@ -122,14 +146,12 @@ public class NovelReadItem extends AppCompatActivity {
             if (lastUrl.equals(allUrl))
                 return;
             pageStatus = "last";
-            authorMap.put("chapter", lastUrl);
             getData(lastUrl);
         }
 
         @Override
         public void nextChapter() {
             pageStatus = "next";
-            authorMap.put("chapter", (String) readItem.get("nextChapter"));
             getData((String) readItem.get("nextChapter"));
         }
     };
@@ -143,6 +165,7 @@ public class NovelReadItem extends AppCompatActivity {
         @Override
         public void onClick() {
             FullScreenPop fullScreenPop = new FullScreenPop(context);
+            fullScreenPop.refreshData(themeBgEntities);
             fullScreenPop.setFullPopClick(fullPopClick);
             fullScreenPop.setFocusable(true);
             fullScreenPop.setOutsideTouchable(false);
@@ -154,21 +177,35 @@ public class NovelReadItem extends AppCompatActivity {
         @Override
         public void chaptersClick() {
             ChapterPop chapterPop = new ChapterPop(context);
-            chapterPop.setData(chaptersLists,bookName);
+            chapterPop.setData(chaptersLists,bookName,tvChapterName.getText().toString());
             chapterPop.setChaptersClick(chaptersClick);
             chapterPop.setFocusable(true);
             chapterPop.setOutsideTouchable(false);
             chapterPop.showAtLocation(llMain, Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL, 0, 0);
+        }
+
+        @Override
+        public void themeClick(int position) {
+            if (scanViewAdapter!=null)
+                scanViewAdapter.setScanViewBg(themeBgEntities.get(position).getBgId());
+            llMain.setBackground(getResources().getDrawable(themeBgEntities.get(position).getBgId()));
+            scanView.resetBg(themeBgEntities.get(position).getBgId());
+            setSetting(themeBgEntities.get(position).getBgId(),position);
         }
     };
 
     private ChapterPop.ChaptersClick chaptersClick = new ChapterPop.ChaptersClick() {
         @Override
         public void chapterItemClick(int position) {
-            Toast.makeText(context, (CharSequence) chaptersLists.get(position).get("name"), Toast.LENGTH_SHORT).show();
+            HashMap clickHashMap = chaptersLists.get(position);
+            Toast.makeText(context, (CharSequence) clickHashMap.get("name"), Toast.LENGTH_SHORT).show();
+            pageStatus = "next";
+            getData(novelHomeUrl+(String) clickHashMap.get("href"));
         }
     };
     private String bookName="";
+    private BattaryBroadcast battaryBroadcast;
+    private HashMap scanViewBgSetting;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -182,8 +219,35 @@ public class NovelReadItem extends AppCompatActivity {
         myPreference = MyPreference.getInstance();
         myPreference.setPreference(context);
         myBooksLists = myPreference.getListObject(saveInfo, HashMap.class);
+        scanViewBgSetting = myPreference.getObject(scanViewBgId,HashMap.class);
+        if (scanViewBgSetting==null){
+            scanViewBgSetting = new HashMap();
+            setSetting(R.drawable.read_cover3,0);
+        }
 
+        initThemeData();
         getData(initData());
+    }
+
+    private void setSetting(int bgId,int which){
+        scanViewBgSetting.put("bgId",bgId);
+        scanViewBgSetting.put("which",which);
+        myPreference.setObject(scanViewBgId,scanViewBgSetting);
+    }
+
+    private void initThemeData() {
+        int which = (int) scanViewBgSetting.get("which");
+        themeBgEntities.add(new ThemeBgEntity(true,R.drawable.read_cover3));
+        themeBgEntities.add(new ThemeBgEntity(false,R.drawable.read_cover2));
+        themeBgEntities.add(new ThemeBgEntity(false,R.drawable.read_cover));
+        for (int i=0;i<themeBgEntities.size();i++){
+            themeBgEntities.get(i).setChecked(false);
+            if (which == i){
+                themeBgEntities.get(i).setChecked(true);
+            }
+        }
+
+        llMain.setBackground(getResources().getDrawable((Integer) scanViewBgSetting.get("bgId")));
     }
 
     private String initData() {
@@ -192,7 +256,7 @@ public class NovelReadItem extends AppCompatActivity {
         if (bundle.getString("from").equals("noveitem")) {
             href = bundle.getString("url");
             bookName = bundle.getString("bookName");
-            chaptersLists = JSON.parseObject(bundle.getString("chapters"),List.class);
+            chaptersLists = JSON.parseArray(bundle.getString("chapters"), HashMap.class);
             isAdded = bundle.getBoolean("isAdded");
             if (isAdded) {
                 for (int i = 0; i < myBooksLists.size(); i++) {
@@ -213,22 +277,29 @@ public class NovelReadItem extends AppCompatActivity {
             if (myBooksLists != null && myBooksLists.size() > 0) {
                 authorMap = myBooksLists.get(mapPosition);
                 href = (String) authorMap.get("chapter");
-                chaptersLists = JSON.parseObject((String) authorMap.get("chapters"),List.class);
+                chaptersLists = JSON.parseArray((String) authorMap.get("chapters"),HashMap.class);
                 bookName = (String) authorMap.get("title");
                 first = true;
             }
         }
+
+        IntentFilter filter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
+        battaryBroadcast = new BattaryBroadcast(tvNowBattary, ivBattary);
+        registerReceiver(battaryBroadcast, filter);
+
         return href;
     }
 
     private void getData(final String href) {
+        authorMap.put("chapter", href);
+        llPro.setVisibility(View.VISIBLE);
         new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
                     readItem = jsoupGet.getReadItem(href);
                     handler.sendEmptyMessage(0);
-                } catch (IOException e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
@@ -240,8 +311,7 @@ public class NovelReadItem extends AppCompatActivity {
         super.onDestroy();
         onSaveBooks();
         bind.unbind();
-        if (scanViewAdapter != null)
-            scanViewAdapter.unRegister();
+        unregisterReceiver(battaryBroadcast);
     }
 
     @Override
@@ -267,11 +337,20 @@ public class NovelReadItem extends AppCompatActivity {
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_VOLUME_DOWN || keyCode == KeyEvent.KEYCODE_VOLUME_UP) {
+            if (llPro.getVisibility()== View.GONE)
             scanView.keyDown(keyCode);
             return true;
         } else {
             onSaveBooks();
             return super.onKeyDown(keyCode, event);
+        }
+    }
+
+    @OnClick(R.id.ll_pro)
+    public void onClickViewed(View v){
+        switch (v.getId()){
+            case R.id.ll_pro:
+                break;
         }
     }
 

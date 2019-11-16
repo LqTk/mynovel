@@ -8,14 +8,27 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:padding="5dp">
-        <ImageView
-            android:id="@+id/iv_item"
+        <RelativeLayout
+            android:id="@+id/rl_left"
             android:layout_width="60dp"
             android:layout_height="80dp"
-            android:src="@drawable/my_books"
-            android:layout_centerVertical="true"/>
+            android:layout_centerVertical="true">
+            <ImageView
+                android:id="@+id/iv_item"
+                android:layout_width="60dp"
+                android:layout_height="80dp"
+                android:src="@drawable/my_books"
+                android:layout_centerVertical="true"/>
+            <ImageView
+                android:id="@+id/iv_hasnew"
+                android:visibility="gone"
+                android:layout_width="30dp"
+                android:layout_height="40dp"
+                android:layout_alignParentRight="true"
+                android:background="@drawable/read_cover"/>
+        </RelativeLayout>
         <LinearLayout
-            android:layout_toRightOf="@+id/iv_item"
+            android:layout_toRightOf="@+id/rl_left"
             android:layout_marginLeft="10dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

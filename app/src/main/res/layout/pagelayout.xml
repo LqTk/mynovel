@@ -1,58 +1,25 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/read_cover3" >
+    android:background="@drawable/read_cover3"
+    android:id="@+id/rl_scanView"
+    android:layout_marginTop="30dp">
 
-    <RelativeLayout
-        android:id="@+id/rl_top"
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="3dp">
+        android:layout_height="match_parent"
+        android:layout_above="@+id/rl_bttom">
         <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/tv_chapter_name"
-            android:layout_marginLeft="10dp"
-            android:layout_alignParentLeft="true"
-            android:textSize="12sp"/>
-        <TextClock
-            android:id="@+id/tc_clock"
-            android:layout_alignParentRight="true"
-            android:textSize="12sp"
-            android:layout_marginRight="10dp"
+            android:id="@+id/content"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:format24Hour="HH:mm"/>
-        <TextView
-            android:layout_width="50dp"
-            android:layout_height="20dp"
-            android:textSize="12sp"
-            android:text=""
-            android:layout_centerVertical="true"
-            android:layout_toLeftOf="@+id/tc_clock"
-            android:layout_marginRight="5dp"
-            android:id="@+id/tv_now_battary"/>
-        <ImageView
-            android:layout_centerVertical="true"
-            android:layout_width="wrap_content"
-            android:layout_height="10dp"
-            android:id="@+id/iv_battary"
-            android:layout_toLeftOf="@+id/tv_now_battary"/>
-    </RelativeLayout>
-
-    <TextView
-        android:id="@+id/content"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="8dp"
-        android:padding="10dp"
-        android:layout_below="@+id/rl_top"
-        android:layout_above="@+id/rl_bttom"
-        android:lineSpacingExtra="5dp"
-        android:textColor="#000000"
-        android:textSize="19sp" />
-
+            android:layout_centerHorizontal="true"
+            android:padding="10dp"
+            android:layout_alignParentTop="true"
+            android:lineSpacingExtra="5dp"
+            android:textColor="#000000"
+            android:textSize="19sp" />
+    </ScrollView>
     <RelativeLayout
         android:id="@+id/rl_bttom"
         android:layout_width="match_parent"

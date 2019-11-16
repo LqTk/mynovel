@@ -3,6 +3,8 @@ package com.org.biquge.jsoup.novel.fragments;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -18,6 +20,7 @@ import android.widget.Toast;
 import com.alibaba.fastjson.JSON;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.githang.statusbar.StatusBarCompat;
+import com.org.biquge.jsoup.JsoupGet;
 import com.org.biquge.jsoup.MyPreference;
 import com.org.biquge.jsoup.R;
 import com.org.biquge.jsoup.novel.NovelReadItem;
@@ -33,6 +36,7 @@ import com.yanzhenjie.recyclerview.swipe.SwipeMenuRecyclerView;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -55,6 +59,12 @@ public class MyFragment extends Fragment {
     MyBooksAdapter booksAdapter;
     View emptyView;
     private List<HashMap> myBooksLists=new ArrayList<>();
+    Handler handler = new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            booksAdapter.notifyDataSetChanged();
+        }
+    };
 
     @Nullable
     @Override
@@ -131,6 +141,8 @@ public class MyFragment extends Fragment {
                 Intent intent = new Intent(getContext(), NovelReadItem.class);
                 intent.putExtras(bundle);
                 startActivity(intent);
+                myBooksLists.get(position).put("hasNew",false);
+                myPreference.setObject(saveInfo,myBooksLists);
             }
         });
         rclBooks.setAdapter(booksAdapter);
@@ -139,6 +151,29 @@ public class MyFragment extends Fragment {
             booksAdapter.setEmptyView(emptyView);
             booksAdapter.notifyDataSetChanged();
         }
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                for (int i=0;i<myBooksLists.size();i++){
+                    HashMap hashMap = myBooksLists.get(i);
+                    JsoupGet jsoupGet = new JsoupGet();
+                    try {
+                        List<List<HashMap>> cataLog = jsoupGet.getItemContent((String) hashMap.get("cataLog"));
+                        if (JSON.parseArray((String) hashMap.get("chapters"),HashMap.class).size()!=cataLog.get(1).size()) {
+                            myBooksLists.get(i).put("chapters", JSON.toJSONString(cataLog.get(1)));
+                            myBooksLists.get(i).put("recentString",cataLog.get(0).get(0).get("recentString"));
+                            myBooksLists.get(i).put("recentHref",cataLog.get(0).get(0).get("recentHref"));
+                            myBooksLists.get(i).put("time",cataLog.get(0).get(0).get("time"));
+                            myBooksLists.get(i).put("hasNew",true);
+                        }
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+                handler.sendEmptyMessage(0);
+            }
+        }).start();
     }
 
     @Override
@@ -157,5 +192,17 @@ public class MyFragment extends Fragment {
             booksAdapter.setNewData(myBooksLists);
         }
         booksAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        myPreference.setObject(saveInfo,myBooksLists);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        myPreference.setObject(saveInfo,myBooksLists);
     }
 }

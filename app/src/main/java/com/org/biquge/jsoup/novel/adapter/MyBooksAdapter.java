@@ -1,6 +1,7 @@
 package com.org.biquge.jsoup.novel.adapter;
 
 import android.support.annotation.Nullable;
+import android.view.View;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
@@ -22,6 +23,12 @@ public class MyBooksAdapter extends BaseQuickAdapter<HashMap, BaseViewHolder> {
         Glide.with(mContext)
                 .load(item.get("img"))
                 .into((ImageView) helper.getView(R.id.iv_item));
+        ImageView ivNew = helper.getView(R.id.iv_hasnew);
+        if ((boolean)item.get("hasNew")) {
+            ivNew.setVisibility(View.VISIBLE);
+        }else {
+            ivNew.setVisibility(View.GONE);
+        }
         helper.setText(R.id.tv_name, (String) item.get("title"));
         helper.setText(R.id.tv_author_name, (String) item.get("author"));
         helper.setText(R.id.tv_recent_time, (String) item.get("time"));

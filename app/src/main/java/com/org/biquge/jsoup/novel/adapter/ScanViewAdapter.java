@@ -9,6 +9,7 @@ import android.content.res.AssetManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.org.biquge.jsoup.R;
@@ -19,18 +20,19 @@ public class ScanViewAdapter extends PageAdapter{
     List<String> items;
     AssetManager am;
     ChapterClicker chapterClicker;
-    String title="";
-    private BattaryBroadcast battaryBroadcast;
+    private View scanView;
+    private RelativeLayout rl_scanView;
+    private int scanViewBg;
 
     public void setChapterClicker(ChapterClicker clicker){
         this.chapterClicker = clicker;
     }
 
-    public ScanViewAdapter(Context context, List<String> items, String chapterName)
+    public ScanViewAdapter(Context context, List<String> items, int bgId)
     {
+        this.scanViewBg = bgId;
         this.context = context;
         this.items = items;
-        this.title = chapterName;
         am = context.getAssets();
     }
 
@@ -51,40 +53,34 @@ public class ScanViewAdapter extends PageAdapter{
 
     public View getView()
     {
-        View view = LayoutInflater.from(context).inflate(R.layout.pagelayout,
-                null);
-        TextView lastchapter = view.findViewById(R.id.tv_last_chapter);
-        TextView nextchapter = view.findViewById(R.id.tv_next_chapter);
-        TextView tv_title = view.findViewById(R.id.tv_chapter_name);
-        TextView tv_now_battary = view.findViewById(R.id.tv_now_battary);
-        ImageView iv_battary = view.findViewById(R.id.iv_battary);
-        tv_title.setText(title);
-        lastchapter.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (chapterClicker!=null){
-                    chapterClicker.lastChapterListener();
+            scanView = LayoutInflater.from(context).inflate(R.layout.pagelayout,
+                    null);
+            rl_scanView = scanView.findViewById(R.id.rl_scanView);
+            rl_scanView.setBackground(context.getResources().getDrawable(scanViewBg));
+            TextView lastchapter = scanView.findViewById(R.id.tv_last_chapter);
+            TextView nextchapter = scanView.findViewById(R.id.tv_next_chapter);
+            lastchapter.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (chapterClicker != null) {
+                        chapterClicker.lastChapterListener();
+                    }
                 }
-            }
-        });
-        nextchapter.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (chapterClicker!=null){
-                    chapterClicker.nextChapterListener();
+            });
+            nextchapter.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (chapterClicker != null) {
+                        chapterClicker.nextChapterListener();
+                    }
                 }
-            }
-        });
+            });
 
-        IntentFilter filter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
-        battaryBroadcast = new BattaryBroadcast(tv_now_battary,iv_battary);
-        context.registerReceiver(battaryBroadcast,filter);
-
-        return view;
+        return scanView;
     }
 
-    public void unRegister() {
-        context.unregisterReceiver(battaryBroadcast);
+    public void setScanViewBg(int bgId){
+        this.scanViewBg = bgId;
     }
 
     public interface ChapterClicker {

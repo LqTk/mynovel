@@ -125,6 +125,7 @@ public class NovelItem extends AppCompatActivity {
     @BindView(R.id.tv_addbook)
     TextView tvAddbook;
     private List<HashMap> saveBookLists = new ArrayList<>();
+    private String cataLog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -137,13 +138,13 @@ public class NovelItem extends AppCompatActivity {
         myPreference.setPreference(context);
 
         saveBookLists = myPreference.getListObject(saveInfo, HashMap.class);
-        String href = getIntent().getExtras().getString("url");
+        cataLog = getIntent().getExtras().getString("url");
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(context);
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         rcvItem.setLayoutManager(layoutManager);
 
-        getItemContent(href);
+        getItemContent(cataLog);
     }
 
     private void getItemContent(final String href) {
@@ -177,6 +178,8 @@ public class NovelItem extends AppCompatActivity {
         authorMap.put("chapter",novelHomeUrl + String.valueOf(itemsMap.get("href")));
         authorMap.put("lastPage",1);
         authorMap.put("chapters", JSON.toJSONString(itemsList));
+        authorMap.put("cataLog",cataLog);
+        authorMap.put("hasNew",false);
         saveBookLists.add(authorMap);
         myPreference.setObject(saveInfo,saveBookLists);
         tvAddbook.setTextColor(Color.parseColor("#999999"));

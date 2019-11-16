@@ -22,6 +22,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.RelativeLayout;
 
+import com.org.biquge.jsoup.R;
 import com.org.biquge.jsoup.novel.adapter.PageAdapter;
 import com.org.biquge.jsoup.novel.adapter.ScanViewAdapter;
 
@@ -320,7 +321,7 @@ public class ScanView extends RelativeLayout {
                     break;
                 case MotionEvent.ACTION_UP:
                     upTime = System.currentTimeMillis();
-                    if (upTime-downTime<500){
+                    if (upTime-downTime<80){
                         if (screenClick!=null){
                             screenClick.onClick();
                         }
@@ -330,7 +331,11 @@ public class ScanView extends RelativeLayout {
                 default:
                     break;
             }
-        super.dispatchTouchEvent(event);
+        try {
+            super.dispatchTouchEvent(event);
+        }catch (IllegalStateException e){
+            e.printStackTrace();
+        }
         return true;
     }
     /*
@@ -397,9 +402,9 @@ public class ScanView extends RelativeLayout {
         if (index == 1) {
             // 第一页不能再往右翻，跳转到前一个activity
             state = STATE_MOVE;
+            releaseMoving();
             if (pageListener!=null)
                 pageListener.lastChapter();
-            releaseMoving();
         } else {
             // 非第一页
             prePageLeft += (int) moveLenght;
@@ -420,9 +425,9 @@ public class ScanView extends RelativeLayout {
         if (index == adapter.getCount()) {
             // 最后一页不能再往左翻
             state = STATE_STOP;
+            releaseMoving();
             if (pageListener!=null)
                 pageListener.nextChapter();
-            releaseMoving();
         } else {
             currPageLeft += (int) moveLenght;
             // 防止滑过边界
@@ -466,9 +471,9 @@ public class ScanView extends RelativeLayout {
                 if (index == 1) {
                     // 第一页不能再往右翻，跳转到前一个activity
                     state = STATE_MOVE;
+                    releaseMoving();
                     if (pageListener!=null)
                         pageListener.lastChapter();
-                    releaseMoving();
                 }else {
                     lastPage();
                     index--;
@@ -489,5 +494,17 @@ public class ScanView extends RelativeLayout {
 
     public interface ScreenClick{
         void onClick();
+    }
+
+    public void resetBg(int bgId){
+        if (prePage!=null){
+            prePage.findViewById(R.id.rl_scanView).setBackground(getResources().getDrawable(bgId));
+        }
+        if (currPage!=null){
+            currPage.findViewById(R.id.rl_scanView).setBackground(getResources().getDrawable(bgId));
+        }
+        if (nextPage!=null){
+            nextPage.findViewById(R.id.rl_scanView).setBackground(getResources().getDrawable(bgId));
+        }
     }
 }

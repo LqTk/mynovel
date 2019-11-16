@@ -9,10 +9,11 @@ import java.util.List;
 
 public class MyPreference {
     public static String saveInfo = "bookInfos";
+    private static String fileName = "novelInfo";
+    public static String scanViewBgId = "scanViewBgId";
 
     SharedPreferences preference;
     Context mContext;
-    String fileName = "novelInfo";
     SharedPreferences.Editor editor;
     private static final MyPreference ourInstance = new MyPreference();
 
@@ -55,6 +56,10 @@ public class MyPreference {
     public String getString(String key, String defaultValue) {
         // TODO Auto-generated method stub
         return preference.getString(key, defaultValue);
+    }
+
+    public int getInt(String key, int defalutValue){
+        return preference.getInt(key,defalutValue);
     }
 
 }
