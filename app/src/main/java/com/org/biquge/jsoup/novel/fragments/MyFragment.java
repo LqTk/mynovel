@@ -152,28 +152,30 @@ public class MyFragment extends Fragment {
             booksAdapter.notifyDataSetChanged();
         }
 
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                for (int i=0;i<myBooksLists.size();i++){
-                    HashMap hashMap = myBooksLists.get(i);
-                    JsoupGet jsoupGet = new JsoupGet();
-                    try {
-                        List<List<HashMap>> cataLog = jsoupGet.getItemContent((String) hashMap.get("cataLog"));
-                        if (JSON.parseArray((String) hashMap.get("chapters"),HashMap.class).size()!=cataLog.get(1).size()) {
-                            myBooksLists.get(i).put("chapters", JSON.toJSONString(cataLog.get(1)));
-                            myBooksLists.get(i).put("recentString",cataLog.get(0).get(0).get("recentString"));
-                            myBooksLists.get(i).put("recentHref",cataLog.get(0).get(0).get("recentHref"));
-                            myBooksLists.get(i).put("time",cataLog.get(0).get(0).get("time"));
-                            myBooksLists.get(i).put("hasNew",true);
+        if (myBooksLists!=null && myBooksLists.size()>0) {
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    for (int i = 0; i < myBooksLists.size(); i++) {
+                        HashMap hashMap = myBooksLists.get(i);
+                        JsoupGet jsoupGet = new JsoupGet();
+                        try {
+                            List<List<HashMap>> cataLog = jsoupGet.getItemContent((String) hashMap.get("cataLog"));
+                            if (JSON.parseArray((String) hashMap.get("chapters"), HashMap.class).size() != cataLog.get(1).size()) {
+                                myBooksLists.get(i).put("chapters", JSON.toJSONString(cataLog.get(1)));
+                                myBooksLists.get(i).put("recentString", cataLog.get(0).get(0).get("recentString"));
+                                myBooksLists.get(i).put("recentHref", cataLog.get(0).get(0).get("recentHref"));
+                                myBooksLists.get(i).put("time", cataLog.get(0).get(0).get("time"));
+                                myBooksLists.get(i).put("hasNew", true);
+                            }
+                        } catch (IOException e) {
+                            e.printStackTrace();
                         }
-                    } catch (IOException e) {
-                        e.printStackTrace();
                     }
+                    handler.sendEmptyMessage(0);
                 }
-                handler.sendEmptyMessage(0);
-            }
-        }).start();
+            }).start();
+        }
     }
 
     @Override

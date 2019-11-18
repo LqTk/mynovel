@@ -23,9 +23,9 @@
                 android:id="@+id/iv_hasnew"
                 android:visibility="gone"
                 android:layout_width="30dp"
-                android:layout_height="40dp"
+                android:layout_height="30dp"
                 android:layout_alignParentRight="true"
-                android:background="@drawable/read_cover"/>
+                android:background="@drawable/hasnew"/>
         </RelativeLayout>
         <LinearLayout
             android:layout_toRightOf="@+id/rl_left"
