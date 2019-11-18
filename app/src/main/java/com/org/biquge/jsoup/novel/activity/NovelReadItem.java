@@ -1,4 +1,4 @@
-package com.org.biquge.jsoup.novel;
+package com.org.biquge.jsoup.novel.activity;
 
 import android.content.Context;
 import android.content.Intent;
@@ -22,10 +22,9 @@ import com.alibaba.fastjson.JSON;
 import com.org.biquge.jsoup.JsoupGet;
 import com.org.biquge.jsoup.MyPreference;
 import com.org.biquge.jsoup.R;
-import com.org.biquge.jsoup.novel.adapter.NovelItemAdapter;
 import com.org.biquge.jsoup.novel.adapter.ScanViewAdapter;
-import com.org.biquge.jsoup.novel.adapter.ThemeAdapter;
 import com.org.biquge.jsoup.novel.broadcastReceiver.BattaryBroadcast;
+import com.org.biquge.jsoup.novel.entities.ThemeBgEntity;
 import com.org.biquge.jsoup.novel.events.RefreshMyBooks;
 import com.org.biquge.jsoup.novel.popwindow.ChapterPop;
 import com.org.biquge.jsoup.novel.popwindow.FullScreenPop;
@@ -34,7 +33,6 @@ import com.org.biquge.jsoup.novel.view.ScanView;
 
 import org.greenrobot.eventbus.EventBus;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;

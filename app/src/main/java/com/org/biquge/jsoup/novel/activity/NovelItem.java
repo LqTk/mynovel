@@ -1,4 +1,4 @@
-package com.org.biquge.jsoup.novel;
+package com.org.biquge.jsoup.novel.activity;
 
 import android.content.Context;
 import android.content.Intent;
@@ -22,6 +22,7 @@ import com.org.biquge.jsoup.JsoupGet;
 import com.org.biquge.jsoup.MyPreference;
 import com.org.biquge.jsoup.R;
 import com.org.biquge.jsoup.novel.adapter.NovelItemAdapter;
+import com.org.biquge.jsoup.novel.entities.DownLoadEntity;
 import com.org.biquge.jsoup.novel.events.RefreshMyBooks;
 
 import org.greenrobot.eventbus.EventBus;
@@ -180,6 +181,9 @@ public class NovelItem extends AppCompatActivity {
         authorMap.put("chapters", JSON.toJSONString(itemsList));
         authorMap.put("cataLog",cataLog);
         authorMap.put("hasNew",false);
+        DownLoadEntity downLoadEntity = new DownLoadEntity(0,itemsList.size(),0,
+                cataLog, (String) itemsList.get(0).get("href"));
+        authorMap.put("downLoadInfo",JSON.toJSONString(downLoadEntity));
         saveBookLists.add(authorMap);
         myPreference.setObject(saveInfo,saveBookLists);
         tvAddbook.setTextColor(Color.parseColor("#999999"));

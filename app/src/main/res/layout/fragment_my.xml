@@ -14,8 +14,12 @@
             android:layout_height="50dp"
             android:background="@color/blue_main">
             <ImageView
-                android:layout_width="20dp"
-                android:layout_height="20dp"/>
+                android:id="@+id/iv_down"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:src="@drawable/download_click"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="@dimen/dp_10"/>
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

@@ -24,9 +24,13 @@ import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.githang.statusbar.StatusBarCompat;
 import com.org.biquge.jsoup.JsoupGet;
 import com.org.biquge.jsoup.R;
-import com.org.biquge.jsoup.novel.NovelItem;
+import com.org.biquge.jsoup.novel.activity.NovelItem;
 import com.org.biquge.jsoup.novel.NovelUrl;
 import com.org.biquge.jsoup.novel.adapter.NovelItemAdapter;
+import com.org.biquge.jsoup.novel.events.LoadingMsg;
+import com.org.biquge.jsoup.novel.utils.ToastUtils;
+
+import org.greenrobot.eventbus.Subscribe;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -185,4 +189,5 @@ public class NovelsAllFragement extends Fragment {
         super.onDestroyView();
         unbinder.unbind();
     }
+
 }

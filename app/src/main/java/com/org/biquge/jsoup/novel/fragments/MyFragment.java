@@ -1,7 +1,6 @@
 package com.org.biquge.jsoup.novel.fragments;
 
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -9,12 +8,10 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.alibaba.fastjson.JSON;
@@ -23,7 +20,8 @@ import com.githang.statusbar.StatusBarCompat;
 import com.org.biquge.jsoup.JsoupGet;
 import com.org.biquge.jsoup.MyPreference;
 import com.org.biquge.jsoup.R;
-import com.org.biquge.jsoup.novel.NovelReadItem;
+import com.org.biquge.jsoup.novel.activity.DownLoadActivity;
+import com.org.biquge.jsoup.novel.activity.NovelReadItem;
 import com.org.biquge.jsoup.novel.adapter.MyBooksAdapter;
 import com.org.biquge.jsoup.novel.events.RefreshMyBooks;
 import com.yanzhenjie.recyclerview.swipe.SwipeMenu;
@@ -43,10 +41,10 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import butterknife.Unbinder;
 
 import static com.org.biquge.jsoup.MyPreference.saveInfo;
-import static com.org.biquge.jsoup.novel.NovelUrl.novelHomeUrl;
 
 public class MyFragment extends Fragment {
     @BindView(R.id.rcl_books)
@@ -58,8 +56,8 @@ public class MyFragment extends Fragment {
     MyPreference myPreference;
     MyBooksAdapter booksAdapter;
     View emptyView;
-    private List<HashMap> myBooksLists=new ArrayList<>();
-    Handler handler = new Handler(){
+    private List<HashMap> myBooksLists = new ArrayList<>();
+    Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             booksAdapter.notifyDataSetChanged();
@@ -70,7 +68,7 @@ public class MyFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_my, container, false);
-        StatusBarCompat.setStatusBarColor(getActivity(),getResources().getColor(R.color.blue_main));
+        StatusBarCompat.setStatusBarColor(getActivity(), getResources().getColor(R.color.blue_main));
         unbinder = ButterKnife.bind(this, view);
         EventBus.getDefault().register(this);
         return view;
@@ -78,7 +76,7 @@ public class MyFragment extends Fragment {
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        emptyView = getLayoutInflater().inflate(R.layout.my_empty_layout, (ViewGroup) rclBooks.getParent(),false);
+        emptyView = getLayoutInflater().inflate(R.layout.my_empty_layout, (ViewGroup) rclBooks.getParent(), false);
         myPreference = MyPreference.getInstance();
         myPreference.setPreference(getContext());
 
@@ -94,7 +92,7 @@ public class MyFragment extends Fragment {
         setAdapter();
     }
 
-    private void setRecyleMenu(){
+    private void setRecyleMenu() {
         SwipeMenuCreator mSwipeMenuCreate = new SwipeMenuCreator() {
             @Override
             public void onCreateMenu(SwipeMenu swipeLeftMenu, SwipeMenu swipeRightMenu, int viewType) {
@@ -118,9 +116,9 @@ public class MyFragment extends Fragment {
                 int direction = menuBridge.getDirection();//左侧还是右侧菜单
                 int adapterPosition = menuBridge.getAdapterPosition();
                 int menuPosition = menuBridge.getPosition();
-                if (menuPosition == 0){
+                if (menuPosition == 0) {
                     myBooksLists.remove(adapterPosition);
-                    myPreference.setObject(saveInfo,myBooksLists);
+                    myPreference.setObject(saveInfo, myBooksLists);
                     Toast.makeText(getContext(), "删除成功", Toast.LENGTH_SHORT).show();
                     getBooks(new RefreshMyBooks());
                 }
@@ -130,7 +128,7 @@ public class MyFragment extends Fragment {
     }
 
     private void setAdapter() {
-        booksAdapter = new MyBooksAdapter(R.layout.mybooks_item,myBooksLists);
+        booksAdapter = new MyBooksAdapter(R.layout.mybooks_item, myBooksLists);
         booksAdapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
@@ -141,18 +139,18 @@ public class MyFragment extends Fragment {
                 Intent intent = new Intent(getContext(), NovelReadItem.class);
                 intent.putExtras(bundle);
                 startActivity(intent);
-                myBooksLists.get(position).put("hasNew",false);
-                myPreference.setObject(saveInfo,myBooksLists);
+                myBooksLists.get(position).put("hasNew", false);
+                myPreference.setObject(saveInfo, myBooksLists);
             }
         });
         rclBooks.setAdapter(booksAdapter);
 
-        if (myBooksLists==null||myBooksLists.size()==0){
+        if (myBooksLists == null || myBooksLists.size() == 0) {
             booksAdapter.setEmptyView(emptyView);
             booksAdapter.notifyDataSetChanged();
         }
 
-        if (myBooksLists!=null && myBooksLists.size()>0) {
+        if (myBooksLists != null && myBooksLists.size() > 0) {
             new Thread(new Runnable() {
                 @Override
                 public void run() {
@@ -186,11 +184,11 @@ public class MyFragment extends Fragment {
     }
 
     @Subscribe
-    public void getBooks(RefreshMyBooks refreshMyBooks){
+    public void getBooks(RefreshMyBooks refreshMyBooks) {
         myBooksLists = myPreference.getListObject(saveInfo, HashMap.class);
-        if (myBooksLists==null || myBooksLists.size()==0){
+        if (myBooksLists == null || myBooksLists.size() == 0) {
             booksAdapter.setEmptyView(emptyView);
-        }else {
+        } else {
             booksAdapter.setNewData(myBooksLists);
         }
         booksAdapter.notifyDataSetChanged();
@@ -199,12 +197,18 @@ public class MyFragment extends Fragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        myPreference.setObject(saveInfo,myBooksLists);
+        myPreference.setObject(saveInfo, myBooksLists);
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        myPreference.setObject(saveInfo,myBooksLists);
+        myPreference.setObject(saveInfo, myBooksLists);
+    }
+
+    @OnClick(R.id.iv_down)
+    public void onViewClicked() {
+        Intent intent = new Intent(getContext(), DownLoadActivity.class);
+        startActivity(intent);
     }
 }

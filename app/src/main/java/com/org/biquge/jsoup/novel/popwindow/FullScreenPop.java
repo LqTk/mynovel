@@ -14,7 +14,7 @@ import android.widget.RelativeLayout;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.org.biquge.jsoup.R;
-import com.org.biquge.jsoup.novel.ThemeBgEntity;
+import com.org.biquge.jsoup.novel.entities.ThemeBgEntity;
 import com.org.biquge.jsoup.novel.adapter.ThemeAdapter;
 
 import java.util.ArrayList;

@@ -8,4 +8,6 @@
     <color name="blue_main">#4E4EF0</color>
     <color name="delete_pink">#D55B5B</color>
     <color name="transparent">#00ffffff</color>
+    <color name="text_color_black">#111111</color>
+    <color name="lint_color">#aa999999</color>
 </resources>

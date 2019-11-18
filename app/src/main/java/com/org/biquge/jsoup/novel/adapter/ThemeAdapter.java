@@ -5,7 +5,7 @@ import android.support.annotation.Nullable;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 import com.org.biquge.jsoup.R;
-import com.org.biquge.jsoup.novel.ThemeBgEntity;
+import com.org.biquge.jsoup.novel.entities.ThemeBgEntity;
 
 import java.util.List;
 

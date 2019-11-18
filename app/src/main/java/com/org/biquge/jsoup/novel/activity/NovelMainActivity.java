@@ -1,15 +1,13 @@
-package com.org.biquge.jsoup.novel;
+package com.org.biquge.jsoup.novel.activity;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
@@ -19,6 +17,7 @@ import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.githang.statusbar.StatusBarCompat;
 import com.org.biquge.jsoup.JsoupGet;
 import com.org.biquge.jsoup.R;
+import com.org.biquge.jsoup.novel.NovelUrl;
 import com.org.biquge.jsoup.novel.adapter.NovelItemAdapter;
 
 import java.io.IOException;

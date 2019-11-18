@@ -1,4 +1,4 @@
-package com.org.biquge.jsoup.novel;
+package com.org.biquge.jsoup.novel.entities;
 
 public class ThemeBgEntity {
     boolean isChecked;
