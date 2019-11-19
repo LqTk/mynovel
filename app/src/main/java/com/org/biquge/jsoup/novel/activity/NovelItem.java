@@ -38,7 +38,7 @@ import butterknife.OnClick;
 import butterknife.Unbinder;
 
 import static com.org.biquge.jsoup.MyPreference.saveInfo;
-import static com.org.biquge.jsoup.novel.NovelUrl.novelHomeUrl;
+import static com.org.biquge.jsoup.novel.NovelPublic.novelHomeUrl;
 
 public class NovelItem extends AppCompatActivity {
 
@@ -182,7 +182,7 @@ public class NovelItem extends AppCompatActivity {
         authorMap.put("cataLog",cataLog);
         authorMap.put("hasNew",false);
         DownLoadEntity downLoadEntity = new DownLoadEntity(0,itemsList.size(),0,
-                cataLog, (String) itemsList.get(0).get("href"));
+                cataLog, (String) itemsList.get(0).get("href"),0);
         authorMap.put("downLoadInfo",JSON.toJSONString(downLoadEntity));
         saveBookLists.add(authorMap);
         myPreference.setObject(saveInfo,saveBookLists);

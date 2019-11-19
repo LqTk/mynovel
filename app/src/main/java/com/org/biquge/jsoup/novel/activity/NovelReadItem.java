@@ -44,7 +44,7 @@ import butterknife.Unbinder;
 
 import static com.org.biquge.jsoup.MyPreference.saveInfo;
 import static com.org.biquge.jsoup.MyPreference.scanViewBgId;
-import static com.org.biquge.jsoup.novel.NovelUrl.novelHomeUrl;
+import static com.org.biquge.jsoup.novel.NovelPublic.novelHomeUrl;
 
 public class NovelReadItem extends AppCompatActivity {
 

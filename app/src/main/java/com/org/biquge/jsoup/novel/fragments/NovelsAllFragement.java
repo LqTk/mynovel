@@ -25,12 +25,8 @@ import com.githang.statusbar.StatusBarCompat;
 import com.org.biquge.jsoup.JsoupGet;
 import com.org.biquge.jsoup.R;
 import com.org.biquge.jsoup.novel.activity.NovelItem;
-import com.org.biquge.jsoup.novel.NovelUrl;
+import com.org.biquge.jsoup.novel.NovelPublic;
 import com.org.biquge.jsoup.novel.adapter.NovelItemAdapter;
-import com.org.biquge.jsoup.novel.events.LoadingMsg;
-import com.org.biquge.jsoup.novel.utils.ToastUtils;
-
-import org.greenrobot.eventbus.Subscribe;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -86,6 +82,8 @@ public class NovelsAllFragement extends Fragment {
     ImageView ivBack;
     @BindView(R.id.ll_pro)
     LinearLayout llPro;
+    @BindView(R.id.tv_reload)
+    TextView tvReload;
     Unbinder unbinder;
 
     private List<HashMap> novelContent;
@@ -127,12 +125,14 @@ public class NovelsAllFragement extends Fragment {
             @Override
             public void run() {
                 try {
-                    novelContent = jsoupGet.getHtmlContent(NovelUrl.novelsContent);
+                    novelContent = jsoupGet.getHtmlContent(NovelPublic.novelsContent);
                     Message message = Message.obtain();
                     message.what = 0;
                     message.obj = novelContent;
                     getNetWorkHandler.sendMessage(message);
                 } catch (IOException e) {
+                    llPro.setVisibility(View.GONE);
+                    tvReload.setVisibility(View.VISIBLE);
                     e.printStackTrace();
                 }
             }
@@ -140,10 +140,15 @@ public class NovelsAllFragement extends Fragment {
     }
 
 
-    @OnClick({R.id.iv_back, R.id.tv_title, R.id.iv_search, R.id.iv_delete_item, R.id.iv_search_item})
+    @OnClick({R.id.iv_back, R.id.tv_title, R.id.iv_search, R.id.iv_delete_item, R.id.iv_search_item, R.id.tv_reload})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.iv_back:
+                break;
+            case R.id.tv_reload:
+                llPro.setVisibility(View.VISIBLE);
+                tvReload.setVisibility(View.GONE);
+                getData();
                 break;
             case R.id.iv_search:
                 rlSearch.setVisibility(View.VISIBLE);

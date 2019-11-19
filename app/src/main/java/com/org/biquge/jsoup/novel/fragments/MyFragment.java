@@ -2,6 +2,7 @@ package com.org.biquge.jsoup.novel.fragments;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.NonNull;
@@ -23,7 +24,11 @@ import com.org.biquge.jsoup.R;
 import com.org.biquge.jsoup.novel.activity.DownLoadActivity;
 import com.org.biquge.jsoup.novel.activity.NovelReadItem;
 import com.org.biquge.jsoup.novel.adapter.MyBooksAdapter;
+import com.org.biquge.jsoup.novel.entities.DownLoadEntity;
+import com.org.biquge.jsoup.novel.events.DeleteEvent;
 import com.org.biquge.jsoup.novel.events.RefreshMyBooks;
+import com.org.biquge.jsoup.novel.thread.DownLoadTask;
+import com.org.biquge.jsoup.novel.thread.DownLoadThread;
 import com.yanzhenjie.recyclerview.swipe.SwipeMenu;
 import com.yanzhenjie.recyclerview.swipe.SwipeMenuBridge;
 import com.yanzhenjie.recyclerview.swipe.SwipeMenuCreator;
@@ -34,8 +39,10 @@ import com.yanzhenjie.recyclerview.swipe.SwipeMenuRecyclerView;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 
@@ -45,6 +52,8 @@ import butterknife.OnClick;
 import butterknife.Unbinder;
 
 import static com.org.biquge.jsoup.MyPreference.saveInfo;
+import static com.org.biquge.jsoup.novel.NovelPublic.novelHomeUrl;
+import static com.org.biquge.jsoup.novel.NovelPublic.novelSaveDirName;
 
 public class MyFragment extends Fragment {
     @BindView(R.id.rcl_books)
@@ -63,6 +72,9 @@ public class MyFragment extends Fragment {
             booksAdapter.notifyDataSetChanged();
         }
     };
+    private String deletePath ="";
+    private int deletePosition=0;
+    List<DownLoadThread> loadThreads = new ArrayList<>();
 
     @Nullable
     @Override
@@ -117,14 +129,48 @@ public class MyFragment extends Fragment {
                 int adapterPosition = menuBridge.getAdapterPosition();
                 int menuPosition = menuBridge.getPosition();
                 if (menuPosition == 0) {
-                    myBooksLists.remove(adapterPosition);
-                    myPreference.setObject(saveInfo, myBooksLists);
-                    Toast.makeText(getContext(), "删除成功", Toast.LENGTH_SHORT).show();
-                    getBooks(new RefreshMyBooks());
+                    HashMap hashMap = myBooksLists.get(adapterPosition);
+                    DownLoadEntity loadEntity = JSON.parseObject((String) hashMap.get("downLoadInfo"),DownLoadEntity.class);
+                    String path = Environment.getExternalStorageDirectory()+novelSaveDirName+loadEntity.getHomeUrl().split(novelHomeUrl)[1];
+                    deletePath = path;
+                    deletePosition = adapterPosition;
+                    llPro.setVisibility(View.VISIBLE);
+                    stopDown(hashMap);
                 }
             }
         };
         rclBooks.setSwipeMenuItemClickListener(mMenuItemClickListener);
+    }
+
+    private void stopDown(HashMap hashMap) {
+        if (DownLoadTask.threadList!=null) {
+            for (int i=0;i<DownLoadTask.threadList.size();i++) {
+                DownLoadThread loadThread = DownLoadTask.threadList.get(i);
+                if (hashMap.get("title").equals(loadThread.title) && hashMap.get("author").equals(loadThread.author)) {
+                    if (DownLoadTask.threadList.get(i).loadEntity.getLoadingStatu()==1) {
+                        DownLoadTask.threadList.get(i).loadEntity.setLoadingStatu(3);
+                    }
+                    loadThreads.add(loadThread);
+                    break;
+                }
+            }
+//            deleteItem(new DeleteEvent());
+        }else {
+            deleteItem(new DeleteEvent());
+        }
+    }
+
+    @Subscribe
+    public void deleteItem(DeleteEvent deleteEvent){
+        if (DownLoadTask.threadList!=null){
+            DownLoadTask.threadList.removeAll(loadThreads);
+        }
+        delFolder(deletePath);
+        myBooksLists.remove(deletePosition);
+        myPreference.setObject(saveInfo, myBooksLists);
+        Toast.makeText(getContext(), "删除成功", Toast.LENGTH_SHORT).show();
+        llPro.setVisibility(View.GONE);
+        getBooks(new RefreshMyBooks());
     }
 
     private void setAdapter() {
@@ -173,6 +219,74 @@ public class MyFragment extends Fragment {
                     handler.sendEmptyMessage(0);
                 }
             }).start();
+        }
+    }
+
+    public void delAllFile(String path) {
+        File file = new File(path);
+        if (!file.exists()) {
+            return;
+        }
+        if (!file.isDirectory()) {
+            return;
+        }
+        String[] tempList = file.list();
+        File temp = null;
+        for (int i = 0; i < tempList.length; i++) {
+            if (path.endsWith(File.separator)) {
+                temp = new File(path + tempList[i]);
+            }
+            else {
+                temp = new File(path + File.separator + tempList[i]);
+            }
+            if (temp.isFile()) {
+                temp.delete();
+            }
+            if (temp.isDirectory()) {
+                delAllFile(path+"/"+ tempList[i]);//先删除文件夹里面的文件
+                delFolder(path+"/"+ tempList[i]);//再删除空文件夹
+            }
+        }
+    }
+
+    //folderPath为文件路径
+    public void delFolder(String folderPath) {
+        try {
+            String[] strings = folderPath.split(File.separator);
+            StringBuffer pathbuffer = new StringBuffer();
+            for (int i=0;i<strings.length-2;i++){
+                pathbuffer.append(strings[i]+File.separator);
+            }
+//            pathbuffer.append(File.separator);
+            String path = pathbuffer.toString();
+            File deleteFile = new File(path+File.separator+strings[strings.length-2]);
+            String[] fileList = deleteFile.list();
+            if (fileList.length>1){
+                for (int i=0;i<fileList.length;i++){
+                    if (strings[strings.length-1].equals(fileList[i])){
+                        delAllFile(path+strings[strings.length-2]+File.separator+fileList[i]+File.separator); //删除完里面所有内容
+                        String filePath = folderPath;
+                        filePath = filePath.toString();
+                        java.io.File myFilePath = new java.io.File(filePath);
+                        myFilePath.delete();
+                    }
+                }
+            }else {
+                delAllFile(folderPath); //删除完里面所有内容
+                String filePath = folderPath;
+                filePath = filePath.toString();
+                java.io.File myFilePath = new java.io.File(filePath);
+                myFilePath.delete();
+                filePath = path+strings[strings.length-2];
+                filePath = filePath.toString();
+                myFilePath = new java.io.File(filePath);
+                myFilePath.delete();
+            }
+            System.out.println(path);
+        }
+        catch (Exception e) {
+            System.out.println("删除文件夹操作出错");
+            e.printStackTrace();
         }
     }
 

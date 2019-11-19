@@ -6,13 +6,15 @@ public class DownLoadEntity {
     int currentPage;
     String homeUrl;
     String currentPageUrl;
+    int loadingStatu = 0;//0 暂停,1正在下载,2下载完成
 
-    public DownLoadEntity(int loadedPage, int allPage, int currentPage, String homeUrl, String currentPageUrl) {
+    public DownLoadEntity(int loadedPage, int allPage, int currentPage, String homeUrl, String currentPageUrl, int loadingStatu) {
         this.loadedPage = loadedPage;
         this.allPage = allPage;
         this.currentPage = currentPage;
         this.homeUrl = homeUrl;
         this.currentPageUrl = currentPageUrl;
+        this.loadingStatu = loadingStatu;
     }
 
     public DownLoadEntity() {
@@ -56,5 +58,13 @@ public class DownLoadEntity {
 
     public void setCurrentPageUrl(String currentPageUrl) {
         this.currentPageUrl = currentPageUrl;
+    }
+
+    public int getLoadingStatu() {
+        return loadingStatu;
+    }
+
+    public void setLoadingStatu(int loadingStatu) {
+        this.loadingStatu = loadingStatu;
     }
 }

@@ -1,6 +1,8 @@
 package com.org.biquge.jsoup.novel.activity;
 
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -10,10 +12,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
-import android.widget.ImageView;
-import android.widget.ProgressBar;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import com.alibaba.fastjson.JSON;
 import com.chad.library.adapter.base.BaseQuickAdapter;
@@ -21,13 +19,16 @@ import com.githang.statusbar.StatusBarCompat;
 import com.org.biquge.jsoup.JsoupGet;
 import com.org.biquge.jsoup.MyPreference;
 import com.org.biquge.jsoup.R;
+import com.org.biquge.jsoup.novel.NovelPublic;
 import com.org.biquge.jsoup.novel.adapter.DownAdapter;
+import com.org.biquge.jsoup.novel.broadcastReceiver.DownLoadingBroadcast;
 import com.org.biquge.jsoup.novel.entities.DownLoadEntity;
-import com.org.biquge.jsoup.novel.events.LoadingMsg;
+import com.org.biquge.jsoup.novel.events.DeleteEvent;
+import com.org.biquge.jsoup.novel.thread.DownLoadTask;
+import com.org.biquge.jsoup.novel.thread.DownLoadThread;
 import com.org.biquge.jsoup.novel.utils.ToastUtils;
 
 import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -42,9 +43,8 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 import static com.org.biquge.jsoup.MyPreference.saveInfo;
-import static com.org.biquge.jsoup.novel.NovelUrl.novelHomeUrl;
-import static com.org.biquge.jsoup.novel.NovelUrl.novelSaveDirName;
-import static java.security.AccessController.getContext;
+import static com.org.biquge.jsoup.novel.NovelPublic.novelHomeUrl;
+import static com.org.biquge.jsoup.novel.NovelPublic.novelSaveDirName;
 
 public class DownLoadActivity extends AppCompatActivity {
 
@@ -59,10 +59,17 @@ public class DownLoadActivity extends AppCompatActivity {
     public Handler handler = new Handler(){
         @Override
         public void handleMessage(Message msg) {
-            super.handleMessage(msg);
-            mToastUtils.showShortMsg(context, (String) msg.obj);
+            switch (msg.what){
+                case 0:
+                    mToastUtils.showShortMsg(context, (String) msg.obj);
+                    break;
+                case 1:
+                    EventBus.getDefault().post(new DeleteEvent());
+                    break;
+            }
         }
     };
+    private DownLoadingBroadcast downLoadingBroadcast;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,7 +77,6 @@ public class DownLoadActivity extends AppCompatActivity {
         setContentView(R.layout.activity_down_load);
         StatusBarCompat.setStatusBarColor(this, getResources().getColor(R.color.blue_main));
         ButterKnife.bind(this);
-        EventBus.getDefault().unregister(this);
         context = this;
 
         initData();
@@ -89,7 +95,7 @@ public class DownLoadActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        EventBus.getDefault().unregister(this);
+        unregisterReceiver(downLoadingBroadcast);
     }
 
     private void initRcv(){
@@ -113,102 +119,106 @@ public class DownLoadActivity extends AppCompatActivity {
         }
 
         downAdapter = new DownAdapter(R.layout.down_item_layout,myBooksLists);
-        downAdapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
-            @Override
-            public void onItemClick(BaseQuickAdapter adapter, final View view, final int position) {
-                final ImageView ivST = view.findViewById(R.id.iv_st);
-                ivST.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        mToastUtils.showShortMsg(context,"开始暂停");
-                        HashMap hashMap = myBooksLists.get(position);
-                        DownLoadEntity loadEntity = JSON.parseObject((String) hashMap.get("downLoadInfo"),DownLoadEntity.class);
+        rcvDown.setAdapter(downAdapter);
+        IntentFilter filter = new IntentFilter(NovelPublic.downLoadingUpdata);
+        downLoadingBroadcast = new DownLoadingBroadcast(downAdapter);
+        registerReceiver(downLoadingBroadcast, filter);
 
-                        String path = Environment.getExternalStorageDirectory()+novelSaveDirName+loadEntity.getHomeUrl().split(novelHomeUrl)[1];
-                        Log.d("savepath",path);
-                        new DownThread((String) hashMap.get("title"),path,loadEntity.getCurrentPageUrl(),handler).start();
+        if (DownLoadTask.threadList==null){
+            DownLoadTask.threadList = new ArrayList<>();
+            for (int i=0;i<myBooksLists.size();i++){
+                HashMap hashMap = myBooksLists.get(i);
+                DownLoadEntity loadEntity = JSON.parseObject((String) hashMap.get("downLoadInfo"),DownLoadEntity.class);
+
+                String path = Environment.getExternalStorageDirectory()+novelSaveDirName+loadEntity.getHomeUrl().split(novelHomeUrl)[1];
+                Log.d("savepath",path);
+                DownLoadTask.threadList.add(new DownLoadThread(context,(String) hashMap.get("title"),(String) hashMap.get("author"),path,loadEntity,handler,i));
+            }
+        }else {
+            List<DownLoadThread> loadThreads = new ArrayList<>();
+            for (DownLoadThread loadThread:DownLoadTask.threadList){
+                boolean has = false;
+                for (HashMap hashMap:myBooksLists){
+                    if (hashMap.get("title").equals(loadThread.title)&&hashMap.get("author").equals(loadThread.author)){
+                        has = true;
+                        break;
                     }
-                });
+                }
+                if (!has){
+                    loadThreads.add(loadThread);
+                }
+            }
+            DownLoadTask.threadList.removeAll(loadThreads);
+            for (int i=0;i<myBooksLists.size();i++){
+                HashMap hashMap = myBooksLists.get(i);
+                boolean has = false;
+                int isPosition = 0;
+                for (DownLoadThread loadThread:DownLoadTask.threadList){
+                    if (hashMap.get("title").equals(loadThread.title)&&hashMap.get("author").equals(loadThread.author)){
+                        has = true;
+                        break;
+                    }
+                    isPosition++;
+                }
+                DownLoadEntity loadEntity = JSON.parseObject((String) hashMap.get("downLoadInfo"),DownLoadEntity.class);
+                String path = Environment.getExternalStorageDirectory()+novelSaveDirName+loadEntity.getHomeUrl().split(novelHomeUrl)[1];
+                String title = (String) hashMap.get("title");
+                String author = (String) hashMap.get("author");
+                if (!has){
+                    DownLoadTask.threadList.add(new DownLoadThread(context,(String) hashMap.get("title"),(String) hashMap.get("author"),path,loadEntity,handler,i));
+                }else {
+                    int loadStatu = DownLoadTask.threadList.get(isPosition).loadEntity.getLoadingStatu();
+                    loadEntity.setLoadingStatu(loadStatu);
+                    DownLoadTask.threadList.get(isPosition).title= title;
+                    DownLoadTask.threadList.get(isPosition).author= author;
+                    DownLoadTask.threadList.get(isPosition).path= path;
+                    DownLoadTask.threadList.get(isPosition).loadEntity= loadEntity;
+                    DownLoadTask.threadList.get(isPosition).position= i;
+                }
+            }
+        }
+        downAdapter.setOnItemChildClickListener(new BaseQuickAdapter.OnItemChildClickListener() {
+            @Override
+            public void onItemChildClick(BaseQuickAdapter adapter, View view, int position) {
+                /*mToastUtils.showShortMsg(context,"开始暂停");
+                HashMap hashMap = myBooksLists.get(position);
+                DownLoadEntity loadEntity = JSON.parseObject((String) hashMap.get("downLoadInfo"),DownLoadEntity.class);
+
+                String path = Environment.getExternalStorageDirectory()+novelSaveDirName+loadEntity.getHomeUrl().split(novelHomeUrl)[1];
+                Log.d("savepath",path);
+                new DownLoadThread(context,(String) hashMap.get("title"),path,loadEntity,handler,position).start();*/
+                boolean isInTask = false;
+                HashMap hashMap = myBooksLists.get(position);
+                String title = (String) hashMap.get("title");
+                String author = (String) hashMap.get("author");
+                DownLoadThread downLoadThread = null;
+                for (int i=0;i<DownLoadTask.threadList.size();i++){
+                    DownLoadThread loadThread = DownLoadTask.threadList.get(i);
+                    if (loadThread.title.equals(title)&&loadThread.author.equals(author)){
+                        downLoadThread = loadThread;
+                        if (loadThread.loadEntity.getLoadingStatu()!=1) {
+                            DownLoadTask.startDownLoad(position);
+                        }else {
+                            DownLoadTask.threadList.get(position).loadEntity.setLoadingStatu(0);
+                        }
+                        isInTask = true;
+                        break;
+                    }
+                }
+                if (!isInTask){
+                    DownLoadEntity loadEntity = JSON.parseObject((String) hashMap.get("downLoadInfo"),DownLoadEntity.class);
+                    String path = Environment.getExternalStorageDirectory()+novelSaveDirName+loadEntity.getHomeUrl().split(novelHomeUrl)[1];
+                    DownLoadTask.threadList.add(new DownLoadThread(context,(String) hashMap.get("title"),(String) hashMap.get("author"),path,loadEntity,handler,position));
+                    DownLoadTask.startDownLoad(position);
+                }
+                if (downLoadThread!=null) {
+                    Intent intent = new Intent(NovelPublic.downLoadingUpdata);
+                    intent.putExtra("position", position);
+                    intent.putExtra("loadEntity", JSON.toJSONString(downLoadThread.loadEntity));
+                    sendBroadcast(intent);
+                }
             }
         });
-        rcvDown.setAdapter(downAdapter);
-    }
-
-    private String getFilePath(String currentPageUrl) {
-        String[] split = currentPageUrl.split("/");
-        String fileName = split[split.length-1].split("\\.")[0];
-        return fileName+"txt";
-    }
-
-    class DownThread extends Thread{
-        String loadString;
-        String path;
-        File saveFile;
-        String[] split;
-        String fileName;
-        Handler handler;
-        String title;
-
-        public DownThread(String title,String savePath, String loadString, Handler mhandler) {
-            this.path = savePath;
-            this.loadString = loadString;
-            this.handler = mhandler;
-            this.title = title;
-        }
-
-        private void checkDir(){
-            split = loadString.split("/");
-            fileName = split[split.length-1].split("\\.")[0];
-            saveFile = new File(path);
-            if (!saveFile.exists()){
-                saveFile.mkdirs();
-            }
-        }
-
-        @Override
-        public void run() {
-            try {
-                JsoupGet jsoupGet = new JsoupGet();
-                HashMap downContent;
-                downContent = jsoupGet.getReadItem(novelHomeUrl+loadString);
-                String content = (String) downContent.get("content");
-                checkDir();
-                File writeFile = new File(path,fileName+".txt");
-                FileOutputStream outputStream = new FileOutputStream(writeFile);
-                OutputStreamWriter writer=new OutputStreamWriter(outputStream, Charset.forName("gbk"));
-                writer.write(content);
-                writer.close();
-                long old_length;
-                do {
-                    old_length = writeFile.length();
-                } while (old_length != writeFile.length());
-                while (!downContent.get("allChapter").equals(downContent.get("nextChapter"))){
-                    loadString = (String) downContent.get("nextChapter");
-                    downContent = jsoupGet.getReadItem(loadString);
-                    content = (String) downContent.get("content");
-                    checkDir();
-                    writeFile = new File(path,fileName+".txt");
-                    outputStream = new FileOutputStream(writeFile);
-                    writer=new OutputStreamWriter(outputStream, Charset.forName("gbk"));
-                    writer.write(content);
-                    writer.close();
-                    do {
-                        old_length = writeFile.length();
-                    } while (old_length != writeFile.length());
-                }
-                Message message = Message.obtain();
-                message.what = 0;
-                message.obj="《"+title+"》下载完成";
-                handler.sendMessage(message);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    @Override
-    public boolean isDestroyed() {
-        return super.isDestroyed();
     }
 
 /*

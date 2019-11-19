@@ -17,7 +17,7 @@ import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.githang.statusbar.StatusBarCompat;
 import com.org.biquge.jsoup.JsoupGet;
 import com.org.biquge.jsoup.R;
-import com.org.biquge.jsoup.novel.NovelUrl;
+import com.org.biquge.jsoup.novel.NovelPublic;
 import com.org.biquge.jsoup.novel.adapter.NovelItemAdapter;
 
 import java.io.IOException;
@@ -95,7 +95,7 @@ public class NovelMainActivity extends AppCompatActivity {
             @Override
             public void run() {
                 try {
-                    novelContent = jsoupGet.getHtmlContent(NovelUrl.novelsContent);
+                    novelContent = jsoupGet.getHtmlContent(NovelPublic.novelsContent);
                     Message message = Message.obtain();
                     message.what = 0;
                     message.obj = novelContent;

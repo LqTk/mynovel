@@ -1,11 +1,8 @@
 package com.org.biquge.jsoup;
 
-import android.util.Log;
-
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-import org.jsoup.nodes.Node;
 import org.jsoup.nodes.TextNode;
 import org.jsoup.select.Elements;
 
@@ -14,7 +11,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import static com.org.biquge.jsoup.novel.NovelUrl.novelHomeUrl;
+import static com.org.biquge.jsoup.novel.NovelPublic.novelHomeUrl;
 
 public class JsoupGet {
     public List<HashMap> getHtmlContent(String htmlUrl) throws IOException {
