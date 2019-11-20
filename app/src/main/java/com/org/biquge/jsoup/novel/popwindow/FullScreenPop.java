@@ -11,6 +11,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.org.biquge.jsoup.R;
@@ -65,9 +66,24 @@ public class FullScreenPop extends PopupWindow {
     public void initView(){
         final RelativeLayout rl_full_pop = popView.findViewById(R.id.rl_full_pop);
         LinearLayout ll_books_chapters = popView.findViewById(R.id.ll_books_chapters);
+        LinearLayout ll_save = popView.findViewById(R.id.ll_save);
         ImageView iv_theme_menu = popView.findViewById(R.id.iv_theme_menu);
+        TextView tv_refresh = popView.findViewById(R.id.tv_refresh);
         rcv_theme = popView.findViewById(R.id.rcv_theme);
 
+        ll_save.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                fullPopClick.onSaveClick();
+            }
+        });
+        tv_refresh.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                fullPopClick.refreshDataClick();
+                dismiss();
+            }
+        });
         LinearLayoutManager layoutManager = new LinearLayoutManager(mContext);
         layoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
         rcv_theme.setLayoutManager(layoutManager);
@@ -113,5 +129,7 @@ public class FullScreenPop extends PopupWindow {
     public interface FullPopClick{
         void chaptersClick();
         void themeClick(int position);
+        void refreshDataClick();
+        void onSaveClick();
     }
 }

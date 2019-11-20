@@ -59,7 +59,7 @@ public class ScanView extends RelativeLayout {
     // 获取滑动速度
     private VelocityTracker vt;
     // 防止抖动
-    private float speed_shake = 20;
+    private float speed_shake = 30;
     // 当前滑动速度
     private float speed;
     private Timer timer;
@@ -321,7 +321,7 @@ public class ScanView extends RelativeLayout {
                     break;
                 case MotionEvent.ACTION_UP:
                     upTime = System.currentTimeMillis();
-                    if (upTime-downTime<80){
+                    if (upTime-downTime<70){
                         if (screenClick!=null){
                             screenClick.onClick();
                         }
@@ -463,9 +463,11 @@ public class ScanView extends RelativeLayout {
         switch (code){
             case KeyEvent.KEYCODE_VOLUME_DOWN:
                 nextPage();
-                index++;
-                // 翻过一页，在底下添加一页，把最上层页面移除
-                addNextPage();
+                if (index != adapter.getCount()) {
+                    index++;
+                    // 翻过一页，在底下添加一页，把最上层页面移除
+                    addNextPage();
+                }
                 break;
             case KeyEvent.KEYCODE_VOLUME_UP:
                 if (index == 1) {

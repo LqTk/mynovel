@@ -13,7 +13,7 @@ import android.widget.TextView;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.org.biquge.jsoup.R;
-import com.org.biquge.jsoup.novel.adapter.NovelItemAdapter;
+import com.org.biquge.jsoup.novel.adapter.ChaptersItemAdapter;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -21,7 +21,7 @@ import java.util.List;
 
 public class ChapterPop extends PopupWindow {
     List<HashMap> chaptersLists=new ArrayList<>();
-    NovelItemAdapter novelItemAdapter;
+    ChaptersItemAdapter novelItemAdapter;
     Context mContext;
     LayoutInflater inflater;
     View popView;
@@ -34,7 +34,7 @@ public class ChapterPop extends PopupWindow {
         super(context);
         this.mContext = context;
         this.inflater = LayoutInflater.from(context);
-        novelItemAdapter = new NovelItemAdapter(R.layout.novel_item, chaptersLists);
+        novelItemAdapter = new ChaptersItemAdapter(R.layout.chapter_item, chaptersLists);
         init();
     }
 

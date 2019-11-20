@@ -112,8 +112,10 @@ public class NovelItem extends AppCompatActivity {
                     bundle.putString("from", "noveitem");
                     bundle.putString("title", (String) authorMap.get("title"));
                     bundle.putString("author", (String) authorMap.get("author"));
-                    bundle.putString("chapters",JSON.toJSONString(itemsList));
+                    bundle.putString("cataLog",cataLog);
                     bundle.putString("bookName", (String) authorMap.get("title"));
+                    bundle.putString("img", (String) authorMap.get("img"));
+                    bundle.putString("time", (String) authorMap.get("time"));
 
                     Intent intent = new Intent(context, NovelReadItem.class);
                     intent.putExtras(bundle);
@@ -176,19 +178,24 @@ public class NovelItem extends AppCompatActivity {
     public void onViewClicked() {
         if (saveBookLists==null)
             saveBookLists = new ArrayList<>();
-        authorMap.put("chapter",novelHomeUrl + String.valueOf(itemsMap.get("href")));
-        authorMap.put("lastPage",1);
-        authorMap.put("chapters", JSON.toJSONString(itemsList));
-        authorMap.put("cataLog",cataLog);
-        authorMap.put("hasNew",false);
-        DownLoadEntity downLoadEntity = new DownLoadEntity(0,itemsList.size(),0,
-                cataLog, (String) itemsList.get(0).get("href"),0);
-        authorMap.put("downLoadInfo",JSON.toJSONString(downLoadEntity));
-        saveBookLists.add(authorMap);
-        myPreference.setObject(saveInfo,saveBookLists);
         tvAddbook.setTextColor(Color.parseColor("#999999"));
         tvAddbook.setText("已加入图书");
         tvAddbook.setEnabled(false);
-        EventBus.getDefault().post(new RefreshMyBooks());
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                authorMap.put("chapter",novelHomeUrl + String.valueOf(itemsMap.get("href")));
+                authorMap.put("lastPage",1);
+                authorMap.put("chapters", JSON.toJSONString(itemsList));
+                authorMap.put("cataLog",cataLog);
+                authorMap.put("hasNew",false);
+                DownLoadEntity downLoadEntity = new DownLoadEntity(0,itemsList.size(),0,
+                        cataLog, (String) itemsList.get(0).get("href"),0);
+                authorMap.put("downLoadInfo",JSON.toJSONString(downLoadEntity));
+                saveBookLists.add(authorMap);
+                myPreference.setObject(saveInfo,saveBookLists);
+                EventBus.getDefault().post(new RefreshMyBooks());
+            }
+        }).start();
     }
 }

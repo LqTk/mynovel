@@ -113,6 +113,9 @@ public class DownLoadActivity extends AppCompatActivity {
             if (savedFile.exists()) {
                 int filesCount = savedFile.list().length;
                 loadEntity.setLoadedPage(filesCount);
+                if (chapters.size()==filesCount){
+                    loadEntity.setLoadingStatu(2);
+                }
                 loadEntity.setCurrentPageUrl((String) chapters.get(filesCount - 1).get("href"));
                 myBooksLists.get(i).put("downLoadInfo",JSON.toJSONString(loadEntity));
             }
@@ -136,17 +139,19 @@ public class DownLoadActivity extends AppCompatActivity {
             }
         }else {
             List<DownLoadThread> loadThreads = new ArrayList<>();
+            int thredid = 0;
             for (DownLoadThread loadThread:DownLoadTask.threadList){
                 boolean has = false;
                 for (HashMap hashMap:myBooksLists){
                     if (hashMap.get("title").equals(loadThread.title)&&hashMap.get("author").equals(loadThread.author)){
                         has = true;
-                        break;
                     }
                 }
                 if (!has){
                     loadThreads.add(loadThread);
                 }
+                DownLoadTask.threadList.get(thredid).handler = handler;
+                thredid++;
             }
             DownLoadTask.threadList.removeAll(loadThreads);
             for (int i=0;i<myBooksLists.size();i++){

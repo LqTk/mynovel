@@ -26,7 +26,7 @@ public class DownLoadThread extends Thread{
     File saveFile;
     String[] split;
     String fileName;
-    Handler handler;
+    public Handler handler;
     public String title;
     Context context;
     public int position;
@@ -114,10 +114,7 @@ public class DownLoadThread extends Thread{
                 loadEntity.setLoadingStatu(2);
                 loadEntity.setLoadedPage(saveFile.list().length);
                 intent.putExtra("loadEntity", JSON.toJSONString(loadEntity));
-                if (System.currentTimeMillis()-time>1000) {
-                    context.sendBroadcast(intent);
-                    time = System.currentTimeMillis();
-                }
+                context.sendBroadcast(intent);
             }else if(loadEntity.getLoadingStatu()==0){
                 message.obj = "《" + title + "》已暂停下载";
                 handler.sendMessage(message);

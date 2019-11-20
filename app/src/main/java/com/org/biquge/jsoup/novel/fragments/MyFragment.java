@@ -69,7 +69,11 @@ public class MyFragment extends Fragment {
     Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
-            booksAdapter.notifyDataSetChanged();
+            if (msg.what==0){
+                booksAdapter.notifyDataSetChanged();
+            }else if (msg.what==1) {
+                deleteItem(new DeleteEvent());
+            }
         }
     };
     private String deletePath ="";
@@ -148,6 +152,7 @@ public class MyFragment extends Fragment {
                 DownLoadThread loadThread = DownLoadTask.threadList.get(i);
                 if (hashMap.get("title").equals(loadThread.title) && hashMap.get("author").equals(loadThread.author)) {
                     if (DownLoadTask.threadList.get(i).loadEntity.getLoadingStatu()==1) {
+                        DownLoadTask.threadList.get(i).handler = handler;
                         DownLoadTask.threadList.get(i).loadEntity.setLoadingStatu(3);
                     }
                     loadThreads.add(loadThread);
