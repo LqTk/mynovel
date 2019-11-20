@@ -132,10 +132,11 @@ public class DownLoadActivity extends AppCompatActivity {
             for (int i=0;i<myBooksLists.size();i++){
                 HashMap hashMap = myBooksLists.get(i);
                 DownLoadEntity loadEntity = JSON.parseObject((String) hashMap.get("downLoadInfo"),DownLoadEntity.class);
-
+                List<HashMap> chapters = JSON.parseArray((String) hashMap.get("chapters"), HashMap.class);
                 String path = Environment.getExternalStorageDirectory()+novelSaveDirName+loadEntity.getHomeUrl().split(novelHomeUrl)[1];
                 Log.d("savepath",path);
-                DownLoadTask.threadList.add(new DownLoadThread(context,(String) hashMap.get("title"),(String) hashMap.get("author"),path,loadEntity,handler,i));
+                DownLoadTask.threadList.add(new DownLoadThread(context,(String) hashMap.get("title"),
+                        (String) hashMap.get("author"),path,loadEntity,handler,i,chapters));
             }
         }else {
             List<DownLoadThread> loadThreads = new ArrayList<>();
@@ -169,8 +170,10 @@ public class DownLoadActivity extends AppCompatActivity {
                 String path = Environment.getExternalStorageDirectory()+novelSaveDirName+loadEntity.getHomeUrl().split(novelHomeUrl)[1];
                 String title = (String) hashMap.get("title");
                 String author = (String) hashMap.get("author");
+                List<HashMap> chapters = JSON.parseArray((String) hashMap.get("chapters"), HashMap.class);
                 if (!has){
-                    DownLoadTask.threadList.add(new DownLoadThread(context,(String) hashMap.get("title"),(String) hashMap.get("author"),path,loadEntity,handler,i));
+                    DownLoadTask.threadList.add(new DownLoadThread(context,(String) hashMap.get("title"),
+                            (String) hashMap.get("author"),path,loadEntity,handler,i,chapters));
                 }else {
                     int loadStatu = DownLoadTask.threadList.get(isPosition).loadEntity.getLoadingStatu();
                     loadEntity.setLoadingStatu(loadStatu);
@@ -213,7 +216,9 @@ public class DownLoadActivity extends AppCompatActivity {
                 if (!isInTask){
                     DownLoadEntity loadEntity = JSON.parseObject((String) hashMap.get("downLoadInfo"),DownLoadEntity.class);
                     String path = Environment.getExternalStorageDirectory()+novelSaveDirName+loadEntity.getHomeUrl().split(novelHomeUrl)[1];
-                    DownLoadTask.threadList.add(new DownLoadThread(context,(String) hashMap.get("title"),(String) hashMap.get("author"),path,loadEntity,handler,position));
+                    List<HashMap> chapters = JSON.parseArray((String) hashMap.get("chapters"), HashMap.class);
+                    DownLoadTask.threadList.add(new DownLoadThread(context,(String) hashMap.get("title"),
+                            (String) hashMap.get("author"),path,loadEntity,handler,position,chapters));
                     DownLoadTask.startDownLoad(position);
                 }
                 if (downLoadThread!=null) {

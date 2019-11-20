@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.nio.charset.Charset;
 import java.util.HashMap;
+import java.util.List;
 
 import static com.org.biquge.jsoup.novel.NovelPublic.novelHomeUrl;
 
@@ -33,9 +34,12 @@ public class DownLoadThread extends Thread{
     public DownLoadEntity loadEntity;
     public String author;
     private long time=0l;
+    private List<HashMap> chaptersLists;
+    JsoupGet jsoupGet;
+    private int nowChapterPosition;
 
     public DownLoadThread(Context context, String title, String author, String savePath,
-                          DownLoadEntity loadEntity, Handler mhandler, int position) {
+                          final DownLoadEntity loadEntity, Handler mhandler, int position, List<HashMap> chapters) {
         this.context = context;
         this.path = savePath;
         this.loadEntity = loadEntity;
@@ -44,15 +48,27 @@ public class DownLoadThread extends Thread{
         this.title = title;
         this.position = position;
         this.author = author;
+        this.jsoupGet = new JsoupGet();
+        this.chaptersLists = chapters;
+        initData();
+    }
+
+    private void initData() {
+        saveFile = new File(path);
+        if (!saveFile.exists()){
+            saveFile.mkdirs();
+        }
+        for (int i=0;i<chaptersLists.size();i++){
+            if (loadString.contains((String) chaptersLists.get(i).get("href"))){
+                nowChapterPosition = i;
+                break;
+            }
+        }
     }
 
     private void checkDir(){
         split = loadString.split("/");
         fileName = split[split.length-1].split("\\.")[0];
-        saveFile = new File(path);
-        if (!saveFile.exists()){
-            saveFile.mkdirs();
-        }
     }
 
     @Override
@@ -60,46 +76,68 @@ public class DownLoadThread extends Thread{
         try {
             Intent intent = new Intent(NovelPublic.downLoadingUpdata);
             intent.putExtra("position",position);
-            JsoupGet jsoupGet = new JsoupGet();
-            HashMap downContent;
+            HashMap downContent = new HashMap<>();
+            String content;
+            FileOutputStream outputStream;
+            OutputStreamWriter writer;
+            long old_length;
             if (!loadString.contains(novelHomeUrl))
                 loadString = novelHomeUrl+loadString;
-            downContent = jsoupGet.getReadItem(loadString);
-            String content = (String) downContent.get("content");
             checkDir();
             File writeFile = new File(path,fileName+".txt");
-            FileOutputStream outputStream = new FileOutputStream(writeFile);
-            OutputStreamWriter writer=new OutputStreamWriter(outputStream, Charset.forName("gbk"));
-            writer.write(content);
-            writer.close();
-            long old_length;
-            do {
-                old_length = writeFile.length();
-            } while (old_length != writeFile.length());
-            loadEntity.setLoadedPage(saveFile.list().length);
-            intent.putExtra("loadEntity", JSON.toJSONString(loadEntity));
-            if (System.currentTimeMillis()-time>1000) {
-                context.sendBroadcast(intent);
-                time = System.currentTimeMillis();
-            }
-            while ((!downContent.get("allChapter").equals(downContent.get("nextChapter"))) && loadEntity.getLoadingStatu()!=0 && loadEntity.getLoadingStatu()!=3){
-                loadString = (String) downContent.get("nextChapter");
+            if (writeFile.exists()){
+                nowChapterPosition++;
+                downContent.put("allChapter",loadEntity.getHomeUrl());
+                if (nowChapterPosition>=chaptersLists.size()){
+                    downContent.put("nextChapter",loadEntity.getHomeUrl());
+                }else {
+                    downContent.put("nextChapter",novelHomeUrl+chaptersLists.get(nowChapterPosition).get("href"));
+                }
+            }else {
                 downContent = jsoupGet.getReadItem(loadString);
                 content = (String) downContent.get("content");
-                checkDir();
-                writeFile = new File(path,fileName+".txt");
                 outputStream = new FileOutputStream(writeFile);
-                writer=new OutputStreamWriter(outputStream, Charset.forName("gbk"));
+                writer = new OutputStreamWriter(outputStream, Charset.forName("gbk"));
                 writer.write(content);
                 writer.close();
                 do {
                     old_length = writeFile.length();
                 } while (old_length != writeFile.length());
                 loadEntity.setLoadedPage(saveFile.list().length);
-                intent.putExtra("loadEntity",JSON.toJSONString(loadEntity));
+                intent.putExtra("loadEntity", JSON.toJSONString(loadEntity));
                 if (System.currentTimeMillis()-time>1000) {
                     context.sendBroadcast(intent);
                     time = System.currentTimeMillis();
+                }
+            }
+            while ((!downContent.get("allChapter").equals(downContent.get("nextChapter"))) && loadEntity.getLoadingStatu()!=0 && loadEntity.getLoadingStatu()!=3){
+                loadString = (String) downContent.get("nextChapter");
+                checkDir();
+                writeFile = new File(path, fileName + ".txt");
+                if (writeFile.exists()){
+                    nowChapterPosition++;
+                    downContent.put("allChapter",loadEntity.getHomeUrl());
+                    if (nowChapterPosition>=chaptersLists.size()){
+                        downContent.put("nextChapter",loadEntity.getHomeUrl());
+                    }else {
+                        downContent.put("nextChapter",novelHomeUrl+chaptersLists.get(nowChapterPosition).get("href"));
+                    }
+                }else {
+                    downContent = jsoupGet.getReadItem(loadString);
+                    content = (String) downContent.get("content");
+                    outputStream = new FileOutputStream(writeFile);
+                    writer = new OutputStreamWriter(outputStream, Charset.forName("gbk"));
+                    writer.write(content);
+                    writer.close();
+                    do {
+                        old_length = writeFile.length();
+                    } while (old_length != writeFile.length());
+                    loadEntity.setLoadedPage(saveFile.list().length);
+                    intent.putExtra("loadEntity", JSON.toJSONString(loadEntity));
+                    if (System.currentTimeMillis() - time > 1000) {
+                        context.sendBroadcast(intent);
+                        time = System.currentTimeMillis();
+                    }
                 }
             }
             Message message = Message.obtain();
@@ -110,7 +148,7 @@ public class DownLoadThread extends Thread{
                 handler.sendMessage(message);
             }else if (loadEntity.getLoadingStatu()==1) {
                 message.obj = "《" + title + "》下载完成";
-                handler.sendMessage(message);
+                handler.sendMessageDelayed(message,200);
                 loadEntity.setLoadingStatu(2);
                 loadEntity.setLoadedPage(saveFile.list().length);
                 intent.putExtra("loadEntity", JSON.toJSONString(loadEntity));

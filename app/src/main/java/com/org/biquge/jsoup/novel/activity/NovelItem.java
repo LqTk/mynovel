@@ -120,6 +120,7 @@ public class NovelItem extends AppCompatActivity {
                     Intent intent = new Intent(context, NovelReadItem.class);
                     intent.putExtras(bundle);
                     startActivity(intent);
+                    NovelItem.this.finish();
                 }
             });
             rcvItem.setAdapter(novelItemAdapter);

@@ -90,7 +90,11 @@ public class NovelReadItem extends AppCompatActivity {
     Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
-            if (msg.what==2) {
+            if (msg.what==0) {
+                mToastUtils.showShortMsg(context, (String) msg.obj);
+            }if (msg.what==1) {
+                mToastUtils.showShortMsg(context, (String) msg.obj);
+            }else if (msg.what==2) {
                 if (readItem == null)
                     return;
                 tvChapterName.setText((String) readItem.get("name"));
@@ -324,6 +328,9 @@ public class NovelReadItem extends AppCompatActivity {
         myPreference = MyPreference.getInstance();
         myPreference.setPreference(context);
         myBooksLists = myPreference.getListObject(saveInfo, HashMap.class);
+        if (myBooksLists==null){
+            myBooksLists=new ArrayList<>();
+        }
         scanViewBgSetting = myPreference.getObject(scanViewBgId,HashMap.class);
         if (scanViewBgSetting==null){
             scanViewBgSetting = new HashMap();
@@ -589,16 +596,23 @@ public class NovelReadItem extends AppCompatActivity {
     }
 
     private void downLoad(String currentUrl){
+        Message msg1 = Message.obtain();
+        msg1.what=0;
         if (DownLoadTask.threadList == null) {
             DownLoadTask.threadList = new ArrayList<>();
             for (int i=0;i<myBooksLists.size();i++){
-                HashMap hashMap = myBooksLists.get(i);DownLoadEntity loadEntity = JSON.parseObject((String) hashMap.get("downLoadInfo"), DownLoadEntity.class);
+                HashMap hashMap = myBooksLists.get(i);
+                DownLoadEntity loadEntity = JSON.parseObject((String) hashMap.get("downLoadInfo"), DownLoadEntity.class);
                 loadEntity.setCurrentPageUrl(currentUrl);
                 String path = Environment.getExternalStorageDirectory() + novelSaveDirName + loadEntity.getHomeUrl().split(novelHomeUrl)[1];
                 Log.d("savepath", path);
-                DownLoadTask.threadList.add(new DownLoadThread(context, (String) hashMap.get("title"), (String) hashMap.get("author"), path, loadEntity, handler, i));
+                List<HashMap> chapters = JSON.parseArray((String) hashMap.get("chapters"), HashMap.class);
+                DownLoadTask.threadList.add(new DownLoadThread(context, (String) hashMap.get("title"),
+                        (String) hashMap.get("author"), path, loadEntity, handler, i,chapters));
                 if (hashMap.get("title").equals(authorMap.get("title"))&&hashMap.get("author").equals(authorMap.get("author"))) {
-                     DownLoadTask.startDownLoad(i);
+                    msg1.obj="开始下载《"+authorMap.get("title")+"》";
+                    DownLoadTask.startDownLoad(i);
+                    handler.sendMessage(msg1);
                 }
             }
                 /*DownLoadTask.threadList.add(new DownLoadThread(context,(String) hashMap.get("title"),(String) hashMap.get("author"),path,loadEntity,handler,0));
@@ -615,18 +629,29 @@ public class NovelReadItem extends AppCompatActivity {
                     break;
                 }
             }
-            HashMap hashMap = myBooksLists.get(position);
             if (!isInTask){
+                HashMap hashMap = myBooksLists.get(myBooksLists.size()-1);
                 DownLoadEntity loadEntity = JSON.parseObject((String) hashMap.get("downLoadInfo"),DownLoadEntity.class);
                 String path = Environment.getExternalStorageDirectory()+novelSaveDirName+loadEntity.getHomeUrl().split(novelHomeUrl)[1];
-                DownLoadTask.threadList.add(new DownLoadThread(context,(String) hashMap.get("title"),(String) hashMap.get("author"),path,loadEntity,handler,position));
-                DownLoadTask.startDownLoad(position);
+                List<HashMap> chapters = JSON.parseArray((String) hashMap.get("chapters"), HashMap.class);
+                loadEntity.setCurrentPageUrl(currentUrl);
+                DownLoadTask.threadList.add(new DownLoadThread(context,(String) hashMap.get("title"),
+                        (String) hashMap.get("author"),path,loadEntity,handler,myBooksLists.size()-1,chapters));
+                msg1.obj="开始下载《"+hashMap.get("title")+"》";
+                DownLoadTask.startDownLoad(myBooksLists.size()-1);
+                handler.sendMessage(msg1);
             }else {
+                HashMap hashMap = myBooksLists.get(position);
                 DownLoadThread loadThread = DownLoadTask.threadList.get(position);
                 if (loadThread.loadEntity.getLoadingStatu()==1) {
-                    mToastUtils.showShortMsg(context,"正在下载哦~");
+                    DownLoadTask.threadList.get(position).loadEntity.setCurrentPageUrl(currentUrl);
+                    msg1.obj="正在下载哦~";
+                    handler.sendMessage(msg1);
                 }else {
+                    DownLoadTask.threadList.get(position).loadEntity.setCurrentPageUrl(currentUrl);
+                    msg1.obj="开始下载《"+hashMap.get("title")+"》";
                     DownLoadTask.startDownLoad(position);
+                    handler.sendMessage(msg1);
                 }
             }
         }

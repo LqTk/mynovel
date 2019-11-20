@@ -1,5 +1,9 @@
 package com.org.biquge.jsoup.novel.entities;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
 public class DownLoadEntity {
     int loadedPage;
     int allPage;
