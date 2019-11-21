@@ -137,6 +137,7 @@ public class MyFragment extends Fragment {
                                     e.printStackTrace();
                                 }
                             }
+                            srf.finishRefresh();
                             handler.sendEmptyMessage(2);
                         }
                     }).start();
