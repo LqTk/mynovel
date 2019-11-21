@@ -33,6 +33,9 @@
             android:id="@+id/srf"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
+            <com.scwang.smartrefresh.layout.header.ClassicsHeader
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
             <com.yanzhenjie.recyclerview.swipe.SwipeMenuRecyclerView
                 android:id="@+id/rcl_books"
                 android:scrollbars="vertical"
