@@ -10,6 +10,7 @@ import android.graphics.Paint;
 import android.graphics.Paint.Style;
 import android.graphics.RectF;
 import android.graphics.Shader.TileMode;
+import android.os.Build;
 import android.os.Handler;
 import android.os.Message;
 import android.util.AttributeSet;
@@ -21,6 +22,7 @@ import android.view.VelocityTracker;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.RelativeLayout;
+import android.widget.ScrollView;
 
 import com.org.biquge.jsoup.R;
 import com.org.biquge.jsoup.novel.adapter.PageAdapter;
@@ -39,6 +41,7 @@ public class ScanView extends RelativeLayout {
     // 当前是第几页
     private int index;
     private float lastX;
+    private float lastY;
     // 前一页，当前页，下一页的左边位置
     private int prePageLeft = 0, currPageLeft = 0, nextPageLeft = 0;
     // 三张页面
@@ -79,6 +82,7 @@ public class ScanView extends RelativeLayout {
 
     private long downTime=0l;
     private long upTime=0l;
+    private int scrollPosition;
 
     public void setScreenClick(ScreenClick click){
         this.screenClick = click;
@@ -92,10 +96,11 @@ public class ScanView extends RelativeLayout {
         this.savePageListener = listener;
     }
 
-    public void setAdapter(ScanViewAdapter adapter, int currentIndex) {
+    public void setAdapter(ScanViewAdapter adapter, int currentIndex, int scrollPosition) {
         removeAllViews();
         index = currentIndex;
         this.adapter = adapter;
+        this.scrollPosition = scrollPosition;
         prePage = adapter.getView();
         addView(prePage, 0, new LayoutParams(LayoutParams.MATCH_PARENT,
                 LayoutParams.MATCH_PARENT));
@@ -103,11 +108,32 @@ public class ScanView extends RelativeLayout {
         currPage = adapter.getView();
         addView(currPage, 0, new LayoutParams(LayoutParams.MATCH_PARENT,
                 LayoutParams.MATCH_PARENT));
+        setScrollTo();
         adapter.addContent(currPage, index);
         nextPage = adapter.getView();
         addView(nextPage, 0, new LayoutParams(LayoutParams.MATCH_PARENT,
                 LayoutParams.MATCH_PARENT));
         adapter.addContent(nextPage, index + 1);
+    }
+
+    private void setScrollTo(){
+        if (adapter.getOrientation()==1){
+            final ScrollView scrollView = currPage.findViewById(R.id.slv_content);
+            scrollView.post(new Runnable() {
+                @Override
+                public void run() {
+                    scrollView.scrollTo(0,(scrollPosition-1)*scrollView.getHeight());
+                }
+            });
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                scrollView.setOnScrollChangeListener(new OnScrollChangeListener() {
+                    @Override
+                    public void onScrollChange(View v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
+                        screenClick.onScrollListener(scrollY,scrollView.getHeight());
+                    }
+                });
+            }
+        }
     }
 
     /**
@@ -272,6 +298,7 @@ public class ScanView extends RelativeLayout {
             switch (event.getActionMasked()) {
                 case MotionEvent.ACTION_DOWN:
                     lastX = event.getX();
+                    lastY = event.getY();
 
                     WindowManager wm = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
                     int screenWidth = wm.getDefaultDisplay().getWidth();
@@ -303,7 +330,11 @@ public class ScanView extends RelativeLayout {
                     vt.addMovement(event);
                     vt.computeCurrentVelocity(500);
                     speed = vt.getXVelocity();
-                    moveLenght = event.getX() - lastX;
+                    if (adapter.getOrientation()==0) {
+                        moveLenght = event.getX() - lastX;
+                    }else {
+                        moveLenght = event.getY() - lastY;
+                    }
                     if ((moveLenght > 0 || !isCurrMoving) && isPreMoving
                             && mEvents == 0) {
                         isPreMoving = true;
@@ -403,8 +434,13 @@ public class ScanView extends RelativeLayout {
             // 第一页不能再往右翻，跳转到前一个activity
             state = STATE_MOVE;
             releaseMoving();
-            if (pageListener!=null)
-                pageListener.lastChapter();
+
+            ScrollView scrollView = currPage.findViewById(R.id.slv_content);
+            float sy = scrollView.getScrollY();
+            if (sy==0) {
+                if (pageListener!=null)
+                    pageListener.lastChapter();
+            }
         } else {
             // 非第一页
             prePageLeft += (int) moveLenght;
@@ -426,8 +462,17 @@ public class ScanView extends RelativeLayout {
             // 最后一页不能再往左翻
             state = STATE_STOP;
             releaseMoving();
-            if (pageListener!=null)
-                pageListener.nextChapter();
+            ScrollView scrollView = currPage.findViewById(R.id.slv_content);
+            View view = scrollView.getChildAt(0);
+            int vh = view.getMeasuredHeight();
+            float sh1 = scrollView.getHeight();
+            float sh2 = scrollView.getScrollY();
+            float sy = sh1+sh2;
+            if (vh<=sy) {
+                if (pageListener!=null)
+                    pageListener.nextChapter();
+
+            }
         } else {
             currPageLeft += (int) moveLenght;
             // 防止滑过边界
@@ -496,6 +541,7 @@ public class ScanView extends RelativeLayout {
 
     public interface ScreenClick{
         void onClick();
+        void onScrollListener(int scrollPosition,int scrollHeight);
     }
 
     public void resetBg(int bgId){

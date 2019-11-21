@@ -1,5 +1,6 @@
 package com.org.biquge.jsoup;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
@@ -11,6 +12,8 @@ import android.widget.FrameLayout;
 
 import com.org.biquge.jsoup.novel.fragments.MyFragment;
 import com.org.biquge.jsoup.novel.fragments.NovelsAllFragement;
+import com.org.biquge.jsoup.novel.thread.DownLoadTask;
+import com.org.biquge.jsoup.novel.utils.ToastUtils;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -27,12 +30,15 @@ public class MainActivity extends AppCompatActivity {
     private NovelsAllFragement novelsAllFragement;
     private Fragment[] fragmentlist;
     private int lastFragment;
+    private long exitTime=0l;
+    Context context;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         bind = ButterKnife.bind(this);
+        context = this;
 
         initFragment();
     }
@@ -106,5 +112,18 @@ public class MainActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         bind.unbind();
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (System.currentTimeMillis()-exitTime<1500){
+            if (DownLoadTask.threadList!=null){
+                DownLoadTask.stopAll();
+            }
+            super.onBackPressed();
+        }else {
+            exitTime = System.currentTimeMillis();
+            ToastUtils.showShortMsg(context,"再按一次退出");
+        }
     }
 }

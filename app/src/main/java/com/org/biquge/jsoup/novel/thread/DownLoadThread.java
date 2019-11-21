@@ -162,7 +162,16 @@ public class DownLoadThread extends Thread{
                     time = System.currentTimeMillis();
                 }
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
+            Message message = Message.obtain();
+            message.what = 0;
+            message.obj = "下载出现错误《" + title + "》已暂停下载";
+            handler.sendMessage(message);
+            loadEntity.setLoadingStatu(0);
+            Intent intent = new Intent(NovelPublic.downLoadingUpdata);
+            intent.putExtra("position",position);
+            intent.putExtra("loadEntity", JSON.toJSONString(loadEntity));
+            context.sendBroadcast(intent);
             e.printStackTrace();
         }
     }

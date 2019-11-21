@@ -24,7 +24,6 @@ import com.alibaba.fastjson.JSON;
 import com.org.biquge.jsoup.JsoupGet;
 import com.org.biquge.jsoup.MyPreference;
 import com.org.biquge.jsoup.R;
-import com.org.biquge.jsoup.novel.NovelPublic;
 import com.org.biquge.jsoup.novel.adapter.ScanViewAdapter;
 import com.org.biquge.jsoup.novel.broadcastReceiver.BattaryBroadcast;
 import com.org.biquge.jsoup.novel.entities.DownLoadEntity;
@@ -59,6 +58,8 @@ import butterknife.Unbinder;
 
 import static com.org.biquge.jsoup.MyPreference.saveInfo;
 import static com.org.biquge.jsoup.MyPreference.scanViewBgId;
+import static com.org.biquge.jsoup.MyPreference.scanViewOrientation;
+import static com.org.biquge.jsoup.MyPreference.scanViewScrollPo;
 import static com.org.biquge.jsoup.novel.NovelPublic.novelHomeUrl;
 import static com.org.biquge.jsoup.novel.NovelPublic.novelSaveDirName;
 
@@ -84,54 +85,93 @@ public class NovelReadItem extends AppCompatActivity {
     private Unbinder bind;
     private JsoupGet jsoupGet = new JsoupGet();
     private int pageReadCount = 300;
-    private ToastUtils mToastUtils = new ToastUtils();
     ScanViewAdapter scanViewAdapter;
 
     Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             if (msg.what==0) {
-                mToastUtils.showShortMsg(context, (String) msg.obj);
+                ToastUtils.showShortMsg(context, (String) msg.obj);
             }if (msg.what==1) {
-                mToastUtils.showShortMsg(context, (String) msg.obj);
+                ToastUtils.showShortMsg(context, (String) msg.obj);
             }else if (msg.what==2) {
                 if (readItem == null)
                     return;
                 tvChapterName.setText((String) readItem.get("name"));
                 String content = (String) readItem.get("content");
+                content = "      "+content;
                 final List<String> cons = new ArrayList<>();
-                int i = 0;
-                for (i = 0; i < content.length() / pageReadCount; i++) {
-                    cons.add(content.substring(i * pageReadCount, (i + 1) * pageReadCount));
+                final List<String> consCopy = new ArrayList<>();
+                if (scrollOrientation==0) {
+                    int i = 0;
+                    for (i = 0; i < content.length() / pageReadCount; i++) {
+                        cons.add(content.substring(i * pageReadCount, (i + 1) * pageReadCount));
+                    }
+                    cons.add(content.substring(i * pageReadCount, content.length()));
+                }else {
+                    int i = 0;
+                    for (i = 0; i < content.length() / pageReadCount; i++) {
+                        consCopy.add(content.substring(i * pageReadCount, (i + 1) * pageReadCount));
+                    }
+                    consCopy.add(content.substring(i * pageReadCount, content.length()));
+                    cons.add(content);
                 }
-                cons.add(content.substring(i * pageReadCount, content.length()));
-                if (!first) {
+                if (!first && !isChangeOrientation) {
                     if (pageStatus.equals("next")) {
                         currentIndex = 1;
                         authorMap.put("lastPage", currentIndex);
+                        scrollPo = 0;
                     } else {
                         currentIndex = cons.size();
                         authorMap.put("lastPage", currentIndex);
+                    }
+                    if (scrollOrientation==0) {
+                        currentIndex = (int) authorMap.get("lastPage");
+                    }else {
+                        currentIndex = 1;
+                        if (pageStatus.equals("last")) {
+                            scrollPosition = consCopy.size();
+                        }else {
+                            authorMap.put("lastPage", currentIndex);
+                            scrollPosition = (int) authorMap.get("lastPage");
+                        }
+                    }
+                }
+                if (isChangeOrientation){
+                    isChangeOrientation = false;
+                    if (scrollOrientation==0) {
+                        currentIndex = (int) authorMap.get("lastPage");
+                    }else {
+                        if (pageStatus.equals("last")) {
+                            scrollPosition = consCopy.size();
+                        }else {
+                            scrollPosition = (int) authorMap.get("lastPage");
+                        }
+                        currentIndex = 1;
                     }
                 }
                 if (first) {
                     first = false;
                     currentIndex = (int) authorMap.get("lastPage");
+                    scrollPosition = currentIndex;
+                    if (scrollOrientation==1){
+                        currentIndex = 1;
+                    }
                 }
-                scanViewAdapter = new ScanViewAdapter(context, cons, (Integer) scanViewBgSetting.get("bgId"));
+                scanViewAdapter = new ScanViewAdapter(context, cons, (Integer) scanViewBgSetting.get("bgId"),scrollOrientation);
                 scanViewAdapter.setChapterClicker(new ScanViewAdapter.ChapterClicker() {
                     @Override
                     public void lastChapterListener() {
                         String lastUrl = (String) readItem.get("lastChapter");
                         String allUrl = (String) readItem.get("allChapter");
+                        if (llPro.getVisibility() == View.VISIBLE) {
+                            return;
+                        }
                         if (lastUrl.equals(allUrl)) {
                             if (System.currentTimeMillis() - showLastTime > 1200) {
                                 showLastTime = System.currentTimeMillis();
-                                mToastUtils.showShortMsg(context, "这已经是第一章了哦~");
+                                ToastUtils.showShortMsg(context, "这已经是第一章了哦~");
                             }
-                            return;
-                        }
-                        if (llPro.getVisibility() == View.VISIBLE) {
                             return;
                         }
                         pageStatus = "next";
@@ -142,14 +182,14 @@ public class NovelReadItem extends AppCompatActivity {
                     public void nextChapterListener() {
                         String nextUrl = (String) readItem.get("nextChapter");
                         String allUrl = (String) readItem.get("allChapter");
+                        if (llPro.getVisibility() == View.VISIBLE) {
+                            return;
+                        }
                         if (nextUrl.equals(allUrl)) {
                             if (System.currentTimeMillis() - showLastTime > 1200) {
                                 showLastTime = System.currentTimeMillis();
-                                mToastUtils.showShortMsg(context, "没有下一章了，看看其它的吧");
+                                ToastUtils.showShortMsg(context, "没有下一章了，看看其它的吧");
                             }
-                            return;
-                        }
-                        if (llPro.getVisibility() == View.VISIBLE) {
                             return;
                         }
                         pageStatus = "next";
@@ -157,7 +197,7 @@ public class NovelReadItem extends AppCompatActivity {
                     }
                 });
                 if (scanViewAdapter != null) {
-                    scanView.setAdapter(scanViewAdapter, currentIndex);
+                    scanView.setAdapter(scanViewAdapter, currentIndex,scrollPosition);
                     scanView.setPageListener(pageListener);
                     scanView.setScreenClick(screenClick);
                     scanView.setSavePageListener(savePageListener);
@@ -186,14 +226,14 @@ public class NovelReadItem extends AppCompatActivity {
         public void lastChapter() {
             String lastUrl = (String) readItem.get("lastChapter");
             String allUrl = (String) readItem.get("allChapter");
+            if (llPro.getVisibility()==View.VISIBLE){
+                return;
+            }
             if (lastUrl.equals(allUrl)) {
                 if (System.currentTimeMillis()-showLastTime>1200) {
                     showLastTime = System.currentTimeMillis();
-                    mToastUtils.showShortMsg(context, "这已经是第一章了哦~");
+                    ToastUtils.showShortMsg(context, "这已经是第一章了哦~");
                 }
-                return;
-            }
-            if (llPro.getVisibility()==View.VISIBLE){
                 return;
             }
             pageStatus = "last";
@@ -204,14 +244,14 @@ public class NovelReadItem extends AppCompatActivity {
         public void nextChapter() {
             String nextUrl = (String) readItem.get("nextChapter");
             String allUrl = (String) readItem.get("allChapter");
+            if (llPro.getVisibility()==View.VISIBLE){
+                return;
+            }
             if (nextUrl.equals(allUrl)) {
                 if (System.currentTimeMillis()-showLastTime>1200) {
                     showLastTime = System.currentTimeMillis();
-                    mToastUtils.showShortMsg(context, "没有下一章了，看看其它的吧");
+                    ToastUtils.showShortMsg(context, "没有下一章了，看看其它的吧");
                 }
-                return;
-            }
-            if (llPro.getVisibility()==View.VISIBLE){
                 return;
             }
             pageStatus = "next";
@@ -228,12 +268,19 @@ public class NovelReadItem extends AppCompatActivity {
         @Override
         public void onClick() {
             FullScreenPop fullScreenPop = new FullScreenPop(context);
-            fullScreenPop.refreshData(themeBgEntities);
+            fullScreenPop.refreshData(themeBgEntities,scrollOrientation);
             fullScreenPop.setFullPopClick(fullPopClick);
             fullScreenPop.setFocusable(true);
             fullScreenPop.setOutsideTouchable(false);
             fullScreenPop.showAtLocation(llMain, Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL, 0, 0);
         }
+
+        @Override
+        public void onScrollListener(int scrollPosition, int scrollHeight) {
+            scrollPo = scrollPosition;
+            authorMap.put("lastPage", (scrollPosition+scrollHeight/2)/scrollHeight);
+        }
+
     };
 
     private FullScreenPop.FullPopClick fullPopClick = new FullScreenPop.FullPopClick() {
@@ -268,6 +315,14 @@ public class NovelReadItem extends AppCompatActivity {
             savePop.setFocusable(true);
             savePop.setOutsideTouchable(false);
             savePop.showAtLocation(llMain, Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL, 0, 0);
+        }
+
+        @Override
+        public void setOrientationClick(int orientation) {
+            myPreference.setInt(scanViewOrientation,orientation);
+            scrollOrientation = myPreference.getInt(scanViewOrientation,0);
+            isChangeOrientation = true;
+            handler.sendEmptyMessage(2);
         }
     };
 
@@ -315,6 +370,11 @@ public class NovelReadItem extends AppCompatActivity {
     private String time;
     private String author;
     private String title;
+    private int scrollOrientation=0;
+    private int scrollPo=0;
+    private boolean isChangeOrientation = false;
+    private int scrollVHeight=0;
+    private int scrollPosition = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -332,6 +392,8 @@ public class NovelReadItem extends AppCompatActivity {
             myBooksLists=new ArrayList<>();
         }
         scanViewBgSetting = myPreference.getObject(scanViewBgId,HashMap.class);
+        scrollOrientation = myPreference.getInt(scanViewOrientation,0);
+        scrollPo = myPreference.getInt(scanViewScrollPo,0);
         if (scanViewBgSetting==null){
             scanViewBgSetting = new HashMap();
             setSetting(R.drawable.read_cover3,0);

@@ -23,16 +23,18 @@ public class ScanViewAdapter extends PageAdapter{
     private View scanView;
     private RelativeLayout rl_scanView;
     private int scanViewBg;
+    private int orientation;
 
     public void setChapterClicker(ChapterClicker clicker){
         this.chapterClicker = clicker;
     }
 
-    public ScanViewAdapter(Context context, List<String> items, int bgId)
+    public ScanViewAdapter(Context context, List<String> items, int bgId, int orientation)
     {
         this.scanViewBg = bgId;
         this.context = context;
         this.items = items;
+        this.orientation = orientation;
         am = context.getAssets();
     }
 
@@ -81,6 +83,10 @@ public class ScanViewAdapter extends PageAdapter{
 
     public void setScanViewBg(int bgId){
         this.scanViewBg = bgId;
+    }
+
+    public int getOrientation(){
+        return orientation;
     }
 
     public interface ChapterClicker {

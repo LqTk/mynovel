@@ -11,6 +11,9 @@ public class MyPreference {
     public static String saveInfo = "bookInfos";
     private static String fileName = "novelInfo";
     public static String scanViewBgId = "scanViewBgId";
+    public static String scanViewOrientation = "scanViewOrientation";
+    public static String scanViewScrollPo = "scanViewScrollPo";
+    public static String refreshLastTime = "refreshLastTime";
 
     SharedPreferences preference;
     Context mContext;
@@ -53,6 +56,18 @@ public class MyPreference {
         editor.commit();
     }
 
+    public void setInt(String key, int value) {
+        // TODO Auto-generated method stub
+        editor.putInt(key, value);
+        editor.commit();
+    }
+
+    public void setFloat(String key, float value) {
+        // TODO Auto-generated method stub
+        editor.putFloat(key, value);
+        editor.commit();
+    }
+
     public String getString(String key, String defaultValue) {
         // TODO Auto-generated method stub
         return preference.getString(key, defaultValue);
@@ -60,6 +75,10 @@ public class MyPreference {
 
     public int getInt(String key, int defalutValue){
         return preference.getInt(key,defalutValue);
+    }
+
+    public float getFloat(String key, float defalutValue){
+        return preference.getFloat(key,defalutValue);
     }
 
 }

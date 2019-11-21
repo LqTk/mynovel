@@ -16,7 +16,6 @@ import android.view.View;
 import com.alibaba.fastjson.JSON;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.githang.statusbar.StatusBarCompat;
-import com.org.biquge.jsoup.JsoupGet;
 import com.org.biquge.jsoup.MyPreference;
 import com.org.biquge.jsoup.R;
 import com.org.biquge.jsoup.novel.NovelPublic;
@@ -31,10 +30,6 @@ import com.org.biquge.jsoup.novel.utils.ToastUtils;
 import org.greenrobot.eventbus.EventBus;
 
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -54,14 +49,13 @@ public class DownLoadActivity extends AppCompatActivity {
     private Context context;
     private List<HashMap> myBooksLists;
     private DownAdapter downAdapter;
-    private ToastUtils mToastUtils = new ToastUtils();
 
     public Handler handler = new Handler(){
         @Override
         public void handleMessage(Message msg) {
             switch (msg.what){
                 case 0:
-                    mToastUtils.showShortMsg(context, (String) msg.obj);
+                    ToastUtils.showShortMsg(context, (String) msg.obj);
                     break;
                 case 1:
                     EventBus.getDefault().post(new DeleteEvent());
@@ -188,7 +182,7 @@ public class DownLoadActivity extends AppCompatActivity {
         downAdapter.setOnItemChildClickListener(new BaseQuickAdapter.OnItemChildClickListener() {
             @Override
             public void onItemChildClick(BaseQuickAdapter adapter, View view, int position) {
-                /*mToastUtils.showShortMsg(context,"开始暂停");
+                /*ToastUtils.showShortMsg(context,"开始暂停");
                 HashMap hashMap = myBooksLists.get(position);
                 DownLoadEntity loadEntity = JSON.parseObject((String) hashMap.get("downLoadInfo"),DownLoadEntity.class);
 

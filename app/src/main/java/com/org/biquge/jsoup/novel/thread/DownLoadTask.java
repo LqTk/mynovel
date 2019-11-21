@@ -12,4 +12,8 @@ public class DownLoadTask {
         threadList.get(position).loadEntity.setLoadingStatu(1);
         sExe.execute(threadList.get(position));
     }
+
+    public static void stopAll(){
+        sExe.shutdownNow();
+    }
 }

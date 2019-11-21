@@ -20,4 +20,6 @@ public abstract class PageAdapter
      *            第position页
      */
     public abstract void addContent(View view, int position);
+
+    public abstract int getOrientation();
 }

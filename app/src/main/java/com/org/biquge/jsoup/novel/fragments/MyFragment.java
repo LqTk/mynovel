@@ -29,6 +29,9 @@ import com.org.biquge.jsoup.novel.events.DeleteEvent;
 import com.org.biquge.jsoup.novel.events.RefreshMyBooks;
 import com.org.biquge.jsoup.novel.thread.DownLoadTask;
 import com.org.biquge.jsoup.novel.thread.DownLoadThread;
+import com.scwang.smartrefresh.layout.SmartRefreshLayout;
+import com.scwang.smartrefresh.layout.api.RefreshLayout;
+import com.scwang.smartrefresh.layout.listener.OnRefreshListener;
 import com.yanzhenjie.recyclerview.swipe.SwipeMenu;
 import com.yanzhenjie.recyclerview.swipe.SwipeMenuBridge;
 import com.yanzhenjie.recyclerview.swipe.SwipeMenuCreator;
@@ -51,6 +54,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
 
+import static com.org.biquge.jsoup.MyPreference.refreshLastTime;
 import static com.org.biquge.jsoup.MyPreference.saveInfo;
 import static com.org.biquge.jsoup.novel.NovelPublic.novelHomeUrl;
 import static com.org.biquge.jsoup.novel.NovelPublic.novelSaveDirName;
@@ -58,10 +62,12 @@ import static com.org.biquge.jsoup.novel.NovelPublic.novelSaveDirName;
 public class MyFragment extends Fragment {
     @BindView(R.id.rcl_books)
     SwipeMenuRecyclerView rclBooks;
-    Unbinder unbinder;
     @BindView(R.id.ll_pro)
     LinearLayout llPro;
+    @BindView(R.id.srf)
+    SmartRefreshLayout srf;
 
+    Unbinder unbinder;
     MyPreference myPreference;
     MyBooksAdapter booksAdapter;
     View emptyView;
@@ -70,15 +76,18 @@ public class MyFragment extends Fragment {
         @Override
         public void handleMessage(Message msg) {
             if (msg.what==0){
-                booksAdapter.notifyDataSetChanged();
+                Toast.makeText(getContext(), (String) msg.obj, Toast.LENGTH_SHORT).show();
             }else if (msg.what==1) {
                 deleteItem(new DeleteEvent());
+            }else if (msg.what==2){
+                booksAdapter.notifyDataSetChanged();
             }
         }
     };
     private String deletePath ="";
     private int deletePosition=0;
     List<DownLoadThread> loadThreads = new ArrayList<>();
+    private float refreshTime=0l;
 
     @Nullable
     @Override
@@ -96,7 +105,44 @@ public class MyFragment extends Fragment {
         myPreference = MyPreference.getInstance();
         myPreference.setPreference(getContext());
 
+        refreshTime = myPreference.getFloat(refreshLastTime,0);
+
+        initView();
         initData();
+    }
+
+    private void initView() {
+        srf.setOnRefreshListener(new OnRefreshListener() {
+            @Override
+            public void onRefresh(@NonNull RefreshLayout refreshLayout) {
+                if (myBooksLists != null && myBooksLists.size() > 0) {
+                    refreshTime = System.currentTimeMillis();
+                    myPreference.setFloat(refreshLastTime,refreshTime);
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            for (int i = 0; i < myBooksLists.size(); i++) {
+                                HashMap hashMap = myBooksLists.get(i);
+                                JsoupGet jsoupGet = new JsoupGet();
+                                try {
+                                    List<List<HashMap>> cataLog = jsoupGet.getItemContent((String) hashMap.get("cataLog"));
+                                    if (JSON.parseArray((String) hashMap.get("chapters"), HashMap.class).size() != cataLog.get(1).size()) {
+                                        myBooksLists.get(i).put("chapters", JSON.toJSONString(cataLog.get(1)));
+                                        myBooksLists.get(i).put("recentString", cataLog.get(0).get(0).get("recentString"));
+                                        myBooksLists.get(i).put("recentHref", cataLog.get(0).get(0).get("recentHref"));
+                                        myBooksLists.get(i).put("time", cataLog.get(0).get(0).get("time"));
+                                        myBooksLists.get(i).put("hasNew", true);
+                                    }
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                            handler.sendEmptyMessage(2);
+                        }
+                    }).start();
+                }
+            }
+        });
     }
 
     private void initData() {
@@ -201,7 +247,9 @@ public class MyFragment extends Fragment {
             booksAdapter.notifyDataSetChanged();
         }
 
-        if (myBooksLists != null && myBooksLists.size() > 0) {
+        if (myBooksLists != null && myBooksLists.size() > 0 && System.currentTimeMillis()-refreshTime>21600000) {
+            refreshTime = System.currentTimeMillis();
+            myPreference.setFloat(refreshLastTime,refreshTime);
             new Thread(new Runnable() {
                 @Override
                 public void run() {
@@ -221,7 +269,7 @@ public class MyFragment extends Fragment {
                             e.printStackTrace();
                         }
                     }
-                    handler.sendEmptyMessage(0);
+                    handler.sendEmptyMessage(2);
                 }
             }).start();
         }
@@ -329,5 +377,15 @@ public class MyFragment extends Fragment {
     public void onViewClicked() {
         Intent intent = new Intent(getContext(), DownLoadActivity.class);
         startActivity(intent);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (DownLoadTask.threadList!=null){
+            for (int i=0;i<DownLoadTask.threadList.size();i++){
+                DownLoadTask.threadList.get(i).handler = handler;
+            }
+        }
     }
 }
