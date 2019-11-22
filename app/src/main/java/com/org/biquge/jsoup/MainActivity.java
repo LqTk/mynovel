@@ -144,9 +144,9 @@ public class MainActivity extends AppCompatActivity {
     public void refreshTheme(RefreshTheme theme){
         int themeId = myPreference.getInt(themeNum,0);
         if (themeId==0) {
-            StatusBarCompat.setStatusBarColor(this, getResources().getColor(R.color.blue_main));
-        }else {
-            StatusBarCompat.setStatusBarColor(this, getResources().getColor(themeId));
+            themeId=R.color.theme_blue;
+            myPreference.setInt(themeNum,themeId);
         }
+        StatusBarCompat.setStatusBarColor(this, getResources().getColor(themeId));
     }
 }

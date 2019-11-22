@@ -53,7 +53,7 @@ public class DownLoadThread extends Thread{
         initData();
     }
 
-    private void initData() {
+    public void initData() {
         saveFile = new File(path);
         if (!saveFile.exists()){
             saveFile.mkdirs();

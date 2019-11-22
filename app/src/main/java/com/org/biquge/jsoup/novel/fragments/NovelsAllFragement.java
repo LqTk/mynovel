@@ -257,11 +257,10 @@ public class NovelsAllFragement extends Fragment {
     public void refreshTheme(RefreshTheme theme) {
         int themeId = myPreference.getInt(themeNum, 0);
         if (themeId==0) {
-            rlTop.setBackgroundColor(getResources().getColor(R.color.blue_main));
-            StatusBarCompat.setStatusBarColor(getActivity(), getResources().getColor(R.color.blue_main));
-        }else {
-            rlTop.setBackgroundColor(getResources().getColor(themeId));
-            StatusBarCompat.setStatusBarColor(getActivity(), getResources().getColor(themeId));
+            themeId=R.color.theme_blue;
+            myPreference.setInt(themeNum,themeId);
         }
+        rlTop.setBackgroundColor(getResources().getColor(themeId));
+        StatusBarCompat.setStatusBarColor(getActivity(), getResources().getColor(themeId));
     }
 }

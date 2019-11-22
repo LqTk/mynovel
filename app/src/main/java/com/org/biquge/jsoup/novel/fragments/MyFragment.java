@@ -255,7 +255,7 @@ public class MyFragment extends Fragment {
 
         if (myBooksLists != null && myBooksLists.size() > 0 && System.currentTimeMillis() - refreshTime > 21600000) {
             refreshTime = System.currentTimeMillis();
-            myPreference.setFloat(refreshLastTime, refreshTime);
+            myPreference.setLong(refreshLastTime, refreshTime);
             new Thread(new Runnable() {
                 @Override
                 public void run() {
@@ -404,11 +404,10 @@ public class MyFragment extends Fragment {
     public void refreshTheme(RefreshTheme theme){
         int themeId = myPreference.getInt(themeNum,0);
         if (themeId==0) {
-            rlTop.setBackgroundColor(getResources().getColor(R.color.blue_main));
-            StatusBarCompat.setStatusBarColor(getActivity(), getResources().getColor(R.color.blue_main));
-        }else {
-            rlTop.setBackgroundColor(getResources().getColor(themeId));
-            StatusBarCompat.setStatusBarColor(getActivity(), getResources().getColor(themeId));
+            themeId=R.color.theme_blue;
+            myPreference.setInt(themeNum,themeId);
         }
+        rlTop.setBackgroundColor(getResources().getColor(themeId));
+        StatusBarCompat.setStatusBarColor(getActivity(), getResources().getColor(themeId));
     }
 }

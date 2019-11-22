@@ -54,6 +54,10 @@ public class ThemeActivity extends AppCompatActivity {
         myPreference.setPreference(context);
         refreshTheme();
         configThemeNum = myPreference.getInt(themeNum,0);
+        if (configThemeNum==0){
+            configThemeNum=R.color.theme_blue;
+            myPreference.setInt(themeNum,configThemeNum);
+        }
 
         initData();
         setAdapter();
@@ -62,7 +66,7 @@ public class ThemeActivity extends AppCompatActivity {
     private void initData() {
         for (int i=0;i<themes.length;i++){
             ThemeBgEntity themeBgEntity = new ThemeBgEntity(themes[i],false,names[i]);
-            if (themes[i]==configThemeNum || configThemeNum==0){
+            if (themes[i]==configThemeNum || configThemeNum==i){
                 themeBgEntity.setCheck(true);
             }
             themesList.add(themeBgEntity);

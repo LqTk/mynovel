@@ -27,6 +27,7 @@
                 android:id="@+id/tv_title"
                 android:text="我的图书"
                 android:layout_centerInParent="true"
+                android:textColor="@color/white"
                 android:textSize="20sp"/>
             <ImageView
                 android:layout_width="30dp"

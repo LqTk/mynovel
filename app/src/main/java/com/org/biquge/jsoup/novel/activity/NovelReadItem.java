@@ -714,7 +714,8 @@ public class NovelReadItem extends AppCompatActivity {
                     msg1.obj="正在下载哦~";
                     handler.sendMessage(msg1);
                 }else {
-                    DownLoadTask.threadList.get(position).loadEntity.setCurrentPageUrl(currentUrl);
+                    DownLoadTask.threadList.get(position).loadString = currentUrl;
+                    DownLoadTask.threadList.get(position).initData();
                     msg1.obj="开始下载《"+hashMap.get("title")+"》";
                     DownLoadTask.startDownLoad(position);
                     handler.sendMessage(msg1);
