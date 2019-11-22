@@ -1,5 +1,6 @@
 package com.org.biquge.jsoup.novel.activity;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -185,6 +186,9 @@ public class NovelReadItem extends AppCompatActivity {
                         if (llPro.getVisibility() == View.VISIBLE) {
                             return;
                         }
+                        if (nextUrl==null || allUrl==null){
+                            return;
+                        }
                         if (nextUrl.equals(allUrl)) {
                             if (System.currentTimeMillis() - showLastTime > 1200) {
                                 showLastTime = System.currentTimeMillis();
@@ -245,6 +249,9 @@ public class NovelReadItem extends AppCompatActivity {
             String nextUrl = (String) readItem.get("nextChapter");
             String allUrl = (String) readItem.get("allChapter");
             if (llPro.getVisibility()==View.VISIBLE){
+                return;
+            }
+            if (nextUrl==null || allUrl==null){
                 return;
             }
             if (nextUrl.equals(allUrl)) {

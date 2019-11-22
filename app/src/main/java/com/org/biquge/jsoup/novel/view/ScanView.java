@@ -466,8 +466,13 @@ public class ScanView extends RelativeLayout {
             float sh1 = scrollView.getHeight();
             float sh2 = scrollView.getScrollY();
             float sy = sh1+sh2;
-            if (sh2!=0&&vh<=sy) {
-                if (pageListener!=null)
+            if (adapter!=null && adapter.getOrientation()==1) {
+                if (sh2 != 0 && vh <= sy) {
+                    if (pageListener != null)
+                        pageListener.nextChapter();
+                }
+            }else {
+                if (pageListener != null)
                     pageListener.nextChapter();
             }
         } else {
