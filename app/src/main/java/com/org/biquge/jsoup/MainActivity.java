@@ -1,9 +1,13 @@
 package com.org.biquge.jsoup;
 
+import android.Manifest;
 import android.content.Context;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
@@ -54,6 +58,19 @@ public class MainActivity extends AppCompatActivity {
         refreshTheme(new RefreshTheme());
 
         initFragment();
+        requestMyPermission();
+    }
+
+    private void requestMyPermission() {
+        String[] permissions = {Manifest.permission.READ_EXTERNAL_STORAGE,
+        Manifest.permission.WRITE_EXTERNAL_STORAGE};
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (ActivityCompat.checkSelfPermission(MainActivity.this,Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                    != PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(MainActivity.this,Manifest.permission.READ_EXTERNAL_STORAGE)
+                    != PackageManager.PERMISSION_GRANTED){
+                ActivityCompat.requestPermissions(MainActivity.this,permissions,0);
+            }
+        }
     }
 
     private void initFragment() {
@@ -148,5 +165,23 @@ public class MainActivity extends AppCompatActivity {
             myPreference.setInt(themeNum,themeId);
         }
         StatusBarCompat.setStatusBarColor(this, getResources().getColor(themeId));
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestCode){
+            case 0:
+                boolean permissionOk = true;
+                for (Integer reslut:grantResults){
+                    if (reslut!=PackageManager.PERMISSION_GRANTED){
+                        permissionOk = false;
+                        break;
+                    }
+                }
+                if (!permissionOk){
+                    ToastUtils.showShortMsg(context,"请先去设置页面允许权限哦~");
+                }
+                break;
+        }
     }
 }
