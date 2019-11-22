@@ -10,6 +10,7 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
         <RelativeLayout
+            android:id="@+id/rl_top"
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:background="@color/blue_main">
@@ -27,6 +28,14 @@
                 android:text="我的图书"
                 android:layout_centerInParent="true"
                 android:textSize="20sp"/>
+            <ImageView
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_alignParentRight="true"
+                android:id="@+id/iv_setting"
+                android:src="@drawable/setting"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="10dp"/>
         </RelativeLayout>
 
         <com.scwang.smartrefresh.layout.SmartRefreshLayout

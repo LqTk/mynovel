@@ -27,7 +27,7 @@ import com.org.biquge.jsoup.R;
 import com.org.biquge.jsoup.novel.adapter.ScanViewAdapter;
 import com.org.biquge.jsoup.novel.broadcastReceiver.BattaryBroadcast;
 import com.org.biquge.jsoup.novel.entities.DownLoadEntity;
-import com.org.biquge.jsoup.novel.entities.ThemeBgEntity;
+import com.org.biquge.jsoup.novel.entities.ScanThemeBgEntity;
 import com.org.biquge.jsoup.novel.events.RefreshMyBooks;
 import com.org.biquge.jsoup.novel.popwindow.ChapterPop;
 import com.org.biquge.jsoup.novel.popwindow.FullScreenPop;
@@ -219,7 +219,7 @@ public class NovelReadItem extends AppCompatActivity {
     private boolean isAdded = false;
     private int chapterPosition = 0;
 
-    List<ThemeBgEntity> themeBgEntities = new ArrayList<>();
+    List<ScanThemeBgEntity> themeBgEntities = new ArrayList<>();
 
     private ScanView.OnPageListener pageListener = new ScanView.OnPageListener() {
         @Override
@@ -278,7 +278,11 @@ public class NovelReadItem extends AppCompatActivity {
         @Override
         public void onScrollListener(int scrollPosition, int scrollHeight) {
             scrollPo = scrollPosition;
-            authorMap.put("lastPage", (scrollPosition+scrollHeight/2)/scrollHeight);
+            if (scrollPosition>scrollHeight){
+                authorMap.put("lastPage", scrollPosition/scrollHeight+1);
+            }else {
+                authorMap.put("lastPage", 1);
+            }
         }
 
     };
@@ -412,9 +416,9 @@ public class NovelReadItem extends AppCompatActivity {
 
     private void initThemeData() {
         int which = (int) scanViewBgSetting.get("which");
-        themeBgEntities.add(new ThemeBgEntity(true,R.drawable.read_cover3));
-        themeBgEntities.add(new ThemeBgEntity(false,R.drawable.read_cover2));
-        themeBgEntities.add(new ThemeBgEntity(false,R.drawable.read_cover));
+        themeBgEntities.add(new ScanThemeBgEntity(true,R.drawable.read_cover3));
+        themeBgEntities.add(new ScanThemeBgEntity(false,R.drawable.read_cover2));
+        themeBgEntities.add(new ScanThemeBgEntity(false,R.drawable.read_cover));
         for (int i=0;i<themeBgEntities.size();i++){
             themeBgEntities.get(i).setChecked(false);
             if (which == i){

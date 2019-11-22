@@ -13,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.alibaba.fastjson.JSON;
@@ -23,10 +24,12 @@ import com.org.biquge.jsoup.MyPreference;
 import com.org.biquge.jsoup.R;
 import com.org.biquge.jsoup.novel.activity.DownLoadActivity;
 import com.org.biquge.jsoup.novel.activity.NovelReadItem;
+import com.org.biquge.jsoup.novel.activity.ThemeActivity;
 import com.org.biquge.jsoup.novel.adapter.MyBooksAdapter;
 import com.org.biquge.jsoup.novel.entities.DownLoadEntity;
 import com.org.biquge.jsoup.novel.events.DeleteEvent;
 import com.org.biquge.jsoup.novel.events.RefreshMyBooks;
+import com.org.biquge.jsoup.novel.events.RefreshTheme;
 import com.org.biquge.jsoup.novel.thread.DownLoadTask;
 import com.org.biquge.jsoup.novel.thread.DownLoadThread;
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
@@ -45,7 +48,6 @@ import org.greenrobot.eventbus.Subscribe;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 
@@ -56,6 +58,7 @@ import butterknife.Unbinder;
 
 import static com.org.biquge.jsoup.MyPreference.refreshLastTime;
 import static com.org.biquge.jsoup.MyPreference.saveInfo;
+import static com.org.biquge.jsoup.MyPreference.themeNum;
 import static com.org.biquge.jsoup.novel.NovelPublic.novelHomeUrl;
 import static com.org.biquge.jsoup.novel.NovelPublic.novelSaveDirName;
 
@@ -71,29 +74,30 @@ public class MyFragment extends Fragment {
     MyPreference myPreference;
     MyBooksAdapter booksAdapter;
     View emptyView;
+    @BindView(R.id.rl_top)
+    RelativeLayout rlTop;
     private List<HashMap> myBooksLists = new ArrayList<>();
     Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
-            if (msg.what==0){
+            if (msg.what == 0) {
                 Toast.makeText(getContext(), (String) msg.obj, Toast.LENGTH_SHORT).show();
-            }else if (msg.what==1) {
+            } else if (msg.what == 1) {
                 deleteItem(new DeleteEvent());
-            }else if (msg.what==2){
+            } else if (msg.what == 2) {
                 booksAdapter.notifyDataSetChanged();
             }
         }
     };
-    private String deletePath ="";
-    private int deletePosition=0;
+    private String deletePath = "";
+    private int deletePosition = 0;
     List<DownLoadThread> loadThreads = new ArrayList<>();
-    private float refreshTime=0l;
+    private long refreshTime = 0l;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_my, container, false);
-        StatusBarCompat.setStatusBarColor(getActivity(), getResources().getColor(R.color.blue_main));
         unbinder = ButterKnife.bind(this, view);
         EventBus.getDefault().register(this);
         return view;
@@ -105,7 +109,8 @@ public class MyFragment extends Fragment {
         myPreference = MyPreference.getInstance();
         myPreference.setPreference(getContext());
 
-        refreshTime = myPreference.getFloat(refreshLastTime,0);
+        refreshTheme(new RefreshTheme());
+        refreshTime = myPreference.getLong(refreshLastTime, 0);
 
         initView();
         initData();
@@ -116,8 +121,6 @@ public class MyFragment extends Fragment {
             @Override
             public void onRefresh(@NonNull RefreshLayout refreshLayout) {
                 if (myBooksLists != null && myBooksLists.size() > 0) {
-                    refreshTime = System.currentTimeMillis();
-                    myPreference.setFloat(refreshLastTime,refreshTime);
                     new Thread(new Runnable() {
                         @Override
                         public void run() {
@@ -137,6 +140,8 @@ public class MyFragment extends Fragment {
                                     e.printStackTrace();
                                 }
                             }
+                            refreshTime = System.currentTimeMillis();
+                            myPreference.setLong(refreshLastTime, refreshTime);
                             srf.finishRefresh();
                             handler.sendEmptyMessage(2);
                         }
@@ -181,8 +186,8 @@ public class MyFragment extends Fragment {
                 int menuPosition = menuBridge.getPosition();
                 if (menuPosition == 0) {
                     HashMap hashMap = myBooksLists.get(adapterPosition);
-                    DownLoadEntity loadEntity = JSON.parseObject((String) hashMap.get("downLoadInfo"),DownLoadEntity.class);
-                    String path = Environment.getExternalStorageDirectory()+novelSaveDirName+loadEntity.getHomeUrl().split(novelHomeUrl)[1];
+                    DownLoadEntity loadEntity = JSON.parseObject((String) hashMap.get("downLoadInfo"), DownLoadEntity.class);
+                    String path = Environment.getExternalStorageDirectory() + novelSaveDirName + loadEntity.getHomeUrl().split(novelHomeUrl)[1];
                     deletePath = path;
                     deletePosition = adapterPosition;
                     llPro.setVisibility(View.VISIBLE);
@@ -194,11 +199,11 @@ public class MyFragment extends Fragment {
     }
 
     private void stopDown(HashMap hashMap) {
-        if (DownLoadTask.threadList!=null) {
-            for (int i=0;i<DownLoadTask.threadList.size();i++) {
+        if (DownLoadTask.threadList != null) {
+            for (int i = 0; i < DownLoadTask.threadList.size(); i++) {
                 DownLoadThread loadThread = DownLoadTask.threadList.get(i);
                 if (hashMap.get("title").equals(loadThread.title) && hashMap.get("author").equals(loadThread.author)) {
-                    if (DownLoadTask.threadList.get(i).loadEntity.getLoadingStatu()==1) {
+                    if (DownLoadTask.threadList.get(i).loadEntity.getLoadingStatu() == 1) {
                         DownLoadTask.threadList.get(i).handler = handler;
                         DownLoadTask.threadList.get(i).loadEntity.setLoadingStatu(3);
                     }
@@ -207,14 +212,14 @@ public class MyFragment extends Fragment {
                 }
             }
 //            deleteItem(new DeleteEvent());
-        }else {
+        } else {
             deleteItem(new DeleteEvent());
         }
     }
 
     @Subscribe
-    public void deleteItem(DeleteEvent deleteEvent){
-        if (DownLoadTask.threadList!=null){
+    public void deleteItem(DeleteEvent deleteEvent) {
+        if (DownLoadTask.threadList != null) {
             DownLoadTask.threadList.removeAll(loadThreads);
         }
         delFolder(deletePath);
@@ -248,9 +253,9 @@ public class MyFragment extends Fragment {
             booksAdapter.notifyDataSetChanged();
         }
 
-        if (myBooksLists != null && myBooksLists.size() > 0 && System.currentTimeMillis()-refreshTime>21600000) {
+        if (myBooksLists != null && myBooksLists.size() > 0 && System.currentTimeMillis() - refreshTime > 21600000) {
             refreshTime = System.currentTimeMillis();
-            myPreference.setFloat(refreshLastTime,refreshTime);
+            myPreference.setFloat(refreshLastTime, refreshTime);
             new Thread(new Runnable() {
                 @Override
                 public void run() {
@@ -289,16 +294,15 @@ public class MyFragment extends Fragment {
         for (int i = 0; i < tempList.length; i++) {
             if (path.endsWith(File.separator)) {
                 temp = new File(path + tempList[i]);
-            }
-            else {
+            } else {
                 temp = new File(path + File.separator + tempList[i]);
             }
             if (temp.isFile()) {
                 temp.delete();
             }
             if (temp.isDirectory()) {
-                delAllFile(path+"/"+ tempList[i]);//先删除文件夹里面的文件
-                delFolder(path+"/"+ tempList[i]);//再删除空文件夹
+                delAllFile(path + "/" + tempList[i]);//先删除文件夹里面的文件
+                delFolder(path + "/" + tempList[i]);//再删除空文件夹
             }
         }
     }
@@ -308,37 +312,36 @@ public class MyFragment extends Fragment {
         try {
             String[] strings = folderPath.split(File.separator);
             StringBuffer pathbuffer = new StringBuffer();
-            for (int i=0;i<strings.length-2;i++){
-                pathbuffer.append(strings[i]+File.separator);
+            for (int i = 0; i < strings.length - 2; i++) {
+                pathbuffer.append(strings[i] + File.separator);
             }
 //            pathbuffer.append(File.separator);
             String path = pathbuffer.toString();
-            File deleteFile = new File(path+File.separator+strings[strings.length-2]);
+            File deleteFile = new File(path + File.separator + strings[strings.length - 2]);
             String[] fileList = deleteFile.list();
-            if (fileList.length>1){
-                for (int i=0;i<fileList.length;i++){
-                    if (strings[strings.length-1].equals(fileList[i])){
-                        delAllFile(path+strings[strings.length-2]+File.separator+fileList[i]+File.separator); //删除完里面所有内容
+            if (fileList.length > 1) {
+                for (int i = 0; i < fileList.length; i++) {
+                    if (strings[strings.length - 1].equals(fileList[i])) {
+                        delAllFile(path + strings[strings.length - 2] + File.separator + fileList[i] + File.separator); //删除完里面所有内容
                         String filePath = folderPath;
                         filePath = filePath.toString();
-                        java.io.File myFilePath = new java.io.File(filePath);
+                        File myFilePath = new File(filePath);
                         myFilePath.delete();
                     }
                 }
-            }else {
+            } else {
                 delAllFile(folderPath); //删除完里面所有内容
                 String filePath = folderPath;
                 filePath = filePath.toString();
-                java.io.File myFilePath = new java.io.File(filePath);
+                File myFilePath = new File(filePath);
                 myFilePath.delete();
-                filePath = path+strings[strings.length-2];
+                filePath = path + strings[strings.length - 2];
                 filePath = filePath.toString();
-                myFilePath = new java.io.File(filePath);
+                myFilePath = new File(filePath);
                 myFilePath.delete();
             }
             System.out.println(path);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             System.out.println("删除文件夹操作出错");
             e.printStackTrace();
         }
@@ -374,19 +377,38 @@ public class MyFragment extends Fragment {
         myPreference.setObject(saveInfo, myBooksLists);
     }
 
-    @OnClick(R.id.iv_down)
-    public void onViewClicked() {
-        Intent intent = new Intent(getContext(), DownLoadActivity.class);
-        startActivity(intent);
-    }
-
     @Override
     public void onResume() {
         super.onResume();
-        if (DownLoadTask.threadList!=null){
-            for (int i=0;i<DownLoadTask.threadList.size();i++){
+        if (DownLoadTask.threadList != null) {
+            for (int i = 0; i < DownLoadTask.threadList.size(); i++) {
                 DownLoadTask.threadList.get(i).handler = handler;
             }
+        }
+    }
+
+    @OnClick({R.id.iv_down, R.id.iv_setting})
+    public void onViewClicked(View view) {
+        switch (view.getId()) {
+            case R.id.iv_down:
+                Intent intent = new Intent(getContext(), DownLoadActivity.class);
+                startActivity(intent);
+                break;
+            case R.id.iv_setting:
+                startActivity(new Intent(getContext(), ThemeActivity.class));
+                break;
+        }
+    }
+
+    @Subscribe
+    public void refreshTheme(RefreshTheme theme){
+        int themeId = myPreference.getInt(themeNum,0);
+        if (themeId==0) {
+            rlTop.setBackgroundColor(getResources().getColor(R.color.blue_main));
+            StatusBarCompat.setStatusBarColor(getActivity(), getResources().getColor(R.color.blue_main));
+        }else {
+            rlTop.setBackgroundColor(getResources().getColor(themeId));
+            StatusBarCompat.setStatusBarColor(getActivity(), getResources().getColor(themeId));
         }
     }
 }

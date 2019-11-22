@@ -15,8 +15,8 @@ import android.widget.TextView;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.org.biquge.jsoup.R;
-import com.org.biquge.jsoup.novel.entities.ThemeBgEntity;
-import com.org.biquge.jsoup.novel.adapter.ThemeAdapter;
+import com.org.biquge.jsoup.novel.entities.ScanThemeBgEntity;
+import com.org.biquge.jsoup.novel.adapter.ScanThemeAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,8 +26,8 @@ public class FullScreenPop extends PopupWindow {
     LayoutInflater inflater;
     View popView;
     FullPopClick fullPopClick;
-    List<ThemeBgEntity> themeData = new ArrayList<>();
-    ThemeAdapter themeAdapter;
+    List<ScanThemeBgEntity> themeData = new ArrayList<>();
+    ScanThemeAdapter themeAdapter;
     private RecyclerView rcv_theme;
     private ImageView iv_scroll;
     private TextView tv_scroll;
@@ -37,7 +37,7 @@ public class FullScreenPop extends PopupWindow {
         this.mContext = context;
         this.inflater = LayoutInflater.from(context);
 
-        themeAdapter = new ThemeAdapter(R.layout.theme_menu_layout,themeData);
+        themeAdapter = new ScanThemeAdapter(R.layout.theme_menu_layout,themeData);
 
         init();
     }
@@ -59,7 +59,7 @@ public class FullScreenPop extends PopupWindow {
         initView();
     }
 
-    public void refreshData(List<ThemeBgEntity> themeBgEntities,int orientation){
+    public void refreshData(List<ScanThemeBgEntity> themeBgEntities, int orientation){
         if (iv_scroll!=null){
             //orientation 1滑动 0横屏
             if (orientation==0){
@@ -130,7 +130,7 @@ public class FullScreenPop extends PopupWindow {
             @Override
             public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
                 fullPopClick.themeClick(position);
-                for (ThemeBgEntity bgEntity:themeData){
+                for (ScanThemeBgEntity bgEntity:themeData){
                     bgEntity.setChecked(false);
                 }
                 themeData.get(position).setChecked(true);

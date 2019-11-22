@@ -10,6 +10,7 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
         <RelativeLayout
+            android:id="@+id/rl_top"
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:background="@color/blue_main">
@@ -44,24 +45,27 @@
             android:visibility="gone"
             android:background="#99aaaaaa">
             <ImageView
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:background="@drawable/delete_gray"
-                android:layout_alignParentRight="true"
-                android:id="@+id/iv_delete_item"/>
-            <ImageView
-                android:layout_marginRight="10dp"
                 android:id="@+id/iv_search_item"
                 android:layout_width="20dp"
                 android:layout_height="20dp"
                 android:layout_centerVertical="true"
-                android:layout_toLeftOf="@+id/iv_delete_item"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="5dp"
                 android:background="@drawable/search_gray"/>
+            <ImageView
+                android:layout_marginRight="10dp"
+                android:layout_width="15dp"
+                android:layout_height="15dp"
+                android:padding="3dp"
+                android:layout_centerVertical="true"
+                android:background="@drawable/delete_gray"
+                android:layout_toLeftOf="@+id/iv_search_item"
+                android:id="@+id/iv_delete_item"/>
             <EditText
                 android:id="@+id/et_search"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_toLeftOf="@+id/iv_search_item"
+                android:layout_toLeftOf="@+id/iv_delete_item"
                 android:hint="请输入搜索内容"
                 android:background="#00ffffff"
                 android:textSize="15sp"/>
@@ -69,7 +73,8 @@
 
         <com.scwang.smartrefresh.layout.SmartRefreshLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:id="@+id/srf_all">
             <com.scwang.smartrefresh.layout.header.ClassicsHeader
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"/>

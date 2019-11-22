@@ -118,21 +118,19 @@ public class ScanView extends RelativeLayout {
 
     private void setScrollTo(){
         if (adapter.getOrientation()==1){
-            final ScrollView scrollView = currPage.findViewById(R.id.slv_content);
+            final MyScrollView scrollView = currPage.findViewById(R.id.slv_content);
             scrollView.post(new Runnable() {
                 @Override
                 public void run() {
                     scrollView.scrollTo(0,(scrollPosition-1)*scrollView.getHeight());
                 }
             });
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                scrollView.setOnScrollChangeListener(new OnScrollChangeListener() {
-                    @Override
-                    public void onScrollChange(View v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
-                        screenClick.onScrollListener(scrollY,scrollView.getHeight());
-                    }
-                });
-            }
+            scrollView.setOnMyScrollChangeListener(new MyScrollView.OnMyScrollChangeListener() {
+                @Override
+                public void onScrollChange(View v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
+                    screenClick.onScrollListener(scrollY,scrollView.getHeight());
+                }
+            });
         }
     }
 
@@ -435,7 +433,7 @@ public class ScanView extends RelativeLayout {
             state = STATE_MOVE;
             releaseMoving();
 
-            ScrollView scrollView = currPage.findViewById(R.id.slv_content);
+            MyScrollView scrollView = currPage.findViewById(R.id.slv_content);
             float sy = scrollView.getScrollY();
             if (sy==0) {
                 if (pageListener!=null)
@@ -462,16 +460,15 @@ public class ScanView extends RelativeLayout {
             // 最后一页不能再往左翻
             state = STATE_STOP;
             releaseMoving();
-            ScrollView scrollView = currPage.findViewById(R.id.slv_content);
+            MyScrollView scrollView = currPage.findViewById(R.id.slv_content);
             View view = scrollView.getChildAt(0);
             int vh = view.getMeasuredHeight();
             float sh1 = scrollView.getHeight();
             float sh2 = scrollView.getScrollY();
             float sy = sh1+sh2;
-            if (vh<=sy) {
+            if (sh2!=0&&vh<=sy) {
                 if (pageListener!=null)
                     pageListener.nextChapter();
-
             }
         } else {
             currPageLeft += (int) moveLenght;

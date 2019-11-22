@@ -11,4 +11,14 @@
     <color name="text_color_black">#111111</color>
     <color name="text_color_white">#999999</color>
     <color name="lint_color">#aa999999</color>
+    <color name="theme_blue">#00ABF4</color>
+    <color name="theme_brown">#CB9865</color>
+    <color name="theme_red">#D71D05</color>
+    <color name="theme_black">#2D2D2F</color>
+    <color name="theme_orange">#FE6600</color>
+    <color name="theme_green">#59B763</color>
+    <color name="theme_purple">#8F9CEE</color>
+    <color name="theme_pink">#F87299</color>
+    <color name="theme_cyan">#00B791</color>
+    <color name="theme_yellow">#FEC74F</color>
 </resources>

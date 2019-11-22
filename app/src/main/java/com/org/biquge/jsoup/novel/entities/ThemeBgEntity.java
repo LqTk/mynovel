@@ -1,27 +1,37 @@
 package com.org.biquge.jsoup.novel.entities;
 
 public class ThemeBgEntity {
-    boolean isChecked;
-    int bgId;
+    int id;
+    boolean isCheck;
+    String name;
 
-    public ThemeBgEntity(boolean isChecked, int bgId) {
-        this.isChecked = isChecked;
-        this.bgId = bgId;
+    public ThemeBgEntity(int id, boolean isCheck, String name) {
+        this.id = id;
+        this.isCheck = isCheck;
+        this.name = name;
     }
 
-    public boolean isChecked() {
-        return isChecked;
+    public int getId() {
+        return id;
     }
 
-    public void setChecked(boolean checked) {
-        isChecked = checked;
+    public void setId(int id) {
+        this.id = id;
     }
 
-    public int getBgId() {
-        return bgId;
+    public boolean isCheck() {
+        return isCheck;
     }
 
-    public void setBgId(int bgId) {
-        this.bgId = bgId;
+    public void setCheck(boolean check) {
+        isCheck = check;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }

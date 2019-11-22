@@ -14,6 +14,9 @@ public class MyPreference {
     public static String scanViewOrientation = "scanViewOrientation";
     public static String scanViewScrollPo = "scanViewScrollPo";
     public static String refreshLastTime = "refreshLastTime";
+    public static String allNovelLastTime = "allNovelLastTime";
+    public static String allNovel = "allNovel";
+    public static String themeNum = "themeNum";
 
     SharedPreferences preference;
     Context mContext;
@@ -68,6 +71,12 @@ public class MyPreference {
         editor.commit();
     }
 
+    public void setLong(String key, long value) {
+        // TODO Auto-generated method stub
+        editor.putLong(key, value);
+        editor.commit();
+    }
+
     public String getString(String key, String defaultValue) {
         // TODO Auto-generated method stub
         return preference.getString(key, defaultValue);
@@ -79,6 +88,10 @@ public class MyPreference {
 
     public float getFloat(String key, float defalutValue){
         return preference.getFloat(key,defalutValue);
+    }
+
+    public long getLong(String key, long defalutValue){
+        return preference.getLong(key,defalutValue);
     }
 
 }

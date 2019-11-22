@@ -8,16 +8,23 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
+import android.view.WindowManager;
 import android.widget.FrameLayout;
 
+import com.githang.statusbar.StatusBarCompat;
+import com.org.biquge.jsoup.novel.events.RefreshTheme;
 import com.org.biquge.jsoup.novel.fragments.MyFragment;
 import com.org.biquge.jsoup.novel.fragments.NovelsAllFragement;
 import com.org.biquge.jsoup.novel.thread.DownLoadTask;
 import com.org.biquge.jsoup.novel.utils.ToastUtils;
 
+import org.greenrobot.eventbus.Subscribe;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+
+import static com.org.biquge.jsoup.MyPreference.themeNum;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -32,13 +39,19 @@ public class MainActivity extends AppCompatActivity {
     private int lastFragment;
     private long exitTime=0l;
     Context context;
+    MyPreference myPreference;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN
+                |WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
         setContentView(R.layout.activity_main);
         bind = ButterKnife.bind(this);
         context = this;
+        myPreference = MyPreference.getInstance();
+        myPreference.setPreference(context);
+        refreshTheme(new RefreshTheme());
 
         initFragment();
     }
@@ -124,6 +137,16 @@ public class MainActivity extends AppCompatActivity {
         }else {
             exitTime = System.currentTimeMillis();
             ToastUtils.showShortMsg(context,"再按一次退出");
+        }
+    }
+
+    @Subscribe
+    public void refreshTheme(RefreshTheme theme){
+        int themeId = myPreference.getInt(themeNum,0);
+        if (themeId==0) {
+            StatusBarCompat.setStatusBarColor(this, getResources().getColor(R.color.blue_main));
+        }else {
+            StatusBarCompat.setStatusBarColor(this, getResources().getColor(themeId));
         }
     }
 }

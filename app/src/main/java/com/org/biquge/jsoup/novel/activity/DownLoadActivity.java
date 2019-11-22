@@ -110,7 +110,11 @@ public class DownLoadActivity extends AppCompatActivity {
                 if (chapters.size()==filesCount){
                     loadEntity.setLoadingStatu(2);
                 }
-                loadEntity.setCurrentPageUrl((String) chapters.get(filesCount - 1).get("href"));
+                if (filesCount==0){
+                    loadEntity.setCurrentPageUrl((String) chapters.get(0).get("href"));
+                }else {
+                    loadEntity.setCurrentPageUrl((String) chapters.get(filesCount - 1).get("href"));
+                }
                 myBooksLists.get(i).put("downLoadInfo",JSON.toJSONString(loadEntity));
             }
         }
