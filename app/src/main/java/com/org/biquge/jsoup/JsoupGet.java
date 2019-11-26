@@ -118,19 +118,28 @@ public class JsoupGet {
         return headMap;
     }
 
-    public List<HashMap> getBooks3(String htmlUrl) throws IOException {
+    public List<List<HashMap>> getBooks3(String htmlUrl) throws IOException {
+        NovelPublic.trustEveryone();
+        List<List<HashMap>> reslut = new ArrayList<>();
         List<HashMap> books = new ArrayList<>();
         Document doc = Jsoup.connect(htmlUrl).maxBodySize(0).get();
         Elements l = doc.getElementsByClass("l");
-        for (Element item:l){
-            Elements image = item.getElementsByClass("image");
-            Elements a = image.get(0).getElementsByTag("a");
-            Elements img = a.get(0).getElementsByTag("img");
-            HashMap hashMap = new HashMap();
-            hashMap.put("name",img.attr("src"));
-            hashMap.put("url", NovelPublic.getHomeUrl(3)+img.attr("alt"));
-            books.add(hashMap);
+        for (int i=0;i<l.size();i++){
+            Element item = l.get(i);
+            if (i==0) {
+                Elements image = item.getElementsByClass("image");
+                for (Element imageItem:image) {
+                    Elements a = imageItem.getElementsByTag("a");
+                    Elements img = a.get(0).getElementsByTag("img");
+                    HashMap hashMap = new HashMap();
+                    hashMap.put("name", img.attr("alt"));
+                    hashMap.put("url", NovelPublic.getHomeUrl(3) + img.attr("src"));
+                    books.add(hashMap);
+                }
+            }
         }
-        return books;
+        reslut.add(books);
+
+        return reslut;
     }
 }
