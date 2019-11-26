@@ -1,6 +1,5 @@
 package com.org.biquge.jsoup.novel.activity;
 
-import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -8,7 +7,6 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
-import android.support.annotation.RequiresPermission;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -41,6 +39,7 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 import static com.org.biquge.jsoup.MyPreference.saveInfo;
 import static com.org.biquge.jsoup.MyPreference.themeNum;
@@ -248,5 +247,10 @@ public class DownLoadActivity extends AppCompatActivity {
         }
         rlTop.setBackgroundColor(getResources().getColor(themeId));
         StatusBarCompat.setStatusBarColor(this, getResources().getColor(themeId));
+    }
+
+    @OnClick(R.id.iv_back)
+    public void onViewClicked() {
+        finish();
     }
 }

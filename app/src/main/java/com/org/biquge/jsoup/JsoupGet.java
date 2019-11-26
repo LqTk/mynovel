@@ -1,5 +1,7 @@
 package com.org.biquge.jsoup;
 
+import com.org.biquge.jsoup.novel.NovelPublic;
+
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -114,5 +116,21 @@ public class JsoupGet {
         headMap.put("content",stringBuilder.toString().replace("  ","\n      "));
 
         return headMap;
+    }
+
+    public List<HashMap> getBooks3(String htmlUrl) throws IOException {
+        List<HashMap> books = new ArrayList<>();
+        Document doc = Jsoup.connect(htmlUrl).maxBodySize(0).get();
+        Elements l = doc.getElementsByClass("l");
+        for (Element item:l){
+            Elements image = item.getElementsByClass("image");
+            Elements a = image.get(0).getElementsByTag("a");
+            Elements img = a.get(0).getElementsByTag("img");
+            HashMap hashMap = new HashMap();
+            hashMap.put("name",img.attr("src"));
+            hashMap.put("url", NovelPublic.getHomeUrl(3)+img.attr("alt"));
+            books.add(hashMap);
+        }
+        return books;
     }
 }

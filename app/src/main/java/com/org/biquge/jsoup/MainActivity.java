@@ -17,6 +17,7 @@ import android.widget.FrameLayout;
 
 import com.githang.statusbar.StatusBarCompat;
 import com.org.biquge.jsoup.novel.events.RefreshTheme;
+import com.org.biquge.jsoup.novel.fragments.BooksHome;
 import com.org.biquge.jsoup.novel.fragments.MyFragment;
 import com.org.biquge.jsoup.novel.fragments.NovelsAllFragement;
 import com.org.biquge.jsoup.novel.thread.DownLoadTask;
@@ -39,6 +40,7 @@ public class MainActivity extends AppCompatActivity {
     private Unbinder bind;
     private MyFragment myFragment;
     private NovelsAllFragement novelsAllFragement;
+    private BooksHome booksHome;
     private Fragment[] fragmentlist;
     private int lastFragment;
     private long exitTime=0l;
@@ -78,8 +80,9 @@ public class MainActivity extends AppCompatActivity {
 
         myFragment = new MyFragment();
         novelsAllFragement = new NovelsAllFragement();
+        booksHome = new BooksHome();
 
-        fragmentlist = new Fragment[]{myFragment, novelsAllFragement};
+        fragmentlist = new Fragment[]{myFragment, booksHome};
 
         //此时标识首页
         //0表示首页，1依次推

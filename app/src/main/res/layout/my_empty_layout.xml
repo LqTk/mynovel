@@ -12,7 +12,7 @@
         android:padding="5dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="暂无图书快去添加吧~"
+        android:text="暂无书架快去添加吧~"
         android:textColor="@color/blue_main"/>
 
 </RelativeLayout>

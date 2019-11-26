@@ -11,11 +11,18 @@
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:background="@color/blue_main">
+        <ImageView
+            android:padding="10dp"
+            android:id="@+id/iv_back"
+            android:src="@drawable/left"
+            android:layout_width="50dp"
+            android:layout_height="match_parent"/>
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/tv_title"
             android:text="我的下载"
+            android:textColor="@color/white"
             android:layout_centerInParent="true"
             android:textSize="20sp"/>
     </RelativeLayout>
