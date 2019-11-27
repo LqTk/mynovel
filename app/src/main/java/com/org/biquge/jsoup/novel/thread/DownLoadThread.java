@@ -13,13 +13,10 @@ import com.org.biquge.jsoup.novel.entities.DownLoadEntity;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.List;
-
-import static com.org.biquge.jsoup.novel.NovelPublic.novelHomeUrl;
 
 public class DownLoadThread extends Thread{
     public String loadString;
@@ -37,6 +34,7 @@ public class DownLoadThread extends Thread{
     private List<HashMap> chaptersLists;
     JsoupGet jsoupGet;
     private int nowChapterPosition;
+    private String homeUrl = NovelPublic.getHomeUrl(3);
 
     public DownLoadThread(Context context, String title, String author, String savePath,
                           final DownLoadEntity loadEntity, Handler mhandler, int position, List<HashMap> chapters) {
@@ -81,8 +79,8 @@ public class DownLoadThread extends Thread{
             FileOutputStream outputStream;
             OutputStreamWriter writer;
             long old_length;
-            if (!loadString.contains(novelHomeUrl))
-                loadString = novelHomeUrl+loadString;
+            if (!loadString.contains(homeUrl))
+                loadString = homeUrl +loadString;
             checkDir();
             File writeFile = new File(path,fileName+".txt");
             if (writeFile.exists()){
@@ -91,7 +89,7 @@ public class DownLoadThread extends Thread{
                 if (nowChapterPosition>=chaptersLists.size()){
                     downContent.put("nextChapter",loadEntity.getHomeUrl());
                 }else {
-                    downContent.put("nextChapter",novelHomeUrl+chaptersLists.get(nowChapterPosition).get("href"));
+                    downContent.put("nextChapter", homeUrl +chaptersLists.get(nowChapterPosition).get("href"));
                 }
             }else {
                 downContent = jsoupGet.getReadItem(loadString);
@@ -120,7 +118,7 @@ public class DownLoadThread extends Thread{
                     if (nowChapterPosition>=chaptersLists.size()){
                         downContent.put("nextChapter",loadEntity.getHomeUrl());
                     }else {
-                        downContent.put("nextChapter",novelHomeUrl+chaptersLists.get(nowChapterPosition).get("href"));
+                        downContent.put("nextChapter", homeUrl +chaptersLists.get(nowChapterPosition).get("href"));
                     }
                 }else {
                     downContent = jsoupGet.getReadItem(loadString);

@@ -43,7 +43,6 @@ import butterknife.OnClick;
 
 import static com.org.biquge.jsoup.MyPreference.saveInfo;
 import static com.org.biquge.jsoup.MyPreference.themeNum;
-import static com.org.biquge.jsoup.novel.NovelPublic.novelHomeUrl;
 import static com.org.biquge.jsoup.novel.NovelPublic.novelSaveDirName;
 
 public class DownLoadActivity extends AppCompatActivity {
@@ -111,7 +110,7 @@ public class DownLoadActivity extends AppCompatActivity {
             DownLoadEntity loadEntity = JSON.parseObject((String) hashMap.get("downLoadInfo"), DownLoadEntity.class);
             List<HashMap> chapters = JSON.parseArray((String) hashMap.get("chapters"), HashMap.class);
 
-            String path = Environment.getExternalStorageDirectory() + novelSaveDirName + loadEntity.getHomeUrl().split(novelHomeUrl)[1];
+            String path = Environment.getExternalStorageDirectory() + novelSaveDirName + loadEntity.getHomeUrl().split(NovelPublic.getHomeUrl(3))[1];
             File savedFile = new File(path);
             if (savedFile.exists()) {
                 int filesCount = savedFile.list().length;
@@ -140,7 +139,7 @@ public class DownLoadActivity extends AppCompatActivity {
                 HashMap hashMap = myBooksLists.get(i);
                 DownLoadEntity loadEntity = JSON.parseObject((String) hashMap.get("downLoadInfo"), DownLoadEntity.class);
                 List<HashMap> chapters = JSON.parseArray((String) hashMap.get("chapters"), HashMap.class);
-                String path = Environment.getExternalStorageDirectory() + novelSaveDirName + loadEntity.getHomeUrl().split(novelHomeUrl)[1];
+                String path = Environment.getExternalStorageDirectory() + novelSaveDirName + loadEntity.getHomeUrl().split(NovelPublic.getHomeUrl(3))[1];
                 Log.d("savepath", path);
                 DownLoadTask.threadList.add(new DownLoadThread(context, (String) hashMap.get("title"),
                         (String) hashMap.get("author"), path, loadEntity, handler, i, chapters));
@@ -174,7 +173,7 @@ public class DownLoadActivity extends AppCompatActivity {
                     isPosition++;
                 }
                 DownLoadEntity loadEntity = JSON.parseObject((String) hashMap.get("downLoadInfo"), DownLoadEntity.class);
-                String path = Environment.getExternalStorageDirectory() + novelSaveDirName + loadEntity.getHomeUrl().split(novelHomeUrl)[1];
+                String path = Environment.getExternalStorageDirectory() + novelSaveDirName + loadEntity.getHomeUrl().split(NovelPublic.getHomeUrl(3))[1];
                 String title = (String) hashMap.get("title");
                 String author = (String) hashMap.get("author");
                 List<HashMap> chapters = JSON.parseArray((String) hashMap.get("chapters"), HashMap.class);
@@ -199,7 +198,7 @@ public class DownLoadActivity extends AppCompatActivity {
                 HashMap hashMap = myBooksLists.get(position);
                 DownLoadEntity loadEntity = JSON.parseObject((String) hashMap.get("downLoadInfo"),DownLoadEntity.class);
 
-                String path = Environment.getExternalStorageDirectory()+novelSaveDirName+loadEntity.getHomeUrl().split(novelHomeUrl)[1];
+                String path = Environment.getExternalStorageDirectory()+novelSaveDirName+loadEntity.getHomeUrl().split(NovelPublic.getHomeUrl(3))[1];
                 Log.d("savepath",path);
                 new DownLoadThread(context,(String) hashMap.get("title"),path,loadEntity,handler,position).start();*/
                 boolean isInTask = false;
@@ -222,7 +221,7 @@ public class DownLoadActivity extends AppCompatActivity {
                 }
                 if (!isInTask) {
                     DownLoadEntity loadEntity = JSON.parseObject((String) hashMap.get("downLoadInfo"), DownLoadEntity.class);
-                    String path = Environment.getExternalStorageDirectory() + novelSaveDirName + loadEntity.getHomeUrl().split(novelHomeUrl)[1];
+                    String path = Environment.getExternalStorageDirectory() + novelSaveDirName + loadEntity.getHomeUrl().split(NovelPublic.getHomeUrl(3))[1];
                     List<HashMap> chapters = JSON.parseArray((String) hashMap.get("chapters"), HashMap.class);
                     DownLoadTask.threadList.add(new DownLoadThread(context, (String) hashMap.get("title"),
                             (String) hashMap.get("author"), path, loadEntity, handler, position, chapters));

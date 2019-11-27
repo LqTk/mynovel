@@ -9,6 +9,7 @@
     <color name="delete_pink">#D55B5B</color>
     <color name="transparent">#00ffffff</color>
     <color name="text_color_black">#111111</color>
+    <color name="text_color_blue">#6F78A7</color>
     <color name="text_color_white">#999999</color>
     <color name="lint_color">#aa999999</color>
     <color name="theme_blue">#00ABF4</color>

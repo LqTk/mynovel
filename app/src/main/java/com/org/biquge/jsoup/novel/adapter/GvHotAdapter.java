@@ -21,7 +21,7 @@ public class GvHotAdapter extends BaseQuickAdapter<HashMap, BaseViewHolder> {
     protected void convert(BaseViewHolder helper, HashMap item) {
        helper.setText(R.id.tv_hot_name,(String) item.get("name"));
         Glide.with(mContext)
-                .load(item.get("url"))
+                .load(item.get("imgUrl"))
                 .into((ImageView) helper.getView(R.id.iv_hot_img));
     }
 }

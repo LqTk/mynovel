@@ -1,6 +1,5 @@
 package com.org.biquge.jsoup.novel.activity;
 
-import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -25,6 +24,7 @@ import com.alibaba.fastjson.JSON;
 import com.org.biquge.jsoup.JsoupGet;
 import com.org.biquge.jsoup.MyPreference;
 import com.org.biquge.jsoup.R;
+import com.org.biquge.jsoup.novel.NovelPublic;
 import com.org.biquge.jsoup.novel.adapter.ScanViewAdapter;
 import com.org.biquge.jsoup.novel.broadcastReceiver.BattaryBroadcast;
 import com.org.biquge.jsoup.novel.entities.DownLoadEntity;
@@ -100,7 +100,6 @@ public class NovelReadItem extends AppCompatActivity {
                     return;
                 tvChapterName.setText((String) readItem.get("name"));
                 String content = (String) readItem.get("content");
-                content = "      "+content;
                 final List<String> cons = new ArrayList<>();
                 final List<String> consCopy = new ArrayList<>();
                 if (scrollOrientation==0) {
@@ -222,6 +221,7 @@ public class NovelReadItem extends AppCompatActivity {
     private List<HashMap> chaptersLists;
     private boolean isAdded = false;
     private int chapterPosition = 0;
+    private String homeUrl = NovelPublic.getHomeUrl(3);
 
     List<ScanThemeBgEntity> themeBgEntities = new ArrayList<>();
 
@@ -343,7 +343,7 @@ public class NovelReadItem extends AppCompatActivity {
             HashMap clickHashMap = chaptersLists.get(position);
             Toast.makeText(context, (CharSequence) clickHashMap.get("name"), Toast.LENGTH_SHORT).show();
             pageStatus = "next";
-            getData(novelHomeUrl+(String) clickHashMap.get("href"));
+            getData(homeUrl +(String) clickHashMap.get("href"));
         }
     };
 
@@ -356,9 +356,9 @@ public class NovelReadItem extends AppCompatActivity {
         @Override
         public void saveAll() {
             if (isAdded) {
-                downLoad(novelHomeUrl+(String) chaptersLists.get(0).get("href"));
+                downLoad(homeUrl +(String) chaptersLists.get(0).get("href"));
             }else {
-                saveBook(novelHomeUrl+(String) chaptersLists.get(0).get("href"));
+                saveBook(homeUrl +(String) chaptersLists.get(0).get("href"));
             }
         }
 
@@ -372,20 +372,16 @@ public class NovelReadItem extends AppCompatActivity {
         }
     };
 
-    private String bookName="";
     private BattaryBroadcast battaryBroadcast;
     private HashMap scanViewBgSetting;
     private long showLastTime = 0l;
     private String catalog="";
-    private String img;
-    private String time;
-    private String author;
-    private String title;
     private int scrollOrientation=0;
     private int scrollPo=0;
     private boolean isChangeOrientation = false;
     private int scrollVHeight=0;
     private int scrollPosition = 0;
+    private String bookName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -441,11 +437,6 @@ public class NovelReadItem extends AppCompatActivity {
         Bundle bundle = getIntent().getExtras();
         if (bundle.getString("from").equals("noveitem")) {
             href = bundle.getString("url");
-            bookName = bundle.getString("bookName");
-            img = bundle.getString("img");
-            time = bundle.getString("time");
-            author = bundle.getString("author");
-            title = bundle.getString("title");
 //            chaptersLists = JSON.parseArray(bundle.getString("chapters"), HashMap.class);
             catalog = bundle.getString("cataLog");
             isAdded = bundle.getBoolean("isAdded");
@@ -487,8 +478,11 @@ public class NovelReadItem extends AppCompatActivity {
             public void run() {
                 List<List<HashMap>> itemContent = null;
                 try {
-                    itemContent = jsoupGet.getItemContent(catalog);
+                    itemContent = jsoupGet.getPageContent(catalog);
                     chaptersLists = itemContent.get(1);
+                    if (authorMap.size()<5){
+                        authorMap = itemContent.get(0).get(0);
+                    }
                     getData(href);
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -505,7 +499,7 @@ public class NovelReadItem extends AppCompatActivity {
             getChacters(href);
         }else {
             for (int i = 0; i < chaptersLists.size(); i++) {
-                if ((novelHomeUrl + chaptersLists.get(i).get("href")).equals(href)) {
+                if ((homeUrl + chaptersLists.get(i).get("href")).equals(href)) {
                     chapterPosition = i;
                     break;
                 }
@@ -559,12 +553,12 @@ public class NovelReadItem extends AppCompatActivity {
             if (chapterPosition==0){
                 lastChapter = (String) authorMap.get("cataLog");
             }else {
-                lastChapter = novelHomeUrl+(String) chaptersLists.get(chapterPosition-1).get("href");
+                lastChapter = homeUrl +(String) chaptersLists.get(chapterPosition-1).get("href");
             }
             if (chapterPosition==chaptersLists.size()-1){
                 nextChapter = (String) authorMap.get("cataLog");
             }else {
-                nextChapter = novelHomeUrl+(String) chaptersLists.get(chapterPosition+1).get("href");
+                nextChapter = homeUrl +(String) chaptersLists.get(chapterPosition+1).get("href");
             }
             hashMap.put("lastChapter",lastChapter);
             hashMap.put("allChapter",authorMap.get("cataLog"));
@@ -642,7 +636,7 @@ public class NovelReadItem extends AppCompatActivity {
             public void run() {
                 String[] split = loadString.split("/");
                 String fileName = split[split.length - 1].split("\\.")[0];
-                String path = Environment.getExternalStorageDirectory()+novelSaveDirName+homeUrl.split(novelHomeUrl)[1];
+                String path = Environment.getExternalStorageDirectory()+novelSaveDirName+homeUrl.split(NovelReadItem.this.homeUrl)[1];
                 File saveFile = new File(path);
                 if (!saveFile.exists()){
                     saveFile.mkdirs();
@@ -677,7 +671,7 @@ public class NovelReadItem extends AppCompatActivity {
                 HashMap hashMap = myBooksLists.get(i);
                 DownLoadEntity loadEntity = JSON.parseObject((String) hashMap.get("downLoadInfo"), DownLoadEntity.class);
                 loadEntity.setCurrentPageUrl(currentUrl);
-                String path = Environment.getExternalStorageDirectory() + novelSaveDirName + loadEntity.getHomeUrl().split(novelHomeUrl)[1];
+                String path = Environment.getExternalStorageDirectory() + novelSaveDirName + loadEntity.getHomeUrl().split(homeUrl)[1];
                 Log.d("savepath", path);
                 List<HashMap> chapters = JSON.parseArray((String) hashMap.get("chapters"), HashMap.class);
                 DownLoadTask.threadList.add(new DownLoadThread(context, (String) hashMap.get("title"),
@@ -705,7 +699,7 @@ public class NovelReadItem extends AppCompatActivity {
             if (!isInTask){
                 HashMap hashMap = myBooksLists.get(myBooksLists.size()-1);
                 DownLoadEntity loadEntity = JSON.parseObject((String) hashMap.get("downLoadInfo"),DownLoadEntity.class);
-                String path = Environment.getExternalStorageDirectory()+novelSaveDirName+loadEntity.getHomeUrl().split(novelHomeUrl)[1];
+                String path = Environment.getExternalStorageDirectory()+novelSaveDirName+loadEntity.getHomeUrl().split(homeUrl)[1];
                 List<HashMap> chapters = JSON.parseArray((String) hashMap.get("chapters"), HashMap.class);
                 loadEntity.setCurrentPageUrl(currentUrl);
                 DownLoadTask.threadList.add(new DownLoadThread(context,(String) hashMap.get("title"),
@@ -737,12 +731,12 @@ public class NovelReadItem extends AppCompatActivity {
             public void run() {
                 HashMap saveMap = new HashMap();
 
-                saveMap.put("img",img);
+                saveMap.put("img",authorMap.get("img"));
                 saveMap.put("recentString","最新："+ (String) chaptersLists.get(chaptersLists.size()-1).get("name"));
-                saveMap.put("recentHref",novelHomeUrl+(String) chaptersLists.get(chaptersLists.size()-1).get("href"));
-                saveMap.put("time",time);
-                saveMap.put("author",author);
-                saveMap.put("title",title);
+                saveMap.put("recentHref", homeUrl +(String) chaptersLists.get(chaptersLists.size()-1).get("href"));
+                saveMap.put("time",authorMap.get("time"));
+                saveMap.put("author",authorMap.get("author"));
+                saveMap.put("title",authorMap.get("title"));
 
                 saveMap.put("chapter",String.valueOf(authorMap.get("chapter")));
                 saveMap.put("lastPage",authorMap.get("lastPage"));

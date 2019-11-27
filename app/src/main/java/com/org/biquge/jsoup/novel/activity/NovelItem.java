@@ -21,6 +21,7 @@ import com.githang.statusbar.StatusBarCompat;
 import com.org.biquge.jsoup.JsoupGet;
 import com.org.biquge.jsoup.MyPreference;
 import com.org.biquge.jsoup.R;
+import com.org.biquge.jsoup.novel.NovelPublic;
 import com.org.biquge.jsoup.novel.adapter.NovelItemAdapter;
 import com.org.biquge.jsoup.novel.entities.DownLoadEntity;
 import com.org.biquge.jsoup.novel.events.RefreshMyBooks;
@@ -107,15 +108,10 @@ public class NovelItem extends AppCompatActivity {
                 public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
 
                     Bundle bundle = new Bundle();
-                    bundle.putString("url", novelHomeUrl + String.valueOf(itemsList.get(position).get("href")));
+                    bundle.putString("url", NovelPublic.getHomeUrl(3) + String.valueOf(itemsList.get(position).get("href")));
                     bundle.putBoolean("isAdded", tvAddbook.getText().toString().equals("已加入图书"));
                     bundle.putString("from", "noveitem");
-                    bundle.putString("title", (String) authorMap.get("title"));
-                    bundle.putString("author", (String) authorMap.get("author"));
                     bundle.putString("cataLog",cataLog);
-                    bundle.putString("bookName", (String) authorMap.get("title"));
-                    bundle.putString("img", (String) authorMap.get("img"));
-                    bundle.putString("time", (String) authorMap.get("time"));
 
                     Intent intent = new Intent(context, NovelReadItem.class);
                     intent.putExtras(bundle);
@@ -156,7 +152,7 @@ public class NovelItem extends AppCompatActivity {
             @Override
             public void run() {
                 try {
-                    List<List<HashMap>> itemContent = jsoupGet.getItemContent(href);
+                    List<List<HashMap>> itemContent = jsoupGet.getPageContent(href);
                     infoList = itemContent.get(0);
                     authorMap = infoList.get(0);
                     itemsList = itemContent.get(1);

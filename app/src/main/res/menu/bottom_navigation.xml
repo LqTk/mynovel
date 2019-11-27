@@ -7,7 +7,7 @@
     <item
         android:id="@+id/navigation_allnovels"
         android:icon="@drawable/books"
-        android:title="书架" />
+        android:title="书城" />
     <!--        android:icon="@drawable/homeb"-->
 <!--    <item
         android:id="@+id/navigation_user"

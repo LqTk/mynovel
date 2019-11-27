@@ -22,6 +22,7 @@ import com.githang.statusbar.StatusBarCompat;
 import com.org.biquge.jsoup.JsoupGet;
 import com.org.biquge.jsoup.MyPreference;
 import com.org.biquge.jsoup.R;
+import com.org.biquge.jsoup.novel.NovelPublic;
 import com.org.biquge.jsoup.novel.activity.DownLoadActivity;
 import com.org.biquge.jsoup.novel.activity.NovelReadItem;
 import com.org.biquge.jsoup.novel.activity.ThemeActivity;
@@ -34,6 +35,7 @@ import com.org.biquge.jsoup.novel.thread.DownLoadTask;
 import com.org.biquge.jsoup.novel.thread.DownLoadThread;
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 import com.scwang.smartrefresh.layout.api.RefreshLayout;
+import com.scwang.smartrefresh.layout.header.ClassicsHeader;
 import com.scwang.smartrefresh.layout.listener.OnRefreshListener;
 import com.yanzhenjie.recyclerview.swipe.SwipeMenu;
 import com.yanzhenjie.recyclerview.swipe.SwipeMenuBridge;
@@ -47,9 +49,11 @@ import org.greenrobot.eventbus.Subscribe;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -59,7 +63,6 @@ import butterknife.Unbinder;
 import static com.org.biquge.jsoup.MyPreference.refreshLastTime;
 import static com.org.biquge.jsoup.MyPreference.saveInfo;
 import static com.org.biquge.jsoup.MyPreference.themeNum;
-import static com.org.biquge.jsoup.novel.NovelPublic.novelHomeUrl;
 import static com.org.biquge.jsoup.novel.NovelPublic.novelSaveDirName;
 
 public class MyFragment extends Fragment {
@@ -76,6 +79,8 @@ public class MyFragment extends Fragment {
     View emptyView;
     @BindView(R.id.rl_top)
     RelativeLayout rlTop;
+    @BindView(R.id.srf_header)
+    ClassicsHeader srfHeader;
     private List<HashMap> myBooksLists = new ArrayList<>();
     Handler handler = new Handler() {
         @Override
@@ -93,6 +98,7 @@ public class MyFragment extends Fragment {
     private int deletePosition = 0;
     List<DownLoadThread> loadThreads = new ArrayList<>();
     private long refreshTime = 0l;
+    private String homeUrl = NovelPublic.getHomeUrl(3);
 
     @Nullable
     @Override
@@ -128,7 +134,7 @@ public class MyFragment extends Fragment {
                                 HashMap hashMap = myBooksLists.get(i);
                                 JsoupGet jsoupGet = new JsoupGet();
                                 try {
-                                    List<List<HashMap>> cataLog = jsoupGet.getItemContent((String) hashMap.get("cataLog"));
+                                    List<List<HashMap>> cataLog = jsoupGet.getPageContent((String) hashMap.get("cataLog"));
                                     if (JSON.parseArray((String) hashMap.get("chapters"), HashMap.class).size() != cataLog.get(1).size()) {
                                         myBooksLists.get(i).put("chapters", JSON.toJSONString(cataLog.get(1)));
                                         myBooksLists.get(i).put("recentString", cataLog.get(0).get(0).get("recentString"));
@@ -146,9 +152,17 @@ public class MyFragment extends Fragment {
                             handler.sendEmptyMessage(2);
                         }
                     }).start();
+                }else {
+                    srf.finishRefresh();
                 }
             }
         });
+        srfHeader.setTimeFormat(new SimpleDateFormat("上次更新 MM-dd HH:mm", Locale.CHINA));
+        if (refreshTime==0){
+            refreshTime = System.currentTimeMillis();
+            srf.autoRefresh();
+        }
+
     }
 
     private void initData() {
@@ -187,7 +201,7 @@ public class MyFragment extends Fragment {
                 if (menuPosition == 0) {
                     HashMap hashMap = myBooksLists.get(adapterPosition);
                     DownLoadEntity loadEntity = JSON.parseObject((String) hashMap.get("downLoadInfo"), DownLoadEntity.class);
-                    String path = Environment.getExternalStorageDirectory() + novelSaveDirName + loadEntity.getHomeUrl().split(novelHomeUrl)[1];
+                    String path = Environment.getExternalStorageDirectory() + novelSaveDirName + loadEntity.getHomeUrl().split(homeUrl)[1];
                     deletePath = path;
                     deletePosition = adapterPosition;
                     llPro.setVisibility(View.VISIBLE);
@@ -203,11 +217,13 @@ public class MyFragment extends Fragment {
             for (int i = 0; i < DownLoadTask.threadList.size(); i++) {
                 DownLoadThread loadThread = DownLoadTask.threadList.get(i);
                 if (hashMap.get("title").equals(loadThread.title) && hashMap.get("author").equals(loadThread.author)) {
+                    loadThreads.add(loadThread);
                     if (DownLoadTask.threadList.get(i).loadEntity.getLoadingStatu() == 1) {
                         DownLoadTask.threadList.get(i).handler = handler;
                         DownLoadTask.threadList.get(i).loadEntity.setLoadingStatu(3);
+                    }else {
+                        deleteItem(new DeleteEvent());
                     }
-                    loadThreads.add(loadThread);
                     break;
                 }
             }
@@ -263,7 +279,7 @@ public class MyFragment extends Fragment {
                         HashMap hashMap = myBooksLists.get(i);
                         JsoupGet jsoupGet = new JsoupGet();
                         try {
-                            List<List<HashMap>> cataLog = jsoupGet.getItemContent((String) hashMap.get("cataLog"));
+                            List<List<HashMap>> cataLog = jsoupGet.getPageContent((String) hashMap.get("cataLog"));
                             if (JSON.parseArray((String) hashMap.get("chapters"), HashMap.class).size() != cataLog.get(1).size()) {
                                 myBooksLists.get(i).put("chapters", JSON.toJSONString(cataLog.get(1)));
                                 myBooksLists.get(i).put("recentString", cataLog.get(0).get(0).get("recentString"));
@@ -401,11 +417,11 @@ public class MyFragment extends Fragment {
     }
 
     @Subscribe
-    public void refreshTheme(RefreshTheme theme){
-        int themeId = myPreference.getInt(themeNum,0);
-        if (themeId==0) {
-            themeId=R.color.theme_blue;
-            myPreference.setInt(themeNum,themeId);
+    public void refreshTheme(RefreshTheme theme) {
+        int themeId = myPreference.getInt(themeNum, 0);
+        if (themeId == 0) {
+            themeId = R.color.theme_blue;
+            myPreference.setInt(themeNum, themeId);
         }
         rlTop.setBackgroundColor(getResources().getColor(themeId));
         StatusBarCompat.setStatusBarColor(getActivity(), getResources().getColor(themeId));
