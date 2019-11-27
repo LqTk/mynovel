@@ -302,7 +302,7 @@ public class BooksHome extends Fragment {
                     jsoupGet = new JsoupGet();
                 }
                 try {
-                    List<HashMap> searchBook1 = jsoupGet.getSearchBook(NovelPublic.getHomeUrl(3) + "searchbook.php?keyword=" + URLEncoder.encode(searchBook));
+                    List<HashMap> searchBook1 = jsoupGet.getSearchBook("https://so.biqusoso.com/s.php?ie=utf-8&siteid=biqugex.com&q=" + URLEncoder.encode(searchBook));
                     if (searchBook1 != null) {
                         searchBooks.clear();
                         searchBooks.addAll(searchBook1);

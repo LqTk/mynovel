@@ -151,7 +151,7 @@ public class BooksPage5 extends Fragment {
             @Override
             public void run() {
                 try {
-                    List<List<HashMap>> getBooks3 = jsoupGet.getBooksPage(NovelPublic.getHomeUrl(3)+"bqge_5/");
+                    List<List<HashMap>> getBooks3 = jsoupGet.getBooksPage(NovelPublic.getHomeUrl(3)+"kehuanxiaoshuo/");
                     if (getBooks3.get(0) != null) {
                         books3.clear();
                         books3.addAll(getBooks3.get(0));
