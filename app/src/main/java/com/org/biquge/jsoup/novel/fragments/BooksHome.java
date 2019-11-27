@@ -4,16 +4,21 @@ package com.org.biquge.jsoup.novel.fragments;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
@@ -24,8 +29,8 @@ import com.org.biquge.jsoup.MyPreference;
 import com.org.biquge.jsoup.R;
 import com.org.biquge.jsoup.novel.NovelPublic;
 import com.org.biquge.jsoup.novel.activity.NovelItem;
-import com.org.biquge.jsoup.novel.adapter.AllBookRecentAdapter;
 import com.org.biquge.jsoup.novel.adapter.RcvBooksPageAdapter;
+import com.org.biquge.jsoup.novel.adapter.SearchBooksAdapter;
 import com.org.biquge.jsoup.novel.entities.BooksPageEntity;
 import com.org.biquge.jsoup.novel.events.RefreshTheme;
 import com.org.biquge.jsoup.novel.fragments.booksfrag.AllBooksFragment;
@@ -43,6 +48,7 @@ import org.greenrobot.eventbus.Subscribe;
 
 import java.io.IOException;
 import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -72,6 +78,8 @@ public class BooksHome extends Fragment {
     RecyclerView rcvSearch;
     @BindView(R.id.ll_search)
     LinearLayout llSearch;
+    @BindView(R.id.iv_delete_item)
+    ImageView ivDeleteItem;
 
     private MyPreference myPreference;
     private Context context;
@@ -91,7 +99,24 @@ public class BooksHome extends Fragment {
     private String[] pageName = {"全部", "玄幻奇幻", "武侠仙侠", "都市言情", "历史军事", "科幻灵异", "网游竞技", "完本小说"};
     private int lastFragment;
     private List<HashMap> searchBooks = new ArrayList<>();
-    private AllBookRecentAdapter searchAdapter;
+    private SearchBooksAdapter searchAdapter;
+
+    private Handler handler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+                case 0:
+                    if (searchBooks.size() > 0) {
+                        llBlew.setVisibility(View.GONE);
+                        llSearch.setVisibility(View.VISIBLE);
+                        searchAdapter.notifyDataSetChanged();
+                    }else {
+                        ToastUtils.showShortMsg(context,"请稍后再试");
+                    }
+                    break;
+            }
+        }
+    };
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -161,7 +186,7 @@ public class BooksHome extends Fragment {
 
         rcvPage.setAdapter(pageAdapter);
 
-        searchAdapter = new AllBookRecentAdapter(R.layout.all_book_recent, searchBooks);
+        searchAdapter = new SearchBooksAdapter(R.layout.search_books_layout, searchBooks);
         searchAdapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
@@ -181,6 +206,29 @@ public class BooksHome extends Fragment {
                 pageEntityList.add(new BooksPageEntity(pageName[i], "", false));
             }
         }
+        etSearch.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                String str = editable.toString();
+                if (str.isEmpty()) {
+                    ivDeleteItem.setVisibility(View.GONE);
+                    llSearch.setVisibility(View.GONE);
+                    llBlew.setVisibility(View.VISIBLE);
+                }else {
+                    ivDeleteItem.setVisibility(View.VISIBLE);
+                }
+            }
+        });
     }
 
     private void clearAll() {
@@ -227,13 +275,16 @@ public class BooksHome extends Fragment {
         unbinder.unbind();
     }
 
-    @OnClick({R.id.iv_back, R.id.bt_search_item})
+    @OnClick({R.id.iv_back, R.id.bt_search_item,R.id.iv_delete_item})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.iv_back:
                 break;
             case R.id.bt_search_item:
                 getSearchBook();
+                break;
+            case R.id.iv_delete_item:
+                etSearch.setText("");
                 break;
         }
     }
@@ -251,12 +302,17 @@ public class BooksHome extends Fragment {
                     jsoupGet = new JsoupGet();
                 }
                 try {
-                    searchBooks = jsoupGet.getSearchBook(NovelPublic.getHomeUrl(3) + "searchbook.php?keyword=" + URLDecoder.decode(searchBook));
-
+                    List<HashMap> searchBook1 = jsoupGet.getSearchBook(NovelPublic.getHomeUrl(3) + "searchbook.php?keyword=" + URLEncoder.encode(searchBook));
+                    if (searchBook1 != null) {
+                        searchBooks.clear();
+                        searchBooks.addAll(searchBook1);
+                    }
+                    handler.sendEmptyMessage(0);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
         }).start();
     }
+
 }

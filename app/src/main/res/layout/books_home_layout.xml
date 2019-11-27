@@ -56,6 +56,7 @@
                 android:layout_width="15dp"
                 android:layout_height="15dp"
                 android:padding="3dp"
+                android:visibility="gone"
                 android:layout_centerVertical="true"
                 android:background="@drawable/delete_gray"
                 android:layout_alignParentRight="true"
@@ -104,11 +105,43 @@
     </LinearLayout>
 
     <LinearLayout
-        android:visibility="gone"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/ll_search"
+        android:visibility="gone"
         android:orientation="vertical">
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="5dp">
+            <TextView
+                android:layout_width="100dp"
+                android:layout_marginLeft="10dp"
+                android:layout_height="wrap_content"
+                android:id="@+id/tv_book_name"
+                android:textColor="@color/text_color_black"
+                android:text="作品名称"
+                android:layout_alignParentLeft="true"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/tv_author"
+                android:layout_marginRight="10dp"
+                android:layout_marginLeft="10dp"
+                android:text="作者"
+                android:textColor="@color/text_color_black"
+                android:layout_centerHorizontal="true"
+                android:layout_toRightOf="@+id/tv_book_name"
+                android:layout_toLeftOf="@+id/tv_recent_time"/>
+            <TextView
+                android:text="更新时间"
+                android:textColor="@color/text_color_black"
+                android:layout_marginRight="10dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:id="@+id/tv_recent_time"/>
+        </RelativeLayout>
         <android.support.v7.widget.RecyclerView
             android:layout_width="match_parent"
             android:layout_height="match_parent"

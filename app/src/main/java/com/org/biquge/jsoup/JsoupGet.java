@@ -301,18 +301,24 @@ public class JsoupGet {
         NovelPublic.trustEveryone();
         List<HashMap> resultList = new ArrayList<>();
         Document doc = Jsoup.connect(htmlUrl).maxBodySize(0).get();
-        Elements uls = doc.getElementsByClass("main").get(0).getElementsByTag("ul");
-        for (int i=1;i<uls.size();i++){
-            HashMap hashMap = new HashMap();
-            String bookName = uls.get(i).getElementsByClass("s2").text();
-            String bookUrl = NovelPublic.getHomeUrl(3)+uls.get(i).getElementsByClass("s2").get(0).getElementsByTag("a").attr("href");
-            String author = uls.get(i).getElementsByClass("s4").text();
-            String time = uls.get(i).getElementsByClass("s6").text();
-            hashMap.put("bookName",bookName);
-            hashMap.put("bookUrl",bookUrl);
-            hashMap.put("author",author);
-            hashMap.put("time",time);
-            resultList.add(hashMap);
+        Element main = doc.getElementById("main");
+        if (main!=null) {
+            Elements uls = main.getElementsByTag("ul");
+            if (uls.size() > 0) {
+                Elements lis = uls.get(0).getElementsByTag("li");
+                for (int i = 1; i < lis.size(); i++) {
+                    HashMap hashMap = new HashMap();
+                    String bookName = lis.get(i).getElementsByClass("s2").text();
+                    String bookUrl = NovelPublic.getHomeUrl(3) + lis.get(i).getElementsByClass("s2").get(0).getElementsByTag("a").attr("href");
+                    String author = lis.get(i).getElementsByClass("s4").text();
+                    String time = lis.get(i).getElementsByClass("s6").text();
+                    hashMap.put("name", bookName);
+                    hashMap.put("bookUrl", bookUrl);
+                    hashMap.put("author", author);
+                    hashMap.put("time", time);
+                    resultList.add(hashMap);
+                }
+            }
         }
         return resultList;
     }
