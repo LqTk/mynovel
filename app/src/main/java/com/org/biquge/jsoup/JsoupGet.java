@@ -111,7 +111,10 @@ public class JsoupGet {
         Elements nodes = content.getElementsByTag("p");
         StringBuilder stringBuilder = new StringBuilder();
         for (int i=0;i<nodes.size();i++){
-            stringBuilder.append(nodes.get(i).text());
+            String text = nodes.get(i).text().trim();
+            if (!text.equals(";")) {
+                stringBuilder.append(nodes.get(i).text());
+            }
         }
         String s = stringBuilder.toString();
         String str1 = s.substring(0,3);
