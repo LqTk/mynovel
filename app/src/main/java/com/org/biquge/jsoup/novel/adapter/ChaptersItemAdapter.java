@@ -8,6 +8,7 @@ import android.widget.TextView;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 import com.org.biquge.jsoup.R;
+import com.org.biquge.jsoup.novel.NovelPublic;
 
 import java.io.File;
 import java.util.HashMap;
@@ -32,7 +33,7 @@ public class ChaptersItemAdapter extends BaseQuickAdapter<HashMap, BaseViewHolde
             name.setTextColor(Color.GRAY);
         }
         String nowChapter = (String)item.get("href");
-        String[] split = nowChapter.split(".html");
+        String[] split = nowChapter.split(NovelPublic.getHomeUrl(3))[1].split(".html");
         nowChapter = split[0]+".txt";
         String savePath = Environment.getExternalStorageDirectory()+novelSaveDirName+nowChapter;
         File saveFile = new File(savePath);

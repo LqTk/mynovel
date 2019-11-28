@@ -89,7 +89,7 @@ public class DownLoadThread extends Thread{
                 if (nowChapterPosition>=chaptersLists.size()){
                     downContent.put("nextChapter",loadEntity.getHomeUrl());
                 }else {
-                    downContent.put("nextChapter", homeUrl +chaptersLists.get(nowChapterPosition).get("href"));
+                    downContent.put("nextChapter",chaptersLists.get(nowChapterPosition).get("href"));
                 }
             }else {
                 downContent = jsoupGet.getReadItem(loadString);
@@ -118,9 +118,10 @@ public class DownLoadThread extends Thread{
                     if (nowChapterPosition>=chaptersLists.size()){
                         downContent.put("nextChapter",loadEntity.getHomeUrl());
                     }else {
-                        downContent.put("nextChapter", homeUrl +chaptersLists.get(nowChapterPosition).get("href"));
+                        downContent.put("nextChapter", chaptersLists.get(nowChapterPosition).get("href"));
                     }
                 }else {
+                    Thread.sleep(300);
                     downContent = jsoupGet.getReadItem(loadString);
                     content = (String) downContent.get("content");
                     outputStream = new FileOutputStream(writeFile);

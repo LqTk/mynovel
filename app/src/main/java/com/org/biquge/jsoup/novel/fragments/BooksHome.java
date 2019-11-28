@@ -17,6 +17,7 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -96,7 +97,7 @@ public class BooksHome extends Fragment {
     private BooksPage6 booksPage6;
     private BooksPage7 booksPage7;
 
-    private String[] pageName = {"全部", "玄幻奇幻", "武侠仙侠", "都市言情", "历史军事", "科幻灵异", "网游竞技", "完本小说"};
+    private String[] pageName = {"全部", "玄幻奇幻", "武侠仙侠", "都市言情", "穿越小说", "科幻灵异", "网游竞技", "完本小说"};
     private int lastFragment;
     private List<HashMap> searchBooks = new ArrayList<>();
     private SearchBooksAdapter searchAdapter;
@@ -117,6 +118,7 @@ public class BooksHome extends Fragment {
             }
         }
     };
+    private InputMethodManager imm;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -133,6 +135,7 @@ public class BooksHome extends Fragment {
         myPreference = MyPreference.getInstance();
         myPreference.setPreference(context);
         refreshTheme(new RefreshTheme());
+        imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
 
         initData();
         initView();
@@ -224,6 +227,7 @@ public class BooksHome extends Fragment {
                     ivDeleteItem.setVisibility(View.GONE);
                     llSearch.setVisibility(View.GONE);
                     llBlew.setVisibility(View.VISIBLE);
+                    imm.hideSoftInputFromWindow(getActivity().getWindow().peekDecorView().getWindowToken(),0);
                 }else {
                     ivDeleteItem.setVisibility(View.VISIBLE);
                 }
@@ -290,6 +294,7 @@ public class BooksHome extends Fragment {
     }
 
     private void getSearchBook() {
+        imm.hideSoftInputFromWindow(getActivity().getWindow().peekDecorView().getWindowToken(),0);
         final String searchBook = etSearch.getText().toString().trim();
         if (searchBook.isEmpty()) {
             ToastUtils.showShortMsg(context, "请输入搜索内容");
@@ -302,7 +307,7 @@ public class BooksHome extends Fragment {
                     jsoupGet = new JsoupGet();
                 }
                 try {
-                    List<HashMap> searchBook1 = jsoupGet.getSearchBook("https://so.biqusoso.com/s.php?ie=utf-8&siteid=biqugex.com&q=" + URLEncoder.encode(searchBook));
+                    List<HashMap> searchBook1 = jsoupGet.getSearchBook(NovelPublic.getHomeUrl(3)+"/modules/article/search.php?searchkey=" + URLEncoder.encode(searchBook,"utf-8"));
                     if (searchBook1 != null) {
                         searchBooks.clear();
                         searchBooks.addAll(searchBook1);

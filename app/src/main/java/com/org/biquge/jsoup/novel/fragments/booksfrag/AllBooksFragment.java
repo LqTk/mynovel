@@ -66,6 +66,12 @@ public class AllBooksFragment extends Fragment {
                     }
                     llPro.setVisibility(View.GONE);
                     break;
+                case 1:
+                    llPro.setVisibility(View.GONE);
+                    if (books3.size()==0) {
+                        rlFailed.setVisibility(View.VISIBLE);
+                    }
+                    break;
             }
         }
     };
@@ -122,7 +128,7 @@ public class AllBooksFragment extends Fragment {
                 switch (view.getId()){
                     case R.id.tv_book_name:
                         Intent intent = new Intent(context, NovelItem.class);
-                        intent.putExtra("url", NovelPublic.getHomeUrl(3)+String.valueOf(recentNew.get(position).get("nameurl")));
+                        intent.putExtra("url", String.valueOf(recentNew.get(position).get("nameurl")));
                         startActivity(intent);
                         break;
                     case R.id.tv_recent_chapter:
@@ -130,12 +136,8 @@ public class AllBooksFragment extends Fragment {
                         bundle.putString("url", NovelPublic.getHomeUrl(3) + recentNew.get(position).get("chapterUrl"));
                         bundle.putBoolean("isAdded", false);
                         bundle.putString("from", "noveitem");
-                        bundle.putString("title", String.valueOf(recentNew.get(position).get("chapterName")));
-                        bundle.putString("author", (String) recentNew.get(position).get("author"));
-                        bundle.putString("cataLog",NovelPublic.getHomeUrl(3)+String.valueOf(recentNew.get(position).get("nameurl")));
+                        bundle.putString("cataLog",String.valueOf(recentNew.get(position).get("nameurl")));
                         bundle.putString("bookName", (String) recentNew.get(position).get("name"));
-                        bundle.putString("img", "");
-                        bundle.putString("time", (String) recentNew.get(position).get("time"));
 
                         Intent intent1 = new Intent(context, NovelReadItem.class);
                         intent1.putExtras(bundle);
@@ -164,7 +166,7 @@ public class AllBooksFragment extends Fragment {
                     }
                     handler.sendEmptyMessage(0);
                 } catch (IOException e) {
-                    rlFailed.setVisibility(View.VISIBLE);
+                    handler.sendEmptyMessage(1);
                     e.printStackTrace();
                 }
                 srf.finishRefresh();

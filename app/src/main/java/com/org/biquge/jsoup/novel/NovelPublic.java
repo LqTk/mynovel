@@ -1,5 +1,8 @@
 package com.org.biquge.jsoup.novel;
 
+import com.bumptech.glide.request.RequestOptions;
+import com.org.biquge.jsoup.R;
+
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.cert.CertificateException;
@@ -18,7 +21,7 @@ public class NovelPublic {
     public static String downLoadingUpdata = "novelLoadingUpdata";
     public static String novelHomeUrl2 = "http://book.zongheng.com/store/c0/c0/b0/u0/p2/v9/s9/t0/u0/i1/ALL.html";//纵横中文网
     public static String biqudao = "https://www.biqudao.com/";//笔趣岛
-    public static String biquge2 = "https://www.biqugex.com/";//
+    public static String biquge2 = "http://www.b5200.net";
 
     //type 1笔趣阁,2纵横中文网，3笔趣岛
     public static String getHomeUrl(int type){
@@ -69,5 +72,11 @@ public class NovelPublic {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public static RequestOptions errorOptions(){
+        return new RequestOptions()
+                .centerCrop()
+                .error(R.drawable.nobookpic);
     }
 }

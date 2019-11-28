@@ -19,7 +19,7 @@
             android:layout_alignParentTop="true"
             android:lineSpacingExtra="5dp"
             android:textColor="#000000"
-            android:textSize="19sp" />
+            android:textSize="18sp" />
     </com.org.biquge.jsoup.novel.view.MyScrollView>
     <RelativeLayout
         android:id="@+id/rl_bttom"

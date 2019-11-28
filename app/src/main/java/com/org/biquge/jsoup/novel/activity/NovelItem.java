@@ -39,7 +39,6 @@ import butterknife.OnClick;
 import butterknife.Unbinder;
 
 import static com.org.biquge.jsoup.MyPreference.saveInfo;
-import static com.org.biquge.jsoup.novel.NovelPublic.novelHomeUrl;
 
 public class NovelItem extends AppCompatActivity {
 
@@ -96,6 +95,7 @@ public class NovelItem extends AppCompatActivity {
             }
             Glide.with(context)
                     .load(authorMap.get("img"))
+                    .apply(NovelPublic.errorOptions())
                     .into(ivItem);
             tvName.setText((CharSequence) authorMap.get("title"));
             tvAuthorName.setText((CharSequence) authorMap.get("author"));
@@ -108,7 +108,7 @@ public class NovelItem extends AppCompatActivity {
                 public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
 
                     Bundle bundle = new Bundle();
-                    bundle.putString("url", NovelPublic.getHomeUrl(3) + String.valueOf(itemsList.get(position).get("href")));
+                    bundle.putString("url", String.valueOf(itemsList.get(position).get("href")));
                     bundle.putBoolean("isAdded", tvAddbook.getText().toString().equals("已加入图书"));
                     bundle.putString("from", "noveitem");
                     bundle.putString("cataLog",cataLog);
@@ -181,7 +181,7 @@ public class NovelItem extends AppCompatActivity {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                authorMap.put("chapter",novelHomeUrl + String.valueOf(itemsMap.get("href")));
+                authorMap.put("chapter",String.valueOf(itemsMap.get("href")));
                 authorMap.put("lastPage",1);
                 authorMap.put("chapters", JSON.toJSONString(itemsList));
                 authorMap.put("cataLog",cataLog);

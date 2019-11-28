@@ -7,6 +7,7 @@ import com.bumptech.glide.Glide;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 import com.org.biquge.jsoup.R;
+import com.org.biquge.jsoup.novel.NovelPublic;
 
 import java.util.HashMap;
 import java.util.List;
@@ -22,6 +23,7 @@ public class GvHotAdapter extends BaseQuickAdapter<HashMap, BaseViewHolder> {
        helper.setText(R.id.tv_hot_name,(String) item.get("name"));
         Glide.with(mContext)
                 .load(item.get("imgUrl"))
+                .apply(NovelPublic.errorOptions())
                 .into((ImageView) helper.getView(R.id.iv_hot_img));
     }
 }

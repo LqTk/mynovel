@@ -470,6 +470,9 @@ public class ScanView extends RelativeLayout {
                 if (sh2 != 0 && vh <= sy) {
                     if (pageListener != null)
                         pageListener.nextChapter();
+                }else if (vh<sh1 && sh2==0){
+                    if (pageListener != null)
+                        pageListener.nextChapter();
                 }
             }else {
                 if (pageListener != null)

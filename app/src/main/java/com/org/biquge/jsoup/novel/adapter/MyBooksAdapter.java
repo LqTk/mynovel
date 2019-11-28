@@ -8,6 +8,7 @@ import com.bumptech.glide.Glide;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 import com.org.biquge.jsoup.R;
+import com.org.biquge.jsoup.novel.NovelPublic;
 
 import java.util.HashMap;
 import java.util.List;
@@ -22,6 +23,7 @@ public class MyBooksAdapter extends BaseQuickAdapter<HashMap, BaseViewHolder> {
     protected void convert(BaseViewHolder helper, HashMap item) {
         Glide.with(mContext)
                 .load(item.get("img"))
+                .apply(NovelPublic.errorOptions())
                 .into((ImageView) helper.getView(R.id.iv_item));
         ImageView ivNew = helper.getView(R.id.iv_hasnew);
         if ((boolean)item.get("hasNew")) {
