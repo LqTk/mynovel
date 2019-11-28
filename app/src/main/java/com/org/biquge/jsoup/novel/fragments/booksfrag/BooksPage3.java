@@ -136,6 +136,8 @@ public class BooksPage3 extends Fragment {
                         bundle.putString("from", "noveitem");
                         bundle.putString("cataLog",String.valueOf(recentNew.get(position).get("nameurl")));
                         bundle.putString("bookName", (String) recentNew.get(position).get("name"));
+                        bundle.putString("title", (String) recentNew.get(position).get("name"));
+                        bundle.putString("author",(String) recentNew.get(position).get("author"));
 
                         Intent intent1 = new Intent(context, NovelReadItem.class);
                         intent1.putExtras(bundle);

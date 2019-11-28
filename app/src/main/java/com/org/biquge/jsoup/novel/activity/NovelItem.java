@@ -71,59 +71,74 @@ public class NovelItem extends AppCompatActivity {
     Handler mHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
-            boolean isHave = false;
-            if (saveBookLists!=null){
-                for (int i=0;i<saveBookLists.size();i++){
-                    HashMap cMap = saveBookLists.get(i);
-                    if (cMap.get("title").equals(authorMap.get("title"))
-                            && cMap.get("author").equals(authorMap.get("author"))){
-                        isHave = true;
-                        tvAddbook.setTextColor(Color.parseColor("#999999"));
-                        tvAddbook.setText("已加入图书");
-                        tvAddbook.setEnabled(false);
-                        break;
+            switch (msg.what) {
+                case 0:
+                    boolean isHave = false;
+                    if (saveBookLists != null) {
+                        for (int i = 0; i < saveBookLists.size(); i++) {
+                            HashMap cMap = saveBookLists.get(i);
+                            if (cMap.get("title").equals(authorMap.get("title"))
+                                    && cMap.get("author").equals(authorMap.get("author"))) {
+                                isHave = true;
+                                tvAddbook.setTextColor(Color.parseColor("#999999"));
+                                tvAddbook.setText("已加入图书");
+                                tvAddbook.setEnabled(false);
+                                break;
+                            }
+                        }
+                    } else {
+                        tvAddbook.setText("加入图书");
                     }
-                }
-            }else {
-                tvAddbook.setText("加入图书");
-            }
-            if (!isHave){
-                tvAddbook.setText("加入图书");
-            }
-            if (authorMap.size() > 0) {
-                llPro.setVisibility(View.GONE);
-            }
-            Glide.with(context)
-                    .load(authorMap.get("img"))
-                    .apply(NovelPublic.errorOptions())
-                    .into(ivItem);
-            tvName.setText((CharSequence) authorMap.get("title"));
-            tvAuthorName.setText((CharSequence) authorMap.get("author"));
-            tvRecentTime.setText((CharSequence) authorMap.get("time"));
-            tvRecentContent.setText((CharSequence) authorMap.get("recentString"));
+                    if (!isHave) {
+                        tvAddbook.setText("加入图书");
+                    }
+                    if (authorMap.size() > 0) {
+                        llPro.setVisibility(View.GONE);
+                    }
+                    Glide.with(context)
+                            .load(authorMap.get("img"))
+                            .apply(NovelPublic.errorOptions())
+                            .into(ivItem);
+                    tvName.setText((CharSequence) authorMap.get("title"));
+                    tvAuthorName.setText((CharSequence) authorMap.get("author"));
+                    tvRecentTime.setText((CharSequence) authorMap.get("time"));
+                    tvRecentContent.setText((CharSequence) authorMap.get("recentString"));
 
-            novelItemAdapter = new NovelItemAdapter(R.layout.novel_item, itemsList);
-            novelItemAdapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
-                @Override
-                public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
+                    novelItemAdapter = new NovelItemAdapter(R.layout.novel_item, itemsList);
+                    novelItemAdapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
+                        @Override
+                        public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
 
-                    Bundle bundle = new Bundle();
-                    bundle.putString("url", String.valueOf(itemsList.get(position).get("href")));
-                    bundle.putBoolean("isAdded", tvAddbook.getText().toString().equals("已加入图书"));
-                    bundle.putString("from", "noveitem");
-                    bundle.putString("cataLog",cataLog);
+                            Bundle bundle = new Bundle();
+                            bundle.putString("url", String.valueOf(itemsList.get(position).get("href")));
+                            bundle.putBoolean("isAdded", tvAddbook.getText().toString().equals("已加入图书"));
+                            bundle.putString("from", "noveitem");
+                            bundle.putString("cataLog", cataLog);
+                            bundle.putString("title", (String) authorMap.get("title"));
+                            bundle.putString("author", (String) authorMap.get("author"));
 
-                    Intent intent = new Intent(context, NovelReadItem.class);
-                    intent.putExtras(bundle);
-                    startActivity(intent);
-                    NovelItem.this.finish();
-                }
-            });
-            rcvItem.setAdapter(novelItemAdapter);
+                            Intent intent = new Intent(context, NovelReadItem.class);
+                            intent.putExtras(bundle);
+                            startActivity(intent);
+                            NovelItem.this.finish();
+                        }
+                    });
+                    rcvItem.setAdapter(novelItemAdapter);
+                    break;
+                case 1:
+                    llAdd.setVisibility(View.GONE);
+                    tvAddbook.setTextColor(Color.parseColor("#999999"));
+                    tvAddbook.setText("已加入图书");
+                    tvAddbook.setEnabled(false);
+                    break;
+            }
+
         }
     };
     @BindView(R.id.tv_addbook)
     TextView tvAddbook;
+    @BindView(R.id.ll_add)
+    LinearLayout llAdd;
     private List<HashMap> saveBookLists = new ArrayList<>();
     private String cataLog;
 
@@ -171,28 +186,32 @@ public class NovelItem extends AppCompatActivity {
         binder.unbind();
     }
 
-    @OnClick(R.id.tv_addbook)
-    public void onViewClicked() {
-        if (saveBookLists==null)
-            saveBookLists = new ArrayList<>();
-        tvAddbook.setTextColor(Color.parseColor("#999999"));
-        tvAddbook.setText("已加入图书");
-        tvAddbook.setEnabled(false);
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                authorMap.put("chapter",String.valueOf(itemsMap.get("href")));
-                authorMap.put("lastPage",1);
-                authorMap.put("chapters", JSON.toJSONString(itemsList));
-                authorMap.put("cataLog",cataLog);
-                authorMap.put("hasNew",false);
-                DownLoadEntity downLoadEntity = new DownLoadEntity(0,itemsList.size(),0,
-                        cataLog, (String) itemsList.get(0).get("href"),0);
-                authorMap.put("downLoadInfo",JSON.toJSONString(downLoadEntity));
-                saveBookLists.add(authorMap);
-                myPreference.setObject(saveInfo,saveBookLists);
-                EventBus.getDefault().post(new RefreshMyBooks());
-            }
-        }).start();
+    @OnClick({R.id.tv_addbook, R.id.ll_add})
+    public void onViewClicked(View view) {
+        switch (view.getId()) {
+            case R.id.tv_addbook:llAdd.setVisibility(View.VISIBLE);
+                if (saveBookLists == null)
+                    saveBookLists = new ArrayList<>();
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        authorMap.put("chapter", String.valueOf(itemsMap.get("href")));
+                        authorMap.put("lastPage", 1);
+                        authorMap.put("chapters", JSON.toJSONString(itemsList));
+                        authorMap.put("cataLog", cataLog);
+                        authorMap.put("hasNew", false);
+                        DownLoadEntity downLoadEntity = new DownLoadEntity(0, itemsList.size(), 0,
+                                cataLog, (String) itemsList.get(0).get("href"), 0);
+                        authorMap.put("downLoadInfo", JSON.toJSONString(downLoadEntity));
+                        saveBookLists.add(authorMap);
+                        myPreference.setObject(saveInfo, saveBookLists);
+                        mHandler.sendEmptyMessage(1);
+                        EventBus.getDefault().post(new RefreshMyBooks());
+                    }
+                }).start();
+                break;
+            case R.id.ll_add:
+                break;
+        }
     }
 }

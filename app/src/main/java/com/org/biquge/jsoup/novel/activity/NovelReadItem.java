@@ -447,17 +447,15 @@ public class NovelReadItem extends AppCompatActivity {
 //            chaptersLists = JSON.parseArray(bundle.getString("chapters"), HashMap.class);
             catalog = bundle.getString("cataLog");
             isAdded = bundle.getBoolean("isAdded");
-            if (isAdded) {
-                for (int i = 0; i < myBooksLists.size(); i++) {
-                    HashMap cMap = myBooksLists.get(i);
-                    if (cMap.get("title").equals(bundle.getString("title"))
-                            && cMap.get("author").equals(bundle.getString("author"))) {
-                        mapPosition = i;
-                        authorMap = myBooksLists.get(mapPosition);
-                        /*href = (String) authorMap.get("chapter");
-                        first = true;*/
-                        break;
-                    }
+            bookName = bundle.getString("title");
+            for (int i = 0; i < myBooksLists.size(); i++) {
+                HashMap cMap = myBooksLists.get(i);
+                if (cMap.get("title").equals(bundle.getString("title"))
+                        && cMap.get("author").equals(bundle.getString("author"))) {
+                    mapPosition = i;
+                    authorMap = myBooksLists.get(mapPosition);
+                    isAdded = true;
+                    break;
                 }
             }
         } else {

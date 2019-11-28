@@ -79,6 +79,7 @@ public class AllBooksFragment extends Fragment {
     private List<HashMap> recentNew = new ArrayList<>();
     private GvHotAdapter hotAdapter;
     private AllBookRecentAdapter recentAdapter;
+    private boolean isRefresh = false;
 
     @Nullable
     @Override
@@ -99,6 +100,7 @@ public class AllBooksFragment extends Fragment {
         srf.setOnRefreshListener(new OnRefreshListener() {
             @Override
             public void onRefresh(@NonNull RefreshLayout refreshLayout) {
+                isRefresh = true;
                 getData();
             }
         });
@@ -133,11 +135,13 @@ public class AllBooksFragment extends Fragment {
                         break;
                     case R.id.tv_recent_chapter:
                         Bundle bundle = new Bundle();
-                        bundle.putString("url", NovelPublic.getHomeUrl(3) + recentNew.get(position).get("chapterUrl"));
+                        bundle.putString("url", (String) recentNew.get(position).get("chapterUrl"));
                         bundle.putBoolean("isAdded", false);
                         bundle.putString("from", "noveitem");
                         bundle.putString("cataLog",String.valueOf(recentNew.get(position).get("nameurl")));
                         bundle.putString("bookName", (String) recentNew.get(position).get("name"));
+                        bundle.putString("title", (String) recentNew.get(position).get("name"));
+                        bundle.putString("author",(String) recentNew.get(position).get("author"));
 
                         Intent intent1 = new Intent(context, NovelReadItem.class);
                         intent1.putExtras(bundle);
@@ -169,7 +173,10 @@ public class AllBooksFragment extends Fragment {
                     handler.sendEmptyMessage(1);
                     e.printStackTrace();
                 }
-                srf.finishRefresh();
+                if (isRefresh){
+                    isRefresh = false;
+                    srf.finishRefresh();
+                }
             }
         }).start();
 
