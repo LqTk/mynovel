@@ -436,7 +436,7 @@ public class NovelReadItem extends AppCompatActivity {
             }
         }
 
-        llMain.setBackground(getResources().getDrawable((Integer) scanViewBgSetting.get("bgId")));
+        llMain.setBackground(getResources().getDrawable(themeBgEntities.get(which).getBgId()));
     }
 
     private String initData() {

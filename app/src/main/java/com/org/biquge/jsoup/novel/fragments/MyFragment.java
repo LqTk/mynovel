@@ -51,6 +51,7 @@ import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -161,6 +162,8 @@ public class MyFragment extends Fragment {
         if (refreshTime==0){
             refreshTime = System.currentTimeMillis();
             srf.autoRefresh();
+        }else {
+            srfHeader.setLastUpdateTime(new Date(refreshTime));
         }
 
     }

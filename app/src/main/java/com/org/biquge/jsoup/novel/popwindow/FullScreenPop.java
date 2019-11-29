@@ -80,7 +80,7 @@ public class FullScreenPop extends PopupWindow {
         LinearLayout ll_books_chapters = popView.findViewById(R.id.ll_books_chapters);
         LinearLayout ll_save = popView.findViewById(R.id.ll_save);
         LinearLayout ll_scroll_orientation = popView.findViewById(R.id.ll_scroll_orientation);
-        ImageView iv_theme_menu = popView.findViewById(R.id.iv_theme_menu);
+        TextView iv_theme_menu = popView.findViewById(R.id.iv_theme_menu);
         TextView tv_refresh = popView.findViewById(R.id.tv_refresh);
         rcv_theme = popView.findViewById(R.id.rcv_theme);
         iv_scroll = popView.findViewById(R.id.iv_scroll);

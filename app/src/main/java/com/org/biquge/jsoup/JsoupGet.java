@@ -112,8 +112,8 @@ public class JsoupGet {
         StringBuilder stringBuilder = new StringBuilder();
         for (int i=0;i<nodes.size();i++){
             String text = nodes.get(i).text().trim();
-            if (!text.equals(";")) {
-                stringBuilder.append(nodes.get(i).text());
+            if (!text.equals("　　;")) {
+                stringBuilder.append(text);
             }
         }
         String s = stringBuilder.toString();
