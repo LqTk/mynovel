@@ -68,7 +68,7 @@ public class NovelsAllFragement extends Fragment {
                     final List<HashMap> noveList = (List<HashMap>) msg.obj;
                     novelItemAdapter = new NovelItemAdapter(R.layout.novel_item, noveList);
 
-                    novelItemAdapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
+                    /*novelItemAdapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
                         @Override
                         public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
                             Intent intent = new Intent(context, NovelItem.class);
@@ -76,7 +76,7 @@ public class NovelsAllFragement extends Fragment {
                             startActivity(intent);
                         }
                     });
-
+*/
                     rcvNovel.setAdapter(novelItemAdapter);
                     break;
             }

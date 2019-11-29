@@ -151,14 +151,20 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        if (System.currentTimeMillis()-exitTime<1500){
-            if (DownLoadTask.threadList!=null){
-                DownLoadTask.stopAll();
-            }
-            super.onBackPressed();
+        if (lastFragment!=0){
+            resetTodefaultIcon();
+            switchFragment(0);
+            bnvMain.getMenu().findItem(R.id.navigation_my).setIcon(R.drawable.my_books);
         }else {
-            exitTime = System.currentTimeMillis();
-            ToastUtils.showShortMsg(context,"再按一次退出");
+            if (System.currentTimeMillis() - exitTime < 1500) {
+                if (DownLoadTask.threadList != null) {
+                    DownLoadTask.stopAll();
+                }
+                super.onBackPressed();
+            } else {
+                exitTime = System.currentTimeMillis();
+                ToastUtils.showShortMsg(context, "再按一次退出");
+            }
         }
     }
 

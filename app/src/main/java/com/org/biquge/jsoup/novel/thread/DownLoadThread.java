@@ -73,7 +73,6 @@ public class DownLoadThread extends Thread{
     public void run() {
         try {
             Intent intent = new Intent(NovelPublic.downLoadingUpdata);
-            intent.putExtra("position",position);
             HashMap downContent = new HashMap<>();
             String content;
             FileOutputStream outputStream;
@@ -104,6 +103,7 @@ public class DownLoadThread extends Thread{
                 loadEntity.setLoadedPage(saveFile.list().length);
                 intent.putExtra("loadEntity", JSON.toJSONString(loadEntity));
                 if (System.currentTimeMillis()-time>1000) {
+                    intent.putExtra("position",position);
                     context.sendBroadcast(intent);
                     time = System.currentTimeMillis();
                 }
@@ -134,6 +134,7 @@ public class DownLoadThread extends Thread{
                     loadEntity.setLoadedPage(saveFile.list().length);
                     intent.putExtra("loadEntity", JSON.toJSONString(loadEntity));
                     if (System.currentTimeMillis() - time > 1000) {
+                        intent.putExtra("position",position);
                         context.sendBroadcast(intent);
                         time = System.currentTimeMillis();
                     }
@@ -151,12 +152,14 @@ public class DownLoadThread extends Thread{
                 loadEntity.setLoadingStatu(2);
                 loadEntity.setLoadedPage(saveFile.list().length);
                 intent.putExtra("loadEntity", JSON.toJSONString(loadEntity));
+                intent.putExtra("position",position);
                 context.sendBroadcast(intent);
             }else if(loadEntity.getLoadingStatu()==0){
                 message.obj = "《" + title + "》已暂停下载";
                 handler.sendMessage(message);
                 intent.putExtra("loadEntity", JSON.toJSONString(loadEntity));
                 if (System.currentTimeMillis()-time>1000) {
+                    intent.putExtra("position",position);
                     context.sendBroadcast(intent);
                     time = System.currentTimeMillis();
                 }
