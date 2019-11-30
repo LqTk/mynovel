@@ -161,7 +161,7 @@ public class NovelReadItem extends AppCompatActivity {
                             currentIndex = 1;
                         }
                     }
-                    scanViewAdapter = new ScanViewAdapter(context, cons, (Integer) scanViewBgSetting.get("bgId"),scrollOrientation);
+                    scanViewAdapter = new ScanViewAdapter(context, cons, NRIScanViewBgId,scrollOrientation);
                     scanViewAdapter.setChapterClicker(new ScanViewAdapter.ChapterClicker() {
                         @Override
                         public void lastChapterListener() {
@@ -316,6 +316,7 @@ public class NovelReadItem extends AppCompatActivity {
         public void themeClick(int position) {
             if (scanViewAdapter!=null)
                 scanViewAdapter.setScanViewBg(themeBgEntities.get(position).getBgId());
+            NRIScanViewBgId = themeBgEntities.get(position).getBgId();
             llMain.setBackground(getResources().getDrawable(themeBgEntities.get(position).getBgId()));
             scanView.resetBg(themeBgEntities.get(position).getBgId());
             setSetting(themeBgEntities.get(position).getBgId(),position);
@@ -389,6 +390,7 @@ public class NovelReadItem extends AppCompatActivity {
     private int scrollVHeight=0;
     private int scrollPosition = 0;
     private String bookName;
+    private int NRIScanViewBgId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -436,7 +438,8 @@ public class NovelReadItem extends AppCompatActivity {
             }
         }
 
-        llMain.setBackground(getResources().getDrawable(themeBgEntities.get(which).getBgId()));
+        NRIScanViewBgId = themeBgEntities.get(which).getBgId();
+        llMain.setBackground(getResources().getDrawable(NRIScanViewBgId));
     }
 
     private String initData() {

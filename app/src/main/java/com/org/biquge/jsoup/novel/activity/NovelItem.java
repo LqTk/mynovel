@@ -9,6 +9,8 @@ import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -25,6 +27,7 @@ import com.org.biquge.jsoup.novel.NovelPublic;
 import com.org.biquge.jsoup.novel.adapter.NovelItemAdapter;
 import com.org.biquge.jsoup.novel.entities.DownLoadEntity;
 import com.org.biquge.jsoup.novel.events.RefreshMyBooks;
+import com.org.biquge.jsoup.novel.view.MyRecycleViewBar;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -56,6 +59,8 @@ public class NovelItem extends AppCompatActivity {
     TextView tvRecentContent;
     @BindView(R.id.ll_pro)
     LinearLayout llPro;
+    @BindView(R.id.iv_scroll)
+    MyRecycleViewBar ivScroll;
 
     JsoupGet jsoupGet = new JsoupGet();
     Unbinder binder;
@@ -124,6 +129,7 @@ public class NovelItem extends AppCompatActivity {
                         }
                     });
                     rcvItem.setAdapter(novelItemAdapter);
+                    getRcvHeight();
                     break;
                 case 1:
                     llAdd.setVisibility(View.GONE);
@@ -135,6 +141,83 @@ public class NovelItem extends AppCompatActivity {
 
         }
     };
+    private float lastX = 0;
+    private float lastY = 0;
+
+    private float dx;
+    private float dy;
+    private float movex = 0;
+    private float movey = 0;
+
+    int rcvAllHeight;
+    int rcvNowHeight;
+    int rcvScrollHeight;
+    int rcvHeight;
+    int ivScrollStartBottom;
+    int ivScrollStartTop;
+    boolean isGet = false;
+    float itemhei;
+    float countItem =0;
+    private void getRcvHeight() {
+        ivScrollStartTop = ivScroll.getTop();
+        ivScrollStartBottom = ivScroll.getBottom();
+        ivScroll.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent event) {
+
+                if (!isGet) {
+                    isGet = true;
+                    rcvAllHeight = rcvItem.computeVerticalScrollRange();//整个RecycleView控件的高度
+                    rcvNowHeight = rcvItem.computeVerticalScrollExtent();//当前屏幕显示的区域高度
+                    rcvScrollHeight = rcvItem.computeVerticalScrollOffset();//当前屏幕之前滑过的距离
+                    itemhei = itemsList.size() / ((float) rcvNowHeight - ivScrollStartBottom);
+                    countItem = (rcvAllHeight - ivScrollStartBottom)/((float) rcvNowHeight - ivScrollStartBottom);
+                }
+
+                switch (event.getAction()){
+                    case MotionEvent.ACTION_DOWN:
+                        lastY = event.getRawY();
+                        lastX = event.getRawX();
+                        movey = lastY;
+                        movex = lastX;
+                        break;
+                    case MotionEvent.ACTION_MOVE:
+                        dy = event.getRawY() - lastY;
+                        dx = event.getRawX() - lastX;
+
+                        int left = (int) (view.getLeft());
+                        int right = (int) (view.getRight());
+                        int top = (int) (view.getTop() + dy);
+                        int bottom = (int) (view.getBottom() + dy);
+
+                        if (top<0){
+                            top = 0;
+                            bottom = top+view.getHeight();
+                        }
+                        if (bottom>rcvItem.getBottom()){
+                            bottom = rcvItem.getBottom();
+                            top = bottom - view.getHeight();
+                        }
+                        int position =(int)  Math.abs((bottom- ivScrollStartBottom)*itemhei);
+                        Log.d("eventprint","position="+position+",top="+top+",bottom="+bottom+",rcvTop="+rcvItem.getTop()+",rcvBottom="+rcvItem.getBottom());
+
+                        view.layout(left,top,right,bottom);
+                        rcvItem.smoothScrollToPosition(position);
+                        lastX = event.getRawX();
+                        lastY = event.getRawY();
+                        break;
+                    case MotionEvent.ACTION_UP:
+                        if ((int) (event.getRawX()-movex)!=0
+                                || (int) (event.getRawY() - movey) != 0){
+                            return true;
+                        }
+                        break;
+                }
+                return true;
+            }
+        });
+    }
+
     @BindView(R.id.tv_addbook)
     TextView tvAddbook;
     @BindView(R.id.ll_add)
@@ -159,7 +242,48 @@ public class NovelItem extends AppCompatActivity {
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         rcvItem.setLayoutManager(layoutManager);
 
+        initView();
         getItemContent(cataLog);
+    }
+
+    int rcvScroTotal = 0;
+    float itemHeight = 0;
+    private void initView(){
+        rcvItem.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+            }
+
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                if (!isGet) {
+                    isGet = true;
+                    rcvAllHeight = rcvItem.computeVerticalScrollRange();//整个RecycleView控件的高度
+                    rcvNowHeight = rcvItem.computeVerticalScrollExtent();//当前屏幕显示的区域高度
+                    rcvScrollHeight = rcvItem.computeVerticalScrollOffset();//当前屏幕之前滑过的距离
+                    itemhei = itemsList.size() / ((float) rcvNowHeight - ivScrollStartBottom);
+                    itemHeight = (float) rcvAllHeight/(float) itemsList.size();
+                }
+                countItem = ((float) rcvNowHeight - ivScrollStartBottom) / (rcvAllHeight - rcvNowHeight);
+                rcvScroTotal = rcvScroTotal+dy;
+                int left = ivScroll.getLeft();
+                int right = ivScroll.getRight();
+                int top = (int) (ivScrollStartTop + rcvScroTotal*countItem);
+                int bottom  = (int) (ivScrollStartBottom+rcvScroTotal*countItem);
+                if (top<0){
+                    top = 0;
+                    bottom = top+ivScroll.getHeight();
+                }
+                if (bottom>rcvItem.getBottom()){
+                    bottom = rcvItem.getBottom();
+                    top = bottom - ivScroll.getHeight();
+                }
+                ivScroll.layout(left,top,right,bottom);
+
+                super.onScrolled(recyclerView, dx, dy);
+            }
+        });
     }
 
     private void getItemContent(final String href) {
