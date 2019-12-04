@@ -17,7 +17,7 @@ import java.util.List;
 import static com.org.biquge.jsoup.novel.NovelPublic.novelSaveDirName;
 
 public class ChaptersItemAdapter extends BaseQuickAdapter<HashMap, BaseViewHolder> {
-    private int nowChapter;
+    private String nowChapter;
 
     public ChaptersItemAdapter(int layoutResId, @Nullable List<HashMap> data) {
         super(layoutResId, data);
@@ -27,7 +27,7 @@ public class ChaptersItemAdapter extends BaseQuickAdapter<HashMap, BaseViewHolde
     protected void convert(BaseViewHolder helper, HashMap item) {
 //        Glide.with(mContext).load(item.get("img")).into((ImageView) helper.getView(R.id.iv_novel));
         TextView name = helper.getView(R.id.tv_name);
-        if (getParentPosition(item)==nowChapter){
+        if (nowChapter.equals((String) item.get("name"))){
             name.setTextColor(mContext.getResources().getColor(R.color.blue_main));
         }else {
             name.setTextColor(Color.GRAY);
@@ -45,7 +45,7 @@ public class ChaptersItemAdapter extends BaseQuickAdapter<HashMap, BaseViewHolde
         name.setText((CharSequence)item.get("name"));
     }
 
-    public void setNowChapter(int chapter){
+    public void setNowChapter(String chapter){
         this.nowChapter = chapter;
     }
 

@@ -117,7 +117,7 @@ public class ChapterPop extends PopupWindow {
         tv_name.setText(name);
         this.nowChapter = nowChapter;
         int position = getStartPos(nowChapter,newChaptersLists);
-        novelItemAdapter.setNowChapter(position);
+        novelItemAdapter.setNowChapter(nowChapter);
         novelItemAdapter.notifyDataSetChanged();
         RecyclerView.LayoutManager layoutManager = rcv_chapter.getLayoutManager();
         layoutManager.scrollToPosition(position);

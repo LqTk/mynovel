@@ -303,7 +303,7 @@ public class NovelReadItem extends AppCompatActivity {
     private FullScreenPop.FullPopClick fullPopClick = new FullScreenPop.FullPopClick() {
         @Override
         public void chaptersClick() {
-            ChapterPop chapterPop = new ChapterPop(context);
+            ChapterPop chapterPop = new ChapterPop(getApplicationContext());
             chapterPop.setData(chaptersLists,bookName,tvChapterName.getText().toString());
             chapterPop.setChaptersClick(chaptersClick);
             chapterPop.setFocusable(true);
