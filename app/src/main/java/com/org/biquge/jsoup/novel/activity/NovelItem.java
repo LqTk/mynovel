@@ -106,28 +106,7 @@ public class NovelItem extends AppCompatActivity {
                     tvAuthorName.setText((CharSequence) authorMap.get("author"));
                     tvRecentTime.setText((CharSequence) authorMap.get("time"));
                     tvRecentContent.setText((CharSequence) authorMap.get("recentString"));
-
-                    novelItemAdapter = new NovelItemAdapter(R.layout.novel_item, itemsList);
-                    novelItemAdapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
-                        @Override
-                        public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
-
-                            Bundle bundle = new Bundle();
-                            bundle.putString("url", String.valueOf(itemsList.get(position).get("href")));
-                            bundle.putBoolean("isAdded", tvAddbook.getText().toString().equals("已加入图书"));
-                            bundle.putString("from", "noveitem");
-                            bundle.putString("cataLog", cataLog);
-                            bundle.putString("title", (String) authorMap.get("title"));
-                            bundle.putString("author", (String) authorMap.get("author"));
-
-                            Intent intent = new Intent(context, NovelReadItem.class);
-                            intent.putExtras(bundle);
-                            startActivity(intent);
-                            NovelItem.this.finish();
-                        }
-                    });
-                    rcvItem.setAdapter(novelItemAdapter);
-                    fastScroll.attachRecyclerView(rcvItem);
+                    novelItemAdapter.notifyDataSetChanged();
                     break;
                 case 1:
                     llAdd.setVisibility(View.GONE);
@@ -169,10 +148,34 @@ public class NovelItem extends AppCompatActivity {
     }
 
     private void initView(){
+
+        novelItemAdapter = new NovelItemAdapter(R.layout.novel_item, itemsList);
+        novelItemAdapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
+
+                Bundle bundle = new Bundle();
+                bundle.putString("url", String.valueOf(itemsList.get(position).get("href")));
+                bundle.putBoolean("isAdded", tvAddbook.getText().toString().equals("已加入图书"));
+                bundle.putString("from", "noveitem");
+                bundle.putString("cataLog", cataLog);
+                bundle.putString("title", (String) authorMap.get("title"));
+                bundle.putString("author", (String) authorMap.get("author"));
+
+                Intent intent = new Intent(context, NovelReadItem.class);
+                intent.putExtras(bundle);
+                startActivity(intent);
+                NovelItem.this.finish();
+            }
+        });
+        rcvItem.setAdapter(novelItemAdapter);
+        fastScroll.attachRecyclerView(rcvItem);
+
         fastScroll.setTouchTargetWidth(56);
         fastScroll.setBarColor(getResources().getColor(R.color.transparent));
         fastScroll.setHidingEnabled(false);
         fastScroll.touchIsDrawable(true);
+
     }
 
     private void getItemContent(final String href) {
@@ -183,7 +186,7 @@ public class NovelItem extends AppCompatActivity {
                     List<List<HashMap>> itemContent = jsoupGet.getPageContent(href);
                     infoList = itemContent.get(0);
                     authorMap = infoList.get(0);
-                    itemsList = itemContent.get(1);
+                    itemsList.addAll(itemContent.get(1));
                     itemsMap = itemsList.get(0);
                     mHandler.sendEmptyMessage(0);
                 } catch (IOException e) {

@@ -121,8 +121,8 @@ public class RecyclerFastScroller extends FrameLayout {
 
         mMinScrollHandleHeight = fiftySix;
 
-        int eightDp = RecyclerFastScrollerUtils.convertDpToPx(getContext(), 8);
-        mHiddenTranslationX = (RecyclerFastScrollerUtils.isRTL(getContext()) ? -1 : 1) * eightDp;
+        int twenty = RecyclerFastScrollerUtils.convertDpToPx(getContext(), 20);
+        mHiddenTranslationX = (RecyclerFastScrollerUtils.isRTL(getContext()) ? 1 : -1) * twenty;
         mHide = new Runnable() {
             @Override
             public void run() {
@@ -323,7 +323,6 @@ public class RecyclerFastScroller extends FrameLayout {
             }
         }
 
-        Log.d("eventprint",mHandle.getBottom()+"");
         RecyclerFastScrollerUtils.setViewBackground(mHandle, drawable);
     }
 
