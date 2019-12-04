@@ -131,7 +131,7 @@ public class BooksPage4 extends Fragment {
                         break;
                     case R.id.tv_recent_chapter:
                         Bundle bundle = new Bundle();
-                        bundle.putString("url", NovelPublic.getHomeUrl(3) + recentNew.get(position).get("chapterUrl"));
+                        bundle.putString("url", (String) recentNew.get(position).get("chapterUrl"));
                         bundle.putBoolean("isAdded", false);
                         bundle.putString("from", "noveitem");
                         bundle.putString("cataLog",String.valueOf(recentNew.get(position).get("nameurl")));

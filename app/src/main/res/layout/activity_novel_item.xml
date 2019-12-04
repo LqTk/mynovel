@@ -70,26 +70,20 @@
                 android:textSize="15sp"
                 android:layout_marginTop="10dp"/>
         </LinearLayout>
-        <RelativeLayout
+        <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp">
             <android.support.v7.widget.RecyclerView
-                android:layout_marginTop="15dp"
                 android:id="@+id/rcv_item"
-                app:fastScrollEnabled="true"
-                app:fastScrollHorizontalThumbDrawable="@drawable/thumb_drawble"
-                app:fastScrollHorizontalTrackDrawable="@drawable/line_drawable"
-                app:fastScrollVerticalThumbDrawable="@drawable/thumb_drawble"
-                app:fastScrollVerticalTrackDrawable="@drawable/line_drawable"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"/>
-            <com.org.biquge.jsoup.novel.view.MyRecycleViewBar
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:src="@drawable/scroll_up_down"
-                android:layout_alignParentRight="true"
-                android:id="@+id/iv_scroll"/>
-        </RelativeLayout>
+            <com.org.biquge.jsoup.fastscroller.RecyclerFastScroller
+                android:id="@+id/fast_scroll"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"/>
+        </FrameLayout>
         <LinearLayout
             android:id="@+id/ll_pro"
             android:layout_width="wrap_content"

@@ -61,7 +61,6 @@ import static com.org.biquge.jsoup.MyPreference.saveInfo;
 import static com.org.biquge.jsoup.MyPreference.scanViewBgId;
 import static com.org.biquge.jsoup.MyPreference.scanViewOrientation;
 import static com.org.biquge.jsoup.MyPreference.scanViewScrollPo;
-import static com.org.biquge.jsoup.novel.NovelPublic.novelHomeUrl;
 import static com.org.biquge.jsoup.novel.NovelPublic.novelSaveDirName;
 
 public class NovelReadItem extends AppCompatActivity {

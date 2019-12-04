@@ -14,6 +14,7 @@ import android.widget.TextView;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.org.biquge.jsoup.R;
+import com.org.biquge.jsoup.fastscroller.RecyclerFastScroller;
 import com.org.biquge.jsoup.novel.adapter.ChaptersItemAdapter;
 
 import java.util.ArrayList;
@@ -30,9 +31,9 @@ public class ChapterPop extends PopupWindow {
     ChaptersClick chaptersClick;
     RecyclerView rcv_chapter;
     TextView tv_name;
+    RecyclerFastScroller fastScroller;
     private boolean isDown = true;
     private String nowChapter;
-//    private NovelItemAdapter novelItemAdapter;
 
     public ChapterPop(Context context) {
         super(context);
@@ -65,11 +66,16 @@ public class ChapterPop extends PopupWindow {
         tv_name = popView.findViewById(R.id.tv_name);
         rcv_chapter = popView.findViewById(R.id.rcv_chapter);
         final ImageView iv_order = popView.findViewById(R.id.iv_order);
+        fastScroller = popView.findViewById(R.id.fast_scroll);
+
+        fastScroller.setTouchTargetWidth(56);
+        fastScroller.setBarColor(mContext.getResources().getColor(R.color.transparent));
+        fastScroller.setHidingEnabled(false);
+        fastScroller.touchIsDrawable(true);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(mContext);
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         rcv_chapter.setLayoutManager(layoutManager);
-
         novelItemAdapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
@@ -80,6 +86,7 @@ public class ChapterPop extends PopupWindow {
             }
         });
         rcv_chapter.setAdapter(novelItemAdapter);
+        fastScroller.attachRecyclerView(rcv_chapter);
 
         iv_order.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -109,10 +116,11 @@ public class ChapterPop extends PopupWindow {
         this.newChaptersLists.addAll(tempList);
         tv_name.setText(name);
         this.nowChapter = nowChapter;
-        novelItemAdapter.setNowChapter(nowChapter);
+        int position = getStartPos(nowChapter,newChaptersLists);
+        novelItemAdapter.setNowChapter(position);
         novelItemAdapter.notifyDataSetChanged();
         RecyclerView.LayoutManager layoutManager = rcv_chapter.getLayoutManager();
-        layoutManager.scrollToPosition(getStartPos(nowChapter,newChaptersLists));
+        layoutManager.scrollToPosition(position);
     }
 
     private int getStartPos(String nowChapter,List<HashMap> chaptersLists){
@@ -131,6 +139,7 @@ public class ChapterPop extends PopupWindow {
         }
         return pos;
     }
+
 
     public interface ChaptersClick{
         void chapterItemClick(int position);

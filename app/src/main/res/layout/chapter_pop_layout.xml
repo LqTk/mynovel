@@ -44,16 +44,21 @@
                 android:layout_centerVertical="true"
                 android:id="@+id/iv_order"/>
         </RelativeLayout>
-        <android.support.v7.widget.RecyclerView
-            android:layout_marginTop="10dp"
-            android:id="@+id/rcv_chapter"
-            app:fastScrollEnabled="true"
-            app:fastScrollHorizontalThumbDrawable="@drawable/thumb_drawble"
-            app:fastScrollHorizontalTrackDrawable="@color/transparent"
-            app:fastScrollVerticalThumbDrawable="@drawable/thumb_drawble"
-            app:fastScrollVerticalTrackDrawable="@color/transparent"
+        <FrameLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
             android:layout_below="@+id/rl_datalog"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
+            android:layout_marginTop="10dp">
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/rcv_chapter"
+                android:scrollbars="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"/>
+            <com.org.biquge.jsoup.fastscroller.RecyclerFastScroller
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:id="@+id/fast_scroll"/>
+        </FrameLayout>
     </RelativeLayout>
 </LinearLayout>

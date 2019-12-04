@@ -52,6 +52,7 @@ dependencies {
     implementation 'org.greenrobot:eventbus:3.1.1'
     implementation 'com.alibaba:fastjson:1.2.62'
     implementation 'com.yanzhenjie:recyclerview-swipe:1.1.4'
+//    implementation 'com.github.plusCubed:recycler-fast-scroll:0.3.2'
  /*   implementation "org.permissionsdispatcher:permissionsdispatcher:4.6.0"
     annotationProcessor "org.permissionsdispatcher:permissionsdispatcher-processor:4.6.0"*/
 }
