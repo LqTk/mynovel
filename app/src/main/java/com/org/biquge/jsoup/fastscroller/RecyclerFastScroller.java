@@ -35,6 +35,7 @@ public class RecyclerFastScroller extends FrameLayout {
     final int mHiddenTranslationX;
     private final Runnable mHide;
     private final int mMinScrollHandleHeight;
+    private final int mTouchTargetMaxHeight;
     protected OnTouchListener mOnTouchListener;
 
     int mAppBarLayoutOffset;
@@ -99,6 +100,10 @@ public class RecyclerFastScroller extends FrameLayout {
         pressedDrawable = context.getResources().getDrawable(R.drawable.change_scroll_unpress);
 
         mTouchTargetWidth = a.getDimensionPixelSize(
+                R.styleable.RecyclerFastScroller_rfs_touchTargetWidth,
+                RecyclerFastScrollerUtils.convertDpToPx(context, 56));
+
+        mTouchTargetMaxHeight = a.getDimensionPixelSize(
                 R.styleable.RecyclerFastScroller_rfs_touchTargetWidth,
                 RecyclerFastScrollerUtils.convertDpToPx(context, 56));
 
@@ -431,6 +436,10 @@ public class RecyclerFastScroller extends FrameLayout {
         int calculatedHandleHeight = (int) ((float) barHeight / verticalScrollRange * barHeight);
         if (calculatedHandleHeight < mMinScrollHandleHeight) {
             calculatedHandleHeight = mMinScrollHandleHeight;
+        }
+
+        if (calculatedHandleHeight>mTouchTargetMaxHeight){
+            calculatedHandleHeight = mTouchTargetMaxHeight;
         }
 
         if (calculatedHandleHeight >= barHeight) {

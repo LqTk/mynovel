@@ -3,6 +3,7 @@ package com.org.biquge.jsoup.novel.adapter;
 import android.graphics.Color;
 import android.os.Environment;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.widget.TextView;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
@@ -18,14 +19,17 @@ import static com.org.biquge.jsoup.novel.NovelPublic.novelSaveDirName;
 
 public class ChaptersItemAdapter extends BaseQuickAdapter<HashMap, BaseViewHolder> {
     private String nowChapter;
+    List<HashMap> datas;
 
     public ChaptersItemAdapter(int layoutResId, @Nullable List<HashMap> data) {
         super(layoutResId, data);
+        this.datas = data;
     }
 
     @Override
     protected void convert(BaseViewHolder helper, HashMap item) {
 //        Glide.with(mContext).load(item.get("img")).into((ImageView) helper.getView(R.id.iv_novel));
+        Log.d("item index=",datas.indexOf(item)+"当前position");
         TextView name = helper.getView(R.id.tv_name);
         if (nowChapter.equals((String) item.get("name"))){
             name.setTextColor(mContext.getResources().getColor(R.color.blue_main));

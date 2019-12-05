@@ -68,11 +68,6 @@ public class ChapterPop extends PopupWindow {
         final ImageView iv_order = popView.findViewById(R.id.iv_order);
         fastScroller = popView.findViewById(R.id.fast_scroll);
 
-        fastScroller.setTouchTargetWidth(56);
-        fastScroller.setBarColor(mContext.getResources().getColor(R.color.transparent));
-        fastScroller.setHidingEnabled(false);
-        fastScroller.touchIsDrawable(true);
-
         LinearLayoutManager layoutManager = new LinearLayoutManager(mContext);
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         rcv_chapter.setLayoutManager(layoutManager);
@@ -87,6 +82,11 @@ public class ChapterPop extends PopupWindow {
         });
         rcv_chapter.setAdapter(novelItemAdapter);
         fastScroller.attachRecyclerView(rcv_chapter);
+
+        fastScroller.setTouchTargetWidth(56);
+        fastScroller.setBarColor(mContext.getResources().getColor(R.color.transparent));
+        fastScroller.setHidingEnabled(false);
+        fastScroller.touchIsDrawable(true);
 
         iv_order.setOnClickListener(new View.OnClickListener() {
             @Override

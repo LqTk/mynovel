@@ -76,7 +76,7 @@ public class NovelPublic {
 
     public static RequestOptions errorOptions(){
         return new RequestOptions()
-                .centerCrop()
+                .centerInside()
                 .error(R.drawable.nobookpic);
     }
 }
