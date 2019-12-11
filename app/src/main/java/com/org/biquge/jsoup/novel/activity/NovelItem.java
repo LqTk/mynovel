@@ -171,7 +171,8 @@ public class NovelItem extends AppCompatActivity {
         rcvItem.setAdapter(novelItemAdapter);
         fastScroll.attachRecyclerView(rcvItem);
 
-        fastScroll.setTouchTargetWidth(56);
+        fastScroll.setTouchTargetWidth(25);
+        fastScroll.setMarginLeft(10);
         fastScroll.setBarColor(getResources().getColor(R.color.transparent));
         fastScroll.setHidingEnabled(false);
         fastScroll.touchIsDrawable(true);

@@ -83,7 +83,8 @@ public class ChapterPop extends PopupWindow {
         rcv_chapter.setAdapter(novelItemAdapter);
         fastScroller.attachRecyclerView(rcv_chapter);
 
-        fastScroller.setTouchTargetWidth(56);
+        fastScroller.setTouchTargetWidth(25);
+        fastScroller.setMarginLeft(10);
         fastScroller.setBarColor(mContext.getResources().getColor(R.color.transparent));
         fastScroller.setHidingEnabled(false);
         fastScroller.touchIsDrawable(true);
