@@ -112,6 +112,7 @@ public class FullScreenPop extends PopupWindow {
             @Override
             public void onClick(View v) {
                 fullPopClick.refreshDataClick();
+                fullPopClick.popDismiss();
                 dismiss();
             }
         });
@@ -136,6 +137,7 @@ public class FullScreenPop extends PopupWindow {
                 themeData.get(position).setChecked(true);
                 themeAdapter.setNewData(themeData);
                 themeAdapter.notifyDataSetChanged();
+                fullPopClick.popDismiss();
                 dismiss();
             }
         });
@@ -145,6 +147,7 @@ public class FullScreenPop extends PopupWindow {
                 if (fullPopClick!=null){
                     fullPopClick.chaptersClick();
                 }
+                fullPopClick.popDismiss();
                 dismiss();
             }
         });
@@ -152,6 +155,7 @@ public class FullScreenPop extends PopupWindow {
         rl_full_pop.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                fullPopClick.popDismiss();
                 dismiss();
             }
         });
@@ -163,5 +167,6 @@ public class FullScreenPop extends PopupWindow {
         void refreshDataClick();
         void onSaveClick();
         void setOrientationClick(int orientation);
+        void popDismiss();
     }
 }

@@ -303,12 +303,16 @@ public class NovelReadItem extends AppCompatActivity {
     private FullScreenPop.FullPopClick fullPopClick = new FullScreenPop.FullPopClick() {
         @Override
         public void chaptersClick() {
+            if (showFullPop){
+                return;
+            }
             ChapterPop chapterPop = new ChapterPop(getApplicationContext());
             chapterPop.setData(chaptersLists,bookName,tvChapterName.getText().toString());
             chapterPop.setChaptersClick(chaptersClick);
             chapterPop.setFocusable(true);
             chapterPop.setOutsideTouchable(false);
             chapterPop.showAtLocation(llMain, Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL, 0, 0);
+            showFullPop = true;
         }
 
         @Override
@@ -341,6 +345,11 @@ public class NovelReadItem extends AppCompatActivity {
             scrollOrientation = myPreference.getInt(scanViewOrientation,0);
             isChangeOrientation = true;
             handler.sendEmptyMessage(2);
+        }
+
+        @Override
+        public void popDismiss() {
+            showFullPop = false;
         }
     };
 
@@ -390,6 +399,7 @@ public class NovelReadItem extends AppCompatActivity {
     private int scrollPosition = 0;
     private String bookName;
     private int NRIScanViewBgId;
+    private boolean showFullPop = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -516,6 +526,7 @@ public class NovelReadItem extends AppCompatActivity {
             if (!isAdded){
                 authorMap.put("lastPage",chapterPosition);
             }
+            onSaveBooks();
             String nowChapter = (String) chaptersLists.get(chapterPosition).get("href");
             String[] split = nowChapter.split(NovelPublic.getHomeUrl(3))[1].split(".html");
             nowChapter = split[0] + ".txt";
