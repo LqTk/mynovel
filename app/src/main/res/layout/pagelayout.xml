@@ -12,19 +12,19 @@
         android:layout_above="@+id/rl_bttom">
         <TextView
             android:id="@+id/content"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
             android:padding="10dp"
             android:layout_alignParentTop="true"
             android:lineSpacingExtra="5dp"
             android:textColor="#000000"
-            android:textSize="18sp" />
+            android:textSize="18sp"/>
     </com.org.biquge.jsoup.novel.view.MyScrollView>
     <RelativeLayout
         android:id="@+id/rl_bttom"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="30dp"
         android:layout_marginBottom="15dp"
         android:layout_alignParentBottom="true">
         <TextView

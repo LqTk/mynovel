@@ -85,7 +85,7 @@ public class NovelReadItem extends AppCompatActivity {
     private Unbinder bind;
     private JsoupGet jsoupGet = new JsoupGet();
     private int pageReadCount = 280;
-    ScanViewAdapter scanViewAdapter;
+    ScanViewAdapter scanViewAdapter = new ScanViewAdapter();
 
     Handler handler = new Handler() {
         @Override
@@ -101,113 +101,8 @@ public class NovelReadItem extends AppCompatActivity {
                     if (readItem == null)
                         return;
                     tvChapterName.setText((String) readItem.get("name"));
-                    String content = (String) readItem.get("content");
-                    final List<String> cons = new ArrayList<>();
-                    final List<String> consCopy = new ArrayList<>();
-                    if (scrollOrientation==0) {
-                        int i = 0;
-                        for (i = 0; i < content.length() / pageReadCount; i++) {
-                            cons.add(content.substring(i * pageReadCount, (i + 1) * pageReadCount));
-                        }
-                        cons.add(content.substring(i * pageReadCount, content.length()));
-                    }else {
-                        int i = 0;
-                        for (i = 0; i < content.length() / pageReadCount; i++) {
-                            consCopy.add(content.substring(i * pageReadCount, (i + 1) * pageReadCount));
-                        }
-                        consCopy.add(content.substring(i * pageReadCount, content.length()));
-                        cons.add(content);
-                    }
-                    if (!first && !isChangeOrientation) {
-                        if (pageStatus.equals("next")) {
-                            currentIndex = 1;
-                            authorMap.put("lastPage", currentIndex);
-                            scrollPo = 0;
-                        } else {
-                            currentIndex = cons.size();
-                            authorMap.put("lastPage", currentIndex);
-                        }
-                        if (scrollOrientation==0) {
-                            currentIndex = (int) authorMap.get("lastPage");
-                        }else {
-                            currentIndex = 1;
-                            if (pageStatus.equals("last")) {
-                                scrollPosition = consCopy.size();
-                            }else {
-                                authorMap.put("lastPage", currentIndex);
-                                scrollPosition = (int) authorMap.get("lastPage");
-                            }
-                        }
-                    }
-                    if (isChangeOrientation){
-                        isChangeOrientation = false;
-                        if (scrollOrientation==0) {
-                            currentIndex = (int) authorMap.get("lastPage");
-                        }else {
-                            if (pageStatus.equals("last")) {
-                                scrollPosition = consCopy.size();
-                            }else {
-                                scrollPosition = (int) authorMap.get("lastPage");
-                            }
-                            currentIndex = 1;
-                        }
-                    }
-                    if (first) {
-                        first = false;
-                        currentIndex = (int) authorMap.get("lastPage");
-                        scrollPosition = currentIndex;
-                        if (scrollOrientation==1){
-                            currentIndex = 1;
-                        }
-                    }
-                    scanViewAdapter = new ScanViewAdapter(context, cons, NRIScanViewBgId,scrollOrientation);
-                    scanViewAdapter.setChapterClicker(new ScanViewAdapter.ChapterClicker() {
-                        @Override
-                        public void lastChapterListener() {
-                            String lastUrl = (String) readItem.get("lastChapter");
-                            String allUrl = (String) readItem.get("allChapter");
-                            if (llPro.getVisibility() == View.VISIBLE) {
-                                return;
-                            }
-                            if (lastUrl.equals(allUrl)) {
-                                if (System.currentTimeMillis() - showLastTime > 1200) {
-                                    showLastTime = System.currentTimeMillis();
-                                    ToastUtils.showShortMsg(context, "这已经是第一章了哦~");
-                                }
-                                return;
-                            }
-                            pageStatus = "next";
-                            getData(lastUrl);
-                        }
-
-                        @Override
-                        public void nextChapterListener() {
-                            String nextUrl = (String) readItem.get("nextChapter");
-                            String allUrl = (String) readItem.get("allChapter");
-                            if (llPro.getVisibility() == View.VISIBLE) {
-                                return;
-                            }
-                            if (nextUrl==null || allUrl==null){
-                                return;
-                            }
-                            if (nextUrl.equals(allUrl)) {
-                                if (System.currentTimeMillis() - showLastTime > 1200) {
-                                    showLastTime = System.currentTimeMillis();
-                                    ToastUtils.showShortMsg(context, "没有下一章了，看看其它的吧");
-                                }
-                                return;
-                            }
-                            pageStatus = "next";
-                            getData(nextUrl);
-                        }
-                    });
-                    if (scanViewAdapter != null) {
-                        scanView.setAdapter(scanViewAdapter, currentIndex,scrollPosition);
-                        scanView.setPageListener(pageListener);
-                        scanView.setScreenClick(screenClick);
-                        scanView.setSavePageListener(savePageListener);
-                    }
-                    llPro.setVisibility(View.GONE);
+                    String content1 = (String) readItem.get("content");
+                    scanViewAdapter.setData(context, content1,NRIScanViewBgId,scrollOrientation);
                     break;
                 case 3:
                     llPro.setVisibility(View.GONE);
@@ -231,6 +126,119 @@ public class NovelReadItem extends AppCompatActivity {
 
     List<ScanThemeBgEntity> themeBgEntities = new ArrayList<>();
 
+    private ScanViewAdapter.GetPages getPages = new ScanViewAdapter.GetPages() {
+        @Override
+        public void allPagesCount(String content, List<String> items) {
+            List<String> consCopy = new ArrayList<>();
+            List<String> cons = new ArrayList<>();
+            if (scrollOrientation==0) {
+                int i = 0;
+                /*for (i = 0; i < content.length() / pageReadCount; i++) {
+                    cons.add(content.substring(i * pageReadCount, (i + 1) * pageReadCount));
+                }
+                cons.add(content.substring(i * pageReadCount, content.length()));*/
+                cons = items;
+            }else {
+//                                cons = items;
+                                /*int i = 0;
+                                for (i = 0; i < content.length() / pageReadCount; i++) {
+                                    consCopy.add(content.substring(i * pageReadCount, (i + 1) * pageReadCount));
+                                }
+                                consCopy.add(content.substring(i * pageReadCount, content.length()));*/
+                consCopy = items;
+                cons.add(content);
+            }
+            if (!first && !isChangeOrientation) {
+                if (pageStatus.equals("next")) {
+                    currentIndex = 1;
+                    authorMap.put("lastPage", currentIndex);
+                    scrollPo = 0;
+                } else {
+                    currentIndex = cons.size();
+                    authorMap.put("lastPage", currentIndex);
+                }
+                if (scrollOrientation==0) {
+                    currentIndex = (int) authorMap.get("lastPage");
+                }else {
+                    currentIndex = 1;
+                    if (pageStatus.equals("last")) {
+                        scrollPosition = consCopy.size();
+                    }else {
+                        authorMap.put("lastPage", currentIndex);
+                        scrollPosition = (int) authorMap.get("lastPage");
+                    }
+                }
+            }
+            if (isChangeOrientation){
+                isChangeOrientation = false;
+                if (scrollOrientation==0) {
+                    currentIndex = (int) authorMap.get("lastPage");
+                }else {
+                    if (pageStatus.equals("last")) {
+                        scrollPosition = consCopy.size();
+                    }else {
+                        scrollPosition = (int) authorMap.get("lastPage");
+                    }
+                    currentIndex = 1;
+                }
+            }
+            if (first) {
+                first = false;
+                currentIndex = (int) authorMap.get("lastPage");
+                scrollPosition = currentIndex;
+                if (scrollOrientation==1){
+                    currentIndex = 1;
+                }
+            }
+            scanViewAdapter.setChapterClicker(new ScanViewAdapter.ChapterClicker() {
+                @Override
+                public void lastChapterListener() {
+                    String lastUrl = (String) readItem.get("lastChapter");
+                    String allUrl = (String) readItem.get("allChapter");
+                    if (llPro.getVisibility() == View.VISIBLE) {
+                        return;
+                    }
+                    if (lastUrl.equals(allUrl)) {
+                        if (System.currentTimeMillis() - showLastTime > 1200) {
+                            showLastTime = System.currentTimeMillis();
+                            ToastUtils.showShortMsg(context, "这已经是第一章了哦~");
+                        }
+                        return;
+                    }
+                    pageStatus = "next";
+                    getData(lastUrl);
+                }
+
+                @Override
+                public void nextChapterListener() {
+                    String nextUrl = (String) readItem.get("nextChapter");
+                    String allUrl = (String) readItem.get("allChapter");
+                    if (llPro.getVisibility() == View.VISIBLE) {
+                        return;
+                    }
+                    if (nextUrl==null || allUrl==null){
+                        return;
+                    }
+                    if (nextUrl.equals(allUrl)) {
+                        if (System.currentTimeMillis() - showLastTime > 1200) {
+                            showLastTime = System.currentTimeMillis();
+                            ToastUtils.showShortMsg(context, "没有下一章了，看看其它的吧");
+                        }
+                        return;
+                    }
+                    pageStatus = "next";
+                    getData(nextUrl);
+                }
+            });
+            if (scanViewAdapter != null) {
+                scanView.setAdapter(scanViewAdapter, currentIndex,scrollPosition);
+                scanView.setPageListener(pageListener);
+                scanView.setScreenClick(screenClick);
+                scanView.setSavePageListener(savePageListener);
+            }
+            llPro.setVisibility(View.GONE);
+        }
+    };
     private ScanView.OnPageListener pageListener = new ScanView.OnPageListener() {
         @Override
         public void lastChapter() {
@@ -440,6 +448,7 @@ public class NovelReadItem extends AppCompatActivity {
         themeBgEntities.add(new ScanThemeBgEntity(true,R.drawable.read_cover3));
         themeBgEntities.add(new ScanThemeBgEntity(false,R.drawable.read_cover2));
         themeBgEntities.add(new ScanThemeBgEntity(false,R.drawable.read_cover));
+        themeBgEntities.add(new ScanThemeBgEntity(false,R.drawable.read_cover4));
         for (int i=0;i<themeBgEntities.size();i++){
             themeBgEntities.get(i).setChecked(false);
             if (which == i){
@@ -510,6 +519,7 @@ public class NovelReadItem extends AppCompatActivity {
     }
 
     private void getData(final String href) {
+        scanViewAdapter.setPagesListener(getPages);
         llPro.setVisibility(View.VISIBLE);
         authorMap.put("chapter", href);
 
