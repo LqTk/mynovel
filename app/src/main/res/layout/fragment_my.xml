@@ -74,4 +74,39 @@
             android:text="加载中..."/>
     </LinearLayout>
 
+    <LinearLayout
+        android:id="@+id/ll_noshow"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_margin="25dp">
+
+        <ImageView
+            android:id="@+id/iv_delete"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:src="@drawable/delete_gray"
+            android:layout_gravity="right"/>
+        <LinearLayout
+            android:id="@+id/ll_donate"
+            android:background="@drawable/donate_circle"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:padding="5dp">
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@drawable/qian"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="支持一下"
+                android:textSize="7sp"/>
+        </LinearLayout>
+
+    </LinearLayout>
 </RelativeLayout>

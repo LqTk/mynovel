@@ -8,7 +8,7 @@ android {
         minSdkVersion 19
         targetSdkVersion 27
         versionCode 1
-        versionName "2.3"
+        versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
     }
@@ -53,6 +53,6 @@ dependencies {
     implementation 'com.alibaba:fastjson:1.2.62'
     implementation 'com.yanzhenjie:recyclerview-swipe:1.1.4'
 //    implementation 'com.github.plusCubed:recycler-fast-scroll:0.3.2'
- /*   implementation "org.permissionsdispatcher:permissionsdispatcher:4.6.0"
+    /*   implementation "org.permissionsdispatcher:permissionsdispatcher:4.6.0"
     annotationProcessor "org.permissionsdispatcher:permissionsdispatcher-processor:4.6.0"*/
 }

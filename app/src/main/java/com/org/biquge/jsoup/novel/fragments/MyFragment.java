@@ -23,6 +23,7 @@ import com.org.biquge.jsoup.JsoupGet;
 import com.org.biquge.jsoup.MyPreference;
 import com.org.biquge.jsoup.R;
 import com.org.biquge.jsoup.novel.NovelPublic;
+import com.org.biquge.jsoup.novel.activity.DonateActivity;
 import com.org.biquge.jsoup.novel.activity.DownLoadActivity;
 import com.org.biquge.jsoup.novel.activity.NovelReadItem;
 import com.org.biquge.jsoup.novel.activity.ThemeActivity;
@@ -82,6 +83,8 @@ public class MyFragment extends Fragment {
     RelativeLayout rlTop;
     @BindView(R.id.srf_header)
     ClassicsHeader srfHeader;
+    @BindView(R.id.ll_noshow)
+    LinearLayout llNoshow;
     private List<HashMap> myBooksLists = new ArrayList<>();
     Handler handler = new Handler() {
         @Override
@@ -153,16 +156,16 @@ public class MyFragment extends Fragment {
                             handler.sendEmptyMessage(2);
                         }
                     }).start();
-                }else {
+                } else {
                     srf.finishRefresh();
                 }
             }
         });
         srfHeader.setTimeFormat(new SimpleDateFormat("上次更新 MM-dd HH:mm", Locale.CHINA));
-        if (refreshTime==0){
+        if (refreshTime == 0) {
             refreshTime = System.currentTimeMillis();
             srf.autoRefresh();
-        }else {
+        } else {
             srfHeader.setLastUpdateTime(new Date(refreshTime));
         }
 
@@ -224,7 +227,7 @@ public class MyFragment extends Fragment {
                     if (DownLoadTask.threadList.get(i).loadEntity.getLoadingStatu() == 1) {
                         DownLoadTask.threadList.get(i).handler = handler;
                         DownLoadTask.threadList.get(i).loadEntity.setLoadingStatu(3);
-                    }else {
+                    } else {
                         deleteItem(new DeleteEvent());
                     }
                     break;
@@ -406,7 +409,7 @@ public class MyFragment extends Fragment {
         }
     }
 
-    @OnClick({R.id.iv_down, R.id.iv_setting})
+    @OnClick({R.id.iv_down, R.id.iv_setting, R.id.ll_donate, R.id.iv_delete})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.iv_down:
@@ -415,6 +418,12 @@ public class MyFragment extends Fragment {
                 break;
             case R.id.iv_setting:
                 startActivity(new Intent(getContext(), ThemeActivity.class));
+                break;
+            case R.id.ll_donate:
+                startActivity(new Intent(getContext(), DonateActivity.class));
+                break;
+            case R.id.iv_delete:
+                llNoshow.setVisibility(View.GONE);
                 break;
         }
     }
@@ -429,4 +438,5 @@ public class MyFragment extends Fragment {
         rlTop.setBackgroundColor(getResources().getColor(themeId));
         StatusBarCompat.setStatusBarColor(getActivity(), getResources().getColor(themeId));
     }
+
 }

@@ -13,7 +13,8 @@
         android:roundIcon="@drawable/logo_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".novel.activity.ThemeActivity"></activity>
+        <activity android:name=".novel.activity.DonateActivity"></activity>
+        <activity android:name=".novel.activity.ThemeActivity" />
         <activity android:name=".novel.activity.DownLoadActivity" />
         <activity android:name=".novel.activity.NovelMainActivity" />
         <activity android:name=".novel.activity.NovelItem" />
@@ -21,6 +22,7 @@
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>

@@ -153,8 +153,9 @@ public class MainActivity extends AppCompatActivity {
     public void onBackPressed() {
         if (lastFragment!=0){
             resetTodefaultIcon();
-            switchFragment(0);
-            bnvMain.getMenu().findItem(R.id.navigation_my).setIcon(R.drawable.my_books);
+//            switchFragment(0);
+//            bnvMain.getMenu().findItem(R.id.navigation_my).setIcon(R.drawable.my_books);
+            mOnNavigationItemSelectedListener.onNavigationItemSelected(bnvMain.getMenu().findItem(R.id.navigation_my));
         }else {
             if (System.currentTimeMillis() - exitTime < 1500) {
                 if (DownLoadTask.threadList != null) {
