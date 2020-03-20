@@ -74,7 +74,7 @@ public class ScanViewAdapter extends PageAdapter{
         int textOneHeight = 0;
         StringBuffer stringBuffer = new StringBuffer();
         pFont.getTextBounds("宽", 0, 1, rect);
-        for (int i=0;i<stringText.length()-1;i++){
+        for (int i=0;i<stringText.length();i++){
             String oneChar = String.valueOf(stringText.charAt(i));
             if (textOneHeight==0 && oneChar.equals("\n") && TextUtils.isEmpty(stringBuffer.toString())){
             }else {
@@ -95,6 +95,16 @@ public class ScanViewAdapter extends PageAdapter{
                         lineWidth = 0;
                         textOneHeight = 0;
                     }
+                }
+                if (i==stringText.length()-1 && !TextUtils.isEmpty(stringBuffer.toString())){
+                    String lineText = stringBuffer.toString();
+                    if (lineText.endsWith("\n")) {
+                        stringBuffer.deleteCharAt(stringBuffer.length() - 1);
+                    }
+                    itemsReslut.add(stringBuffer.toString());
+                    stringBuffer.setLength(0);
+                    lineWidth = 0;
+                    textOneHeight = 0;
                 }
             }
         }
