@@ -13,7 +13,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="https://raw.githubusercontent.com/LqTk/mynovel/master/app/publish/freetime.apk"
+        android:text="https://raw.githubusercontent.com/LqTk/publishApk/master/freetime.apk"
         android:textIsSelectable="true"
         android:padding="10dp"/>
     <View
