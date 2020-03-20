@@ -54,7 +54,7 @@ public class DonateActivity extends AppCompatActivity {
                 .load("https://raw.githubusercontent.com/LqTk/mynovel/master/app/src/main/res/drawable/donate.png")
                 .apply(new RequestOptions()
                         .centerInside()
-                        .error(R.drawable.nobookpic)
+                        .error(R.drawable.noerweima)
                         .diskCacheStrategy(DiskCacheStrategy.NONE)
                         .skipMemoryCache(true))
                 .into(ivDonate);
