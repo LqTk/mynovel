@@ -9,6 +9,8 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.request.RequestOptions;
 import com.githang.statusbar.StatusBarCompat;
 import com.org.biquge.jsoup.MyPreference;
 import com.org.biquge.jsoup.R;
@@ -50,7 +52,10 @@ public class DonateActivity extends AppCompatActivity {
     private void initDonateIv() {
         Glide.with(context)
                 .load("https://raw.githubusercontent.com/LqTk/mynovel/master/app/src/main/res/drawable/donate.png")
-                .apply(NovelPublic.errorOptions())
+                .apply(new RequestOptions()
+                        .centerInside()
+                        .error(R.drawable.nobookpic)
+                        .diskCacheStrategy(DiskCacheStrategy.NONE))
                 .into(ivDonate);
     }
 
