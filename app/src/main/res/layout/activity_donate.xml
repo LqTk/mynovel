@@ -36,7 +36,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="说明：该APP仅供休闲娱乐使用，禁止用于其它任何商业用途，感谢http://www.b5200.net提供的免费小说。
-如产生任何纠纷，本人不承担任何责任。"
+如产生任何纠纷，本人不承担任何责任。\n如产生侵权问题，请及时联系处理。"
         android:layout_alignParentBottom="true"
         android:layout_marginBottom="40dp"
         android:layout_marginLeft="30dp"
