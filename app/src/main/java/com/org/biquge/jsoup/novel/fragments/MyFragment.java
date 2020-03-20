@@ -1,5 +1,6 @@
 package com.org.biquge.jsoup.novel.fragments;
 
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Environment;
@@ -14,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.alibaba.fastjson.JSON;
@@ -409,7 +411,7 @@ public class MyFragment extends Fragment {
         }
     }
 
-    @OnClick({R.id.iv_down, R.id.iv_setting, R.id.ll_donate, R.id.iv_delete})
+    @OnClick({R.id.iv_down, R.id.iv_setting, R.id.ll_donate, R.id.iv_delete, R.id.rl_share})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.iv_down:
@@ -424,6 +426,21 @@ public class MyFragment extends Fragment {
                 break;
             case R.id.iv_delete:
                 llNoshow.setVisibility(View.GONE);
+                break;
+            case R.id.rl_share:
+                final AlertDialog.Builder showMessage = new AlertDialog.Builder(getContext());
+                View viewMsg = View.inflate(getContext(),R.layout.share,null);
+                TextView tvCancel = viewMsg.findViewById(R.id.tv_cancel);
+                final AlertDialog dialogShare = showMessage.setTitle("分享给好友")
+                        .setView(viewMsg)
+                        .create();
+                tvCancel.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        dialogShare.dismiss();
+                    }
+                });
+                dialogShare.show();
                 break;
         }
     }

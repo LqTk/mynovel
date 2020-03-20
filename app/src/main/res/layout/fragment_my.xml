@@ -89,12 +89,25 @@
             android:layout_height="20dp"
             android:src="@drawable/delete_gray"
             android:layout_gravity="right"/>
+        <RelativeLayout
+            android:id="@+id/rl_share"
+            android:layout_marginTop="5dp"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:padding="5dp"
+            android:background="@drawable/donate_circle">
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:src="@drawable/share"/>
+        </RelativeLayout>
         <LinearLayout
             android:id="@+id/ll_donate"
             android:background="@drawable/donate_circle"
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:orientation="vertical"
+            android:layout_marginTop="5dp"
             android:gravity="center"
             android:padding="5dp">
             <ImageView
