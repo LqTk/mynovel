@@ -55,7 +55,8 @@ public class DonateActivity extends AppCompatActivity {
                 .apply(new RequestOptions()
                         .centerInside()
                         .error(R.drawable.nobookpic)
-                        .diskCacheStrategy(DiskCacheStrategy.NONE))
+                        .diskCacheStrategy(DiskCacheStrategy.NONE)
+                        .skipMemoryCache(true))
                 .into(ivDonate);
     }
 
