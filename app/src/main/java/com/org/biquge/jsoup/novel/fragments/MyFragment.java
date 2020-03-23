@@ -411,7 +411,9 @@ public class MyFragment extends Fragment {
         }
     }
 
-    @OnClick({R.id.iv_down, R.id.iv_setting, R.id.ll_donate, R.id.iv_delete, R.id.rl_share})
+    long clickTime = 0;
+    int clickCount = 0;
+    @OnClick({R.id.iv_down, R.id.iv_setting, R.id.ll_donate, R.id.iv_delete, R.id.rl_share, R.id.tv_title})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.iv_down:
@@ -441,6 +443,19 @@ public class MyFragment extends Fragment {
                     }
                 });
                 dialogShare.show();
+                break;
+            case R.id.tv_title:
+                if (System.currentTimeMillis()-clickTime<300){
+                    clickTime = System.currentTimeMillis();
+                    clickCount++;
+                }else {
+                    clickCount = 0;
+                    clickTime = System.currentTimeMillis();
+                }
+                if (clickCount>=3){
+                    clickCount = 1;
+                    llNoshow.setVisibility(View.VISIBLE);
+                }
                 break;
         }
     }
