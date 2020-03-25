@@ -62,23 +62,19 @@ public class ScanViewAdapter extends PageAdapter{
         List<String> itemsReslut = new ArrayList<>();
         TextView content = (TextView) this.getView().findViewById(R.id.content);
         TextPaint textPaint = content.getPaint();
-        float textWidth = textPaint.measureText("宽")/2;
-        int lineHeight = content.getLineHeight()/2;
+        float textWidth = textPaint.measureText("一")/2;
+        int lineHeight = (int) (content.getLineHeight()/2+textValueToDp(0.8f));
         DisplayMetrics dm = context.getResources().getDisplayMetrics();
         int heigth = dm.heightPixels/2;
         int width = (int) (dm.widthPixels/2-textValueToDp(20));
         int textHeight = (int) (heigth-textValueToDp(15)-textValueToDp(23f));
-        Paint pFont = new Paint();
-        Rect rect = new Rect();
         int lineWidth = 0;
         int textOneHeight = 0;
         StringBuffer stringBuffer = new StringBuffer();
-        pFont.getTextBounds("宽", 0, 1, rect);
         for (int i=0;i<stringText.length();i++){
             String oneChar = String.valueOf(stringText.charAt(i));
             if (textOneHeight==0 && oneChar.equals("\n") && TextUtils.isEmpty(stringBuffer.toString())){
             }else {
-//                lineWidth += rect.width() + textValueToDp(5f);
                 lineWidth += textWidth;
                 stringBuffer.append(oneChar);
                 if (lineWidth >= width || oneChar.equals("\n")) {

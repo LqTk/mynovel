@@ -8,6 +8,7 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
@@ -544,6 +545,10 @@ public class NovelReadItem extends AppCompatActivity {
             File saveFile = new File(savePath);
             if (saveFile.exists()) {
                 readItem = read(saveFile);
+                if (TextUtils.isEmpty((String) readItem.get("allChapter"))&&
+                        !TextUtils.isEmpty(catalog)){
+                    readItem.put("allChapter",catalog);
+                }
                 handler.sendEmptyMessageDelayed(2, 500);
             } else {
                 new Thread(new Runnable() {
