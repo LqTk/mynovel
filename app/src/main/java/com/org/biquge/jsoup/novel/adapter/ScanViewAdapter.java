@@ -92,9 +92,10 @@ public class ScanViewAdapter extends PageAdapter{
                         textOneHeight = 0;
                     }
                 }
-                String lineText = stringBuffer.toString();
-                if (i==stringText.length()-1 && !TextUtils.isEmpty(stringBuffer.toString()) && !lineText.equals("\n")){
-                    if (lineText.endsWith("\n")) {
+
+                String lineText = stringBuffer.toString().replace("　","").trim();
+                if (i==stringText.length()-1 && !TextUtils.isEmpty(lineText) && !lineText.equals("\n")){
+                    if (stringBuffer.toString().endsWith("\n")) {
                         stringBuffer.deleteCharAt(stringBuffer.length() - 1);
                     }
                     itemsReslut.add(stringBuffer.toString());
