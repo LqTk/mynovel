@@ -15,15 +15,15 @@
         android:layout_height="wrap_content"
         android:text="https://raw.githubusercontent.com/LqTk/publishApk/master/freetime.apk"
         android:textIsSelectable="true"
-        android:padding="10dp"/>
+        android:padding="@dimen/dp_10"/>
     <View
         android:layout_width="match_parent"
-        android:layout_height="1dp"
+        android:layout_height="@dimen/dp_1"
         android:background="@color/gray"/>
     <TextView
         android:id="@+id/tv_cancel"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
+        android:layout_height="@dimen/dp_50"
         android:gravity="center"
         android:text="取消"/>
 </LinearLayout>

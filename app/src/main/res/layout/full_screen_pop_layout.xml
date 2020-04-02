@@ -7,26 +7,26 @@
     <RelativeLayout
         android:id="@+id/rl_top"
         android:layout_width="match_parent"
-        android:layout_height="40dp"
-        android:padding="5dp"
+        android:layout_height="@dimen/dp_40"
+        android:padding="@dimen/dp_5"
         android:background="#d0000000">
         <TextView
             android:layout_alignParentRight="true"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="背景"
-            android:padding="5dp"
+            android:padding="@dimen/dp_5"
             android:layout_centerVertical="true"
             android:textColor="@color/text_color_white"
-            android:layout_marginRight="10dp"
+            android:layout_marginRight="@dimen/dp_10"
             android:id="@+id/iv_theme_menu"/>
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:text="刷新"
-            android:padding="5dp"
-            android:layout_marginRight="10dp"
+            android:padding="@dimen/dp_5"
+            android:layout_marginRight="@dimen/dp_10"
             android:textColor="@color/text_color_white"
             android:layout_toLeftOf="@+id/iv_theme_menu"
             android:id="@+id/tv_refresh"/>
@@ -45,26 +45,26 @@
         android:id="@+id/rl_bottom"
         android:layout_alignParentBottom="true"
         android:background="#d0000000"
-        android:padding="10dp">
+        android:padding="@dimen/dp_10">
         <LinearLayout
             android:id="@+id/ll_books_chapters"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:gravity="center"
-            android:layout_marginLeft="10dp"
+            android:layout_marginLeft="@dimen/dp_10"
             android:layout_centerVertical="true"
             android:layout_alignParentLeft="true">
             <ImageView
-                android:layout_width="20dp"
-                android:layout_height="30dp"
+                android:layout_width="@dimen/dp_20"
+                android:layout_height="@dimen/dp_30"
                 android:src="@drawable/full_more"/>
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="目录"
                 android:textColor="@color/text_color_white"
-                android:textSize="13sp" />
+                android:textSize="@dimen/sp_13" />
         </LinearLayout>
         <LinearLayout
             android:layout_width="wrap_content"
@@ -74,15 +74,15 @@
             android:layout_centerInParent="true"
             android:gravity="center">
             <ImageView
-                android:layout_width="20dp"
-                android:layout_height="30dp"
+                android:layout_width="@dimen/dp_20"
+                android:layout_height="@dimen/dp_30"
                 android:src="@drawable/download"/>
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="下载"
                 android:textColor="@color/text_color_white"
-                android:textSize="13sp"/>
+                android:textSize="@dimen/sp_13"/>
         </LinearLayout>
 
         <LinearLayout
@@ -91,13 +91,13 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:gravity="center"
-            android:layout_marginRight="10dp"
+            android:layout_marginRight="@dimen/dp_10"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true">
             <ImageView
                 android:id="@+id/iv_scroll"
-                android:layout_width="20dp"
-                android:layout_height="30dp"
+                android:layout_width="@dimen/dp_20"
+                android:layout_height="@dimen/dp_30"
                 android:src="@drawable/scroll_up_down"/>
             <TextView
                 android:id="@+id/tv_scroll"
@@ -105,7 +105,7 @@
                 android:layout_height="wrap_content"
                 android:text="滑动"
                 android:textColor="@color/text_color_white"
-                android:textSize="13sp" />
+                android:textSize="@dimen/sp_13" />
         </LinearLayout>
     </RelativeLayout>
 </RelativeLayout>

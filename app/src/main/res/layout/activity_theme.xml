@@ -10,13 +10,13 @@
     <RelativeLayout
         android:id="@+id/rl_top"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
+        android:layout_height="@dimen/dp_50"
         android:background="@color/theme_blue">
         <ImageView
-            android:padding="10dp"
+            android:padding="@dimen/dp_10"
             android:id="@+id/iv_back"
             android:src="@drawable/left"
-            android:layout_width="50dp"
+            android:layout_width="@dimen/dp_50"
             android:layout_height="match_parent"/>
         <TextView
             android:layout_width="wrap_content"
@@ -25,7 +25,7 @@
             android:text="换肤"
             android:textColor="@color/white"
             android:layout_centerInParent="true"
-            android:textSize="20sp"/>
+            android:textSize="@dimen/sp_20"/>
     </RelativeLayout>
 
     <GridView

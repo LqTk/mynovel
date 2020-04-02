@@ -7,17 +7,17 @@
     <RelativeLayout
         android:id="@+id/rl_theme_bg"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
+        android:layout_height="@dimen/dp_50"
         android:background="@color/theme_blue"
-        android:layout_marginRight="15dp"
-        android:layout_marginLeft="15dp"
-        android:layout_marginTop="5dp"
-        android:layout_marginBottom="5dp">
+        android:layout_marginRight="@dimen/dp_15"
+        android:layout_marginLeft="@dimen/dp_15"
+        android:layout_marginTop="@dimen/dp_5"
+        android:layout_marginBottom="@dimen/dp_5">
         <ImageView
             android:visibility="gone"
             android:id="@+id/iv_check"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_width="@dimen/dp_40"
+            android:layout_height="@dimen/dp_40"
             android:src="@drawable/theme_check"
             android:layout_centerInParent="true"/>
     </RelativeLayout>
@@ -26,7 +26,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="name"
-        android:textSize="20sp"
+        android:textSize="@dimen/sp_20"
         android:layout_gravity="center_horizontal"
         android:id="@+id/tv_theme_name"/>
 

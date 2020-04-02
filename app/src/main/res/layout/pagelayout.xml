@@ -3,7 +3,7 @@
     android:layout_height="match_parent"
     android:background="@drawable/read_cover3"
     android:id="@+id/rl_scanView"
-    android:layout_marginTop="30dp">
+    android:layout_marginTop="@dimen/dp_30">
 
     <com.org.biquge.jsoup.novel.view.MyScrollView
         android:id="@+id/slv_content"
@@ -15,25 +15,25 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
-            android:padding="10dp"
+            android:padding="@dimen/dp_10"
             android:layout_alignParentTop="true"
-            android:lineSpacingExtra="5dp"
+            android:lineSpacingExtra="@dimen/dp_5"
             android:textColor="#000000"
-            android:textSize="18sp"/>
+            android:textSize="@dimen/sp_18"/>
     </com.org.biquge.jsoup.novel.view.MyScrollView>
     <RelativeLayout
         android:id="@+id/rl_bttom"
         android:layout_width="match_parent"
-        android:layout_height="30dp"
-        android:layout_marginBottom="10dp"
+        android:layout_height="@dimen/dp_30"
+        android:layout_marginBottom="@dimen/dp_10"
         android:layout_alignParentBottom="true">
         <TextView
-            android:layout_marginLeft="40dp"
+            android:layout_marginLeft="@dimen/dp_40"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
             android:text="上一章"
-            android:padding="5dp"
+            android:padding="@dimen/dp_5"
             android:id="@+id/tv_last_chapter"/>
         <TextView
             android:id="@+id/index"
@@ -41,15 +41,15 @@
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
             android:textColor="#000000"
-            android:padding="5dp"
-            android:textSize="15sp" />
+            android:padding="@dimen/dp_5"
+            android:textSize="@dimen/sp_15" />
         <TextView
-            android:layout_marginRight="40dp"
+            android:layout_marginRight="@dimen/dp_40"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:text="下一章"
-            android:padding="5dp"
+            android:padding="@dimen/dp_5"
             android:id="@+id/tv_next_chapter"/>
     </RelativeLayout>
 

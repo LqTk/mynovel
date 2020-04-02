@@ -18,19 +18,19 @@
             android:text="支持一下咯~"
             android:layout_centerInParent="true"
             android:textColor="@color/white"
-            android:textSize="20sp"/>
+            android:textSize="@dimen/sp_20"/>
     </RelativeLayout>
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="如果您觉得该APP还合您胃口，扫一扫支持一下~~\n自愿捐赠，是土豪就来一下~\n一分也是爱~"
-        android:layout_marginTop="80dp"
+        android:layout_marginTop="@dimen/dp_80"
         android:layout_centerHorizontal="true"
         android:gravity="center"/>
     <ImageView
         android:id="@+id/iv_donate"
-        android:layout_width="300dp"
-        android:layout_height="300dp"
+        android:layout_width="@dimen/dp_300"
+        android:layout_height="@dimen/dp_300"
         android:layout_centerInParent="true"/>
     <TextView
         android:layout_width="wrap_content"
@@ -38,14 +38,14 @@
         android:text="说明：该APP仅供休闲娱乐使用，禁止用于其它任何商业用途，感谢http://www.b5200.net提供的免费小说。
 如产生任何纠纷，本人不承担任何责任。\n如产生侵权问题，请及时联系处理。"
         android:layout_alignParentBottom="true"
-        android:layout_marginBottom="40dp"
-        android:layout_marginLeft="30dp"
-        android:layout_marginRight="30dp"
+        android:layout_marginBottom="@dimen/dp_40"
+        android:layout_marginLeft="@dimen/dp_30"
+        android:layout_marginRight="@dimen/dp_30"
         android:gravity="center_horizontal"
         android:textColor="@color/colorAccent"/>
     <TextView
         android:layout_width="wrap_content"
-        android:layout_height="25dp"
+        android:layout_height="@dimen/dp_25"
         android:layout_alignParentBottom="true"
         android:text="您的支持使我们走的更远做的更好！"
         android:layout_centerHorizontal="true"/>

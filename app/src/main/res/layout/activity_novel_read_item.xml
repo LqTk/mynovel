@@ -11,24 +11,24 @@
     <RelativeLayout
         android:id="@+id/rl_top"
         android:layout_width="match_parent"
-        android:layout_height="30dp"
-        android:padding="3dp">
+        android:layout_height="@dimen/dp_30"
+        android:padding="@dimen/dp_3">
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/tv_chapter_name"
-            android:layout_marginLeft="10dp"
+            android:layout_marginLeft="@dimen/dp_10"
             android:layout_alignParentLeft="true"
             android:layout_centerVertical="true"
-            android:textSize="12sp"
+            android:textSize="@dimen/sp_12"
             android:layout_toLeftOf="@+id/iv_battary"
             android:maxLines="1"
             android:ellipsize="end"/>
         <TextClock
             android:id="@+id/tc_clock"
             android:layout_alignParentRight="true"
-            android:textSize="12sp"
-            android:layout_marginRight="10dp"
+            android:textSize="@dimen/sp_12"
+            android:layout_marginRight="@dimen/dp_10"
             android:layout_centerVertical="true"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -36,16 +36,16 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="12sp"
+            android:textSize="@dimen/sp_12"
             android:text=""
             android:layout_centerVertical="true"
             android:layout_toLeftOf="@+id/tc_clock"
-            android:layout_marginRight="5dp"
+            android:layout_marginRight="@dimen/dp_5"
             android:id="@+id/tv_now_battary"/>
         <ImageView
             android:layout_centerVertical="true"
             android:layout_width="wrap_content"
-            android:layout_height="10dp"
+            android:layout_height="@dimen/dp_10"
             android:id="@+id/iv_battary"
             android:layout_toLeftOf="@+id/tv_now_battary"/>
     </RelativeLayout>
@@ -67,8 +67,8 @@
         android:orientation="vertical">
         <ProgressBar
             android:layout_gravity="center"
-            android:layout_width="40dp"
-            android:layout_height="40dp"/>
+            android:layout_width="@dimen/dp_40"
+            android:layout_height="@dimen/dp_40"/>
         <TextView
             android:layout_gravity="center"
             android:layout_width="wrap_content"

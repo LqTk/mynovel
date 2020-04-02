@@ -9,7 +9,7 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:layout_alignParentBottom="true"
-        android:padding="10dp">
+        android:padding="@dimen/dp_10">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -21,35 +21,35 @@
                 android:layout_height="wrap_content"
                 android:text="全本下载"
                 android:textColor="@color/blue_main"
-                android:textSize="15sp"
+                android:textSize="@dimen/sp_15"
                 android:gravity="center"
-                android:padding="10dp"
+                android:padding="@dimen/dp_10"
                 android:id="@+id/tv_saveall"/>
             <View
                 android:layout_width="match_parent"
-                android:layout_height="1dp"
+                android:layout_height="@dimen/dp_1"
                 android:background="@color/lint_color"/>
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="从当前章节下载"
                 android:textColor="@color/blue_main"
-                android:textSize="15sp"
+                android:textSize="@dimen/sp_15"
                 android:gravity="center"
-                android:padding="10dp"
+                android:padding="@dimen/dp_10"
                 android:id="@+id/tv_savenow"/>
         </LinearLayout>
 
         <TextView
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="@dimen/dp_10"
             android:background="@drawable/save_bg"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="取消"
             android:textColor="@color/colorAccent"
-            android:textSize="15sp"
+            android:textSize="@dimen/sp_15"
             android:gravity="center"
-            android:padding="10dp"
+            android:padding="@dimen/dp_10"
             android:id="@+id/tv_savecancel"/>
     </LinearLayout>
 </RelativeLayout>

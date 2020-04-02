@@ -7,13 +7,13 @@
         android:id="@+id/rl_theme_bg"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="5dp"
+        android:layout_margin="@dimen/dp_5"
         android:background="@drawable/theme_checked_bg"
-        android:padding="1dp">
+        android:padding="@dimen/dp_1">
         <ImageView
             android:id="@+id/iv_theme_item"
-            android:layout_width="40dp"
-            android:layout_height="50dp"
+            android:layout_width="@dimen/dp_40"
+            android:layout_height="@dimen/dp_50"
             android:src="@drawable/read_cover3"
             android:scaleType="fitXY"/>
     </RelativeLayout>

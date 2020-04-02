@@ -12,11 +12,11 @@
         <RelativeLayout
             android:id="@+id/rl_top"
             android:layout_width="match_parent"
-            android:layout_height="50dp"
+            android:layout_height="@dimen/dp_50"
             android:background="@color/blue_main">
             <ImageView
                 android:id="@+id/iv_down"
-                android:layout_width="30dp"
+                android:layout_width="@dimen/dp_30"
                 android:layout_height="30dp"
                 android:src="@drawable/download_click"
                 android:layout_centerVertical="true"
@@ -28,15 +28,15 @@
                 android:text="我的图书"
                 android:layout_centerInParent="true"
                 android:textColor="@color/white"
-                android:textSize="20sp"/>
+                android:textSize="@dimen/sp_20"/>
             <ImageView
-                android:layout_width="30dp"
-                android:layout_height="30dp"
+                android:layout_width="@dimen/dp_30"
+                android:layout_height="@dimen/dp_30"
                 android:layout_alignParentRight="true"
                 android:id="@+id/iv_setting"
                 android:src="@drawable/setting"
                 android:layout_centerVertical="true"
-                android:layout_marginRight="10dp"/>
+                android:layout_marginRight="@dimen/dp_10"/>
         </RelativeLayout>
 
         <com.scwang.smartrefresh.layout.SmartRefreshLayout
@@ -65,8 +65,8 @@
         android:orientation="vertical">
         <ProgressBar
             android:layout_gravity="center"
-            android:layout_width="40dp"
-            android:layout_height="40dp"/>
+            android:layout_width="@dimen/dp_40"
+            android:layout_height="@dimen/dp_40"/>
         <TextView
             android:layout_gravity="center"
             android:layout_width="wrap_content"
@@ -82,20 +82,20 @@
         android:layout_alignParentBottom="true"
         android:visibility="gone"
         android:layout_alignParentRight="true"
-        android:layout_margin="25dp">
+        android:layout_margin="@dimen/dp_25">
 
         <ImageView
             android:id="@+id/iv_delete"
-            android:layout_width="20dp"
-            android:layout_height="20dp"
+            android:layout_width="@dimen/dp_20"
+            android:layout_height="@dimen/dp_20"
             android:src="@drawable/delete_gray"
             android:layout_gravity="right"/>
         <RelativeLayout
             android:id="@+id/rl_share"
-            android:layout_marginTop="5dp"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:padding="5dp"
+            android:layout_marginTop="@dimen/dp_5"
+            android:layout_width="@dimen/dp_40"
+            android:layout_height="@dimen/dp_40"
+            android:padding="@dimen/dp_5"
             android:background="@drawable/donate_circle">
             <ImageView
                 android:layout_width="match_parent"
@@ -105,21 +105,21 @@
         <LinearLayout
             android:id="@+id/ll_donate"
             android:background="@drawable/donate_circle"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_width="@dimen/dp_40"
+            android:layout_height="@dimen/dp_40"
             android:orientation="vertical"
-            android:layout_marginTop="5dp"
+            android:layout_marginTop="@dimen/dp_5"
             android:gravity="center"
-            android:padding="5dp">
+            android:padding="@dimen/dp_5">
             <ImageView
-                android:layout_width="20dp"
-                android:layout_height="20dp"
+                android:layout_width="@dimen/dp_20"
+                android:layout_height="@dimen/dp_20"
                 android:src="@drawable/qian"/>
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="支持一下"
-                android:textSize="7sp"/>
+                android:textSize="@dimen/sp_7"/>
         </LinearLayout>
 
     </LinearLayout>

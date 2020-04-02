@@ -7,13 +7,13 @@
     android:orientation="vertical">
 
     <RelativeLayout
-        android:layout_width="300dp"
+        android:layout_width="@dimen/dp_300"
         android:layout_height="match_parent"
         android:background="@drawable/read_cover3">
         <RelativeLayout
             android:id="@+id/rl_name"
             android:layout_width="match_parent"
-            android:layout_height="40dp">
+            android:layout_height="@dimen/dp_40">
             <TextView
                 android:id="@+id/tv_name"
                 android:layout_width="wrap_content"
@@ -21,7 +21,7 @@
                 android:text="书名"
                 android:textColor="@color/text_color_black"
                 android:layout_centerInParent="true"
-                android:textSize="18sp"/>
+                android:textSize="@dimen/sp_18"/>
         </RelativeLayout>
         <RelativeLayout
             android:layout_width="match_parent"
@@ -35,14 +35,14 @@
                 android:text="目录"
                 android:textColor="@color/text_color_white"
                 android:layout_centerInParent="true"
-                android:textSize="15sp"/>
+                android:textSize="@dimen/sp_15"/>
             <ImageView
-                android:layout_width="25dp"
-                android:layout_height="25dp"
-                android:padding="3dp"
+                android:layout_width="@dimen/dp_25"
+                android:layout_height="@dimen/dp_25"
+                android:padding="@dimen/dp_3"
                 android:src="@drawable/order_down"
                 android:layout_alignParentRight="true"
-                android:layout_marginRight="20dp"
+                android:layout_marginRight="@dimen/dp_20"
                 android:layout_centerVertical="true"
                 android:id="@+id/iv_order"/>
         </RelativeLayout>
@@ -50,7 +50,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_below="@+id/rl_datalog"
-            android:layout_marginTop="10dp">
+            android:layout_marginTop="@dimen/dp_10">
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/rcv_chapter"
                 android:layout_width="match_parent"

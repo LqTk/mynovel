@@ -7,29 +7,29 @@
     <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:padding="5dp">
+        android:padding="@dimen/dp_5">
         <RelativeLayout
             android:id="@+id/rl_left"
-            android:layout_width="60dp"
-            android:layout_height="80dp"
+            android:layout_width="@dimen/dp_60"
+            android:layout_height="@dimen/dp_80"
             android:layout_centerVertical="true">
             <ImageView
                 android:id="@+id/iv_item"
-                android:layout_width="60dp"
-                android:layout_height="80dp"
+                android:layout_width="@dimen/dp_60"
+                android:layout_height="@dimen/dp_80"
                 android:src="@drawable/my_books"
                 android:layout_centerVertical="true"/>
             <ImageView
                 android:id="@+id/iv_hasnew"
                 android:visibility="gone"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
+                android:layout_width="@dimen/dp_30"
+                android:layout_height="@dimen/dp_30"
                 android:layout_alignParentRight="true"
                 android:background="@drawable/hasnew"/>
         </RelativeLayout>
         <LinearLayout
             android:layout_toRightOf="@+id/rl_left"
-            android:layout_marginLeft="10dp"
+            android:layout_marginLeft="@dimen/dp_10"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
@@ -39,7 +39,7 @@
                 android:id="@+id/tv_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="15sp"
+                android:textSize="@dimen/sp_15"
                 android:maxLines="1"
                 android:ellipsize="end"
                 android:text=""/>
@@ -47,7 +47,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/tv_author_name"
-                android:textSize="14sp"
+                android:textSize="@dimen/sp_14"
                 android:maxLines="1"
                 android:ellipsize="end"
                 android:text=""/>
@@ -55,7 +55,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/tv_recent_time"
-                android:textSize="13sp"
+                android:textSize="@dimen/sp_13"
                 android:maxLines="1"
                 android:ellipsize="end"
                 android:text=""/>
@@ -63,7 +63,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/tv_recent_content"
-                android:textSize="13sp"
+                android:textSize="@dimen/sp_13"
                 android:maxLines="1"
                 android:ellipsize="end"
                 android:text=""/>
@@ -72,6 +72,6 @@
 
     <View
         android:layout_width="match_parent"
-        android:layout_height="1dp"
+        android:layout_height="@dimen/dp_1"
         android:background="#aa999999"/>
 </LinearLayout>
