@@ -147,6 +147,9 @@ public class MyFragment extends Fragment {
                                         myBooksLists.get(i).put("recentHref", cataLog.get(0).get(0).get("recentHref"));
                                         myBooksLists.get(i).put("time", cataLog.get(0).get(0).get("time"));
                                         myBooksLists.get(i).put("hasNew", true);
+                                        DownLoadEntity loadEntity = JSON.parseObject((String) myBooksLists.get(i).get("downLoadInfo"), DownLoadEntity.class);
+                                        loadEntity.setAllPage(cataLog.get(1).size());
+                                        myBooksLists.get(i).put("downLoadInfo",JSON.toJSONString(loadEntity));
                                     }
                                 } catch (IOException e) {
                                     e.printStackTrace();
@@ -294,6 +297,9 @@ public class MyFragment extends Fragment {
                                 myBooksLists.get(i).put("recentHref", cataLog.get(0).get(0).get("recentHref"));
                                 myBooksLists.get(i).put("time", cataLog.get(0).get(0).get("time"));
                                 myBooksLists.get(i).put("hasNew", true);
+                                DownLoadEntity loadEntity = JSON.parseObject((String) myBooksLists.get(i).get("downLoadInfo"), DownLoadEntity.class);
+                                loadEntity.setAllPage(cataLog.get(1).size());
+                                myBooksLists.get(i).put("downLoadInfo",JSON.toJSONString(loadEntity));
                             }
                         } catch (IOException e) {
                             e.printStackTrace();
