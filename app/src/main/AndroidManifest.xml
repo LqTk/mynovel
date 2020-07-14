@@ -19,7 +19,8 @@
         <activity android:name=".novel.activity.NovelMainActivity" />
         <activity android:name=".novel.activity.NovelItem" />
         <activity android:name=".novel.activity.NovelReadItem" />
-        <activity android:name=".MainActivity">
+        <activity android:name=".MainActivity"
+            android:launchMode="singleTask">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
