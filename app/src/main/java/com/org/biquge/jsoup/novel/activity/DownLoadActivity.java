@@ -296,12 +296,12 @@ public class DownLoadActivity extends AppCompatActivity {
                         (String) hashMap.get("author"), path, loadEntity, handler, position, chapters));
                 DownLoadTask.startDownLoad(position);
             }
-            if (downLoadThread != null) {
+            /*if (downLoadThread != null) {
                 Intent intent = new Intent(NovelPublic.downLoadingUpdata);
                 intent.putExtra("position", position);
                 intent.putExtra("loadEntity", JSON.toJSONString(downLoadThread.loadEntity));
                 sendBroadcast(intent);
-            }
+            }*/
         }
     }
 
