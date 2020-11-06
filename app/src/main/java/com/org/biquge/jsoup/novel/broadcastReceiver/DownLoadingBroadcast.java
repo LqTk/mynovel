@@ -23,8 +23,8 @@ public class DownLoadingBroadcast extends BroadcastReceiver {
             int position = intent.getIntExtra("position",0);
             String loadEntity = intent.getStringExtra("loadEntity");
             DownLoadEntity downLoadEntity = JSON.parseObject(loadEntity,DownLoadEntity.class);
-            if (mAdapter!=null)
-                mAdapter.updataLoading(position,downLoadEntity);
+//            if (mAdapter!=null)
+//                mAdapter.updataLoading(position,downLoadEntity);
         }
     }
 }

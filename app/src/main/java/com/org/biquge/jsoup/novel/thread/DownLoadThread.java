@@ -10,6 +10,9 @@ import com.alibaba.fastjson.JSON;
 import com.org.biquge.jsoup.JsoupGet;
 import com.org.biquge.jsoup.novel.NovelPublic;
 import com.org.biquge.jsoup.novel.entities.DownLoadEntity;
+import com.org.biquge.jsoup.novel.events.RefreshLoadingEvent;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -72,7 +75,8 @@ public class DownLoadThread extends Thread{
     @Override
     public void run() {
         try {
-            Intent intent = new Intent(NovelPublic.downLoadingUpdata);
+            loadEntity.setLoadingStatu(1);
+            EventBus.getDefault().post(new RefreshLoadingEvent("iv",position,JSON.toJSONString(loadEntity)));
             HashMap downContent = new HashMap<>();
             String content;
             FileOutputStream outputStream;
@@ -101,12 +105,7 @@ public class DownLoadThread extends Thread{
                     old_length = writeFile.length();
                 } while (old_length != writeFile.length());
                 loadEntity.setLoadedPage(saveFile.list().length);
-                intent.putExtra("loadEntity", JSON.toJSONString(loadEntity));
-                if (System.currentTimeMillis()-time>1000) {
-                    intent.putExtra("position",position);
-                    context.sendBroadcast(intent);
-                    time = System.currentTimeMillis();
-                }
+                EventBus.getDefault().post(new RefreshLoadingEvent("pro",position,JSON.toJSONString(loadEntity)));
             }
             while ((!downContent.get("allChapter").equals(downContent.get("nextChapter"))) && loadEntity.getLoadingStatu()!=0 && loadEntity.getLoadingStatu()!=3){
                 loadString = (String) downContent.get("nextChapter");
@@ -132,12 +131,7 @@ public class DownLoadThread extends Thread{
                         old_length = writeFile.length();
                     } while (old_length != writeFile.length());
                     loadEntity.setLoadedPage(saveFile.list().length);
-                    intent.putExtra("loadEntity", JSON.toJSONString(loadEntity));
-                    if (System.currentTimeMillis() - time > 1000) {
-                        intent.putExtra("position",position);
-                        context.sendBroadcast(intent);
-                        time = System.currentTimeMillis();
-                    }
+                    EventBus.getDefault().post(new RefreshLoadingEvent("pro",position,JSON.toJSONString(loadEntity)));
                 }
             }
             Message message = Message.obtain();
@@ -151,18 +145,11 @@ public class DownLoadThread extends Thread{
                 handler.sendMessageDelayed(message,200);
                 loadEntity.setLoadingStatu(2);
                 loadEntity.setLoadedPage(saveFile.list().length);
-                intent.putExtra("loadEntity", JSON.toJSONString(loadEntity));
-                intent.putExtra("position",position);
-                context.sendBroadcast(intent);
+                EventBus.getDefault().post(new RefreshLoadingEvent("iv",position,JSON.toJSONString(loadEntity)));
             }else if(loadEntity.getLoadingStatu()==0){
                 message.obj = "《" + title + "》已暂停下载";
                 handler.sendMessage(message);
-                intent.putExtra("loadEntity", JSON.toJSONString(loadEntity));
-                if (System.currentTimeMillis()-time>1000) {
-                    intent.putExtra("position",position);
-                    context.sendBroadcast(intent);
-                    time = System.currentTimeMillis();
-                }
+                EventBus.getDefault().post(new RefreshLoadingEvent("iv",position,JSON.toJSONString(loadEntity)));
             }
         } catch (Exception e) {
             Message message = Message.obtain();
@@ -170,10 +157,7 @@ public class DownLoadThread extends Thread{
             message.obj = "下载出现错误《" + title + "》已暂停下载";
             handler.sendMessage(message);
             loadEntity.setLoadingStatu(0);
-            Intent intent = new Intent(NovelPublic.downLoadingUpdata);
-            intent.putExtra("position",position);
-            intent.putExtra("loadEntity", JSON.toJSONString(loadEntity));
-            context.sendBroadcast(intent);
+            EventBus.getDefault().post(new RefreshLoadingEvent("iv",position,JSON.toJSONString(loadEntity)));
             e.printStackTrace();
         }
     }

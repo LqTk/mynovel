@@ -8,14 +8,14 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/dp_5"
         android:padding="@dimen/dp_5">
+
         <ImageView
             android:id="@+id/iv_st"
             android:layout_width="@dimen/dp_30"
             android:layout_height="@dimen/dp_30"
             android:layout_alignParentRight="true"
-            android:layout_centerVertical="true"
             android:layout_marginRight="@dimen/dp_10"
-            android:src="@drawable/download_start"/>
+            android:src="@drawable/download_start" />
         <LinearLayout
             android:layout_toLeftOf="@+id/iv_st"
             android:layout_centerVertical="true"

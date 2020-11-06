@@ -101,6 +101,7 @@ public class NovelReadItem extends AppCompatActivity {
                 case 2:
                     if (readItem == null)
                         return;
+                    onSaveBooks();
                     tvChapterName.setText((String) readItem.get("name"));
                     String content1 = (String) readItem.get("content");
                     scanViewAdapter.setData(context, content1,NRIScanViewBgId,scrollOrientation);
@@ -537,7 +538,6 @@ public class NovelReadItem extends AppCompatActivity {
             if (!isAdded){
                 authorMap.put("lastPage",chapterPosition);
             }
-            onSaveBooks();
             String nowChapter = (String) chaptersLists.get(chapterPosition).get("href");
             String[] split = nowChapter.split(NovelPublic.getHomeUrl(3))[1].split(".html");
             nowChapter = split[0] + ".txt";

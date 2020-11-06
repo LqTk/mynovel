@@ -24,6 +24,8 @@ import com.org.biquge.jsoup.novel.adapter.DownAdapter;
 import com.org.biquge.jsoup.novel.broadcastReceiver.DownLoadingBroadcast;
 import com.org.biquge.jsoup.novel.entities.DownLoadEntity;
 import com.org.biquge.jsoup.novel.events.DeleteEvent;
+import com.org.biquge.jsoup.novel.events.DownEvent;
+import com.org.biquge.jsoup.novel.events.RefreshLoadingEvent;
 import com.org.biquge.jsoup.novel.events.RefreshTheme;
 import com.org.biquge.jsoup.novel.thread.DownLoadTask;
 import com.org.biquge.jsoup.novel.thread.DownLoadThread;
@@ -66,10 +68,18 @@ public class DownLoadActivity extends AppCompatActivity {
                 case 1:
                     EventBus.getDefault().post(new DeleteEvent());
                     break;
+                case 2:
+                    int position = (int) msg.obj;
+                    downAdapter.notifyItemChanged(position,"iv");
+                    break;
+                case 3:
+                    int position1 = (int) msg.obj;
+                    downAdapter.notifyItemChanged(position1,"pro");
+                    break;
             }
         }
     };
-    private DownLoadingBroadcast downLoadingBroadcast;
+//    private DownLoadingBroadcast downLoadingBroadcast;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -97,7 +107,7 @@ public class DownLoadActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         EventBus.getDefault().unregister(this);
-        unregisterReceiver(downLoadingBroadcast);
+//        unregisterReceiver(downLoadingBroadcast);
     }
 
     private void initRcv() {
@@ -127,11 +137,12 @@ public class DownLoadActivity extends AppCompatActivity {
             }
         }
 
-        downAdapter = new DownAdapter(R.layout.down_item_layout, myBooksLists);
+//        downAdapter = new DownAdapter(R.layout.down_item_layout, myBooksLists);
+        downAdapter = new DownAdapter(this,myBooksLists);
         rcvDown.setAdapter(downAdapter);
-        IntentFilter filter = new IntentFilter(NovelPublic.downLoadingUpdata);
-        downLoadingBroadcast = new DownLoadingBroadcast(downAdapter);
-        registerReceiver(downLoadingBroadcast, filter);
+//        IntentFilter filter = new IntentFilter(NovelPublic.downLoadingUpdata);
+//        downLoadingBroadcast = new DownLoadingBroadcast(downAdapter);
+//        registerReceiver(downLoadingBroadcast, filter);
 
         if (DownLoadTask.threadList == null) {
             DownLoadTask.threadList = new ArrayList<>();
@@ -191,16 +202,16 @@ public class DownLoadActivity extends AppCompatActivity {
                 }
             }
         }
-        downAdapter.setOnItemChildClickListener(new BaseQuickAdapter.OnItemChildClickListener() {
+        /*downAdapter.setOnItemChildClickListener(new BaseQuickAdapter.OnItemChildClickListener() {
             @Override
             public void onItemChildClick(BaseQuickAdapter adapter, View view, int position) {
-                /*ToastUtils.showShortMsg(context,"开始暂停");
+                *//*ToastUtils.showShortMsg(context,"开始暂停");
                 HashMap hashMap = myBooksLists.get(position);
                 DownLoadEntity loadEntity = JSON.parseObject((String) hashMap.get("downLoadInfo"),DownLoadEntity.class);
 
                 String path = Environment.getExternalStorageDirectory()+novelSaveDirName+loadEntity.getHomeUrl().split(NovelPublic.getHomeUrl(3))[1];
                 Log.d("savepath",path);
-                new DownLoadThread(context,(String) hashMap.get("title"),path,loadEntity,handler,position).start();*/
+                new DownLoadThread(context,(String) hashMap.get("title"),path,loadEntity,handler,position).start();*//*
                 boolean isInTask = false;
                 HashMap hashMap = myBooksLists.get(position);
                 String title = (String) hashMap.get("title");
@@ -234,7 +245,64 @@ public class DownLoadActivity extends AppCompatActivity {
                     sendBroadcast(intent);
                 }
             }
-        });
+        });*/
+    }
+
+    @Subscribe
+    public void RefreshLoading(RefreshLoadingEvent event){
+        if (event!=null){
+            int position = event.position;
+            String loadEntity = event.loadEntity;
+            DownLoadEntity downLoadEntity = JSON.parseObject(loadEntity,DownLoadEntity.class);
+            myBooksLists.get(position).put("downLoadInfo",JSON.toJSONString(downLoadEntity));
+            Message message = Message.obtain();
+            if (event.type.equals("iv")) {
+                message.what = 2;
+            }else {
+                message.what = 3;
+            }
+            message.obj = event.position;
+            handler.sendMessage(message);
+        }
+    }
+
+    @Subscribe
+    public void DownEvent(DownEvent event){
+        if (event!=null){
+            int position = event.pos;
+            boolean isInTask = false;
+            HashMap hashMap = myBooksLists.get(position);
+            String title = (String) hashMap.get("title");
+            String author = (String) hashMap.get("author");
+            DownLoadThread downLoadThread = null;
+            for (int i = 0; i < DownLoadTask.threadList.size(); i++) {
+                DownLoadThread loadThread = DownLoadTask.threadList.get(i);
+                if (loadThread.title.equals(title) && loadThread.author.equals(author)) {
+                    downLoadThread = loadThread;
+                    if (loadThread.loadEntity.getLoadingStatu() != 1) {
+                        DownLoadTask.startDownLoad(position);
+                    } else {
+                        DownLoadTask.threadList.get(position).loadEntity.setLoadingStatu(0);
+                    }
+                    isInTask = true;
+                    break;
+                }
+            }
+            if (!isInTask) {
+                DownLoadEntity loadEntity = JSON.parseObject((String) hashMap.get("downLoadInfo"), DownLoadEntity.class);
+                String path = Environment.getExternalStorageDirectory() + novelSaveDirName + loadEntity.getHomeUrl().split(NovelPublic.getHomeUrl(3))[1];
+                List<HashMap> chapters = JSON.parseArray((String) hashMap.get("chapters"), HashMap.class);
+                DownLoadTask.threadList.add(new DownLoadThread(context, (String) hashMap.get("title"),
+                        (String) hashMap.get("author"), path, loadEntity, handler, position, chapters));
+                DownLoadTask.startDownLoad(position);
+            }
+            if (downLoadThread != null) {
+                Intent intent = new Intent(NovelPublic.downLoadingUpdata);
+                intent.putExtra("position", position);
+                intent.putExtra("loadEntity", JSON.toJSONString(downLoadThread.loadEntity));
+                sendBroadcast(intent);
+            }
+        }
     }
 
     @Subscribe
