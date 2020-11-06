@@ -2,6 +2,7 @@ package com.org.biquge.jsoup;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -12,6 +13,7 @@ import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.view.WindowManager;
@@ -23,6 +25,7 @@ import com.org.biquge.jsoup.novel.fragments.BooksHome;
 import com.org.biquge.jsoup.novel.fragments.MyFragment;
 import com.org.biquge.jsoup.novel.fragments.NovelsAllFragement;
 import com.org.biquge.jsoup.novel.thread.DownLoadTask;
+import com.org.biquge.jsoup.novel.thread.DownLoadThread;
 import com.org.biquge.jsoup.novel.utils.ToastUtils;
 
 import org.greenrobot.eventbus.Subscribe;
@@ -157,14 +160,47 @@ public class MainActivity extends AppCompatActivity {
 //            bnvMain.getMenu().findItem(R.id.navigation_my).setIcon(R.drawable.my_books);
             mOnNavigationItemSelectedListener.onNavigationItemSelected(bnvMain.getMenu().findItem(R.id.navigation_my));
         }else {
-            if (System.currentTimeMillis() - exitTime < 1500) {
-                if (DownLoadTask.threadList != null) {
-                    DownLoadTask.stopAll();
+            if (DownLoadTask.threadList != null) {
+                boolean isLoading = false;
+                for (DownLoadThread thread:DownLoadTask.threadList){
+                    if (thread.loadEntity.getLoadingStatu()==1){
+                        isLoading = true;
+                        break;
+                    }
                 }
-                super.onBackPressed();
-            } else {
-                exitTime = System.currentTimeMillis();
-                ToastUtils.showShortMsg(context, "再按一次退出");
+                if (isLoading){
+                    AlertDialog.Builder builder = new AlertDialog.Builder(this)
+                            .setTitle("提示")
+                            .setMessage("正在下载中，退出将停止下载！")
+                            .setPositiveButton("是", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.dismiss();
+                                    System.exit(0);
+                                }
+                            })
+                            .setNegativeButton("否", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.dismiss();
+                                }
+                            });
+                    builder.show();
+                }else {
+                    if (System.currentTimeMillis() - exitTime < 1500) {
+                        super.onBackPressed();
+                    } else {
+                        exitTime = System.currentTimeMillis();
+                        ToastUtils.showShortMsg(context, "再按一次退出");
+                    }
+                }
+            }else {
+                if (System.currentTimeMillis() - exitTime < 1500) {
+                    super.onBackPressed();
+                } else {
+                    exitTime = System.currentTimeMillis();
+                    ToastUtils.showShortMsg(context, "再按一次退出");
+                }
             }
         }
     }
